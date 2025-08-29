@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.28)
-project(CMakeSFMLProject LANGUAGES CXX)
+project(ShapeWars LANGUAGES CXX)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
@@ -12,6 +12,34 @@ FetchContent_Declare(SFML
     SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
-add_executable(main src/main.cpp)
-target_compile_features(main PRIVATE cxx_std_17)
-target_link_libraries(main PRIVATE SFML::Graphics)
+#file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/src/Content" DESTINATION "${CMAKE_BINARY_DIR}/bin")
+
+add_executable(ShapeWars src/main.cpp
+        src/GameRoot.cpp
+        src/GameRoot.h
+        src/Logger/Logger.cpp
+        src/Logger/Logger.h
+        src/Content/Art.cpp
+        src/Content/Art.h
+        src/Entities/Src/PlayerShip.cpp
+        src/Entities/Include/PlayerShip.h
+        src/Input/Input.cpp
+        src/Input/Input.h
+        src/System/Include/Extensions.h
+        src/Entities/Src/Bullets.cpp
+        src/Entities/Include/Bullets.h
+        src/System/Src/Quaternion.cpp
+        src/System/Include/Quaternion.h
+        src/UserInterface/Src/UserInterface.cpp
+        src/UserInterface/Include/UserInterface.h
+)
+
+target_compile_features(ShapeWars PRIVATE cxx_std_17)
+
+target_link_libraries(
+        ShapeWars
+        PRIVATE SFML::Graphics
+        PRIVATE SFML::Audio
+        PRIVATE SFML::Window
+        PRIVATE SFML::System
+)
