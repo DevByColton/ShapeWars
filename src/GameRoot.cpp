@@ -2,6 +2,7 @@
 #include "GameRoot.h"
 #include "Logger/Logger.h"
 
+
 GameRoot::GameRoot() {
 
     // Set fullscreen mode and set the window maximum size to it
@@ -33,17 +34,32 @@ GameRoot::GameRoot() {
     );
 }
 
+
 sf::Vector2<int> GameRoot::size() const {
     return sf::Vector2<int>(renderWindow.getSize());
 }
+
 
 float GameRoot::halfWidth() const {
     return static_cast<float>(renderWindow.getSize().x / 2.0);
 }
 
+
 float GameRoot::halfHeight() const {
     return static_cast<float>(renderWindow.getSize().y / 2.0);
 }
 
+
+void GameRoot::togglePause() {
+    isPaused = !isPaused;
+}
+
+
+void GameRoot::update() {
+
+    const sf::Time elapsed = gameClock.restart();
+    deltaTime = elapsed.asSeconds();
+
+}
 
 

@@ -2,14 +2,17 @@
 
 #include "../GameRoot.h"
 #include "../Entities/Include/PlayerShip.h"
+#include "../Logger/Logger.h"
 #include "../System/Include/Extensions.h"
 #include "SFML/Window/Joystick.hpp"
 #include "SFML/Window/Keyboard.hpp"
 #include "SFML/Window/Mouse.hpp"
 
+
 bool Input::isMouseVisible() const {
     return aimMode == AimMode::Mouse;
 }
+
 
 sf::Vector2f Input::getThumbstickPosition(const sf::Joystick::Axis thumbstickX, const sf::Joystick::Axis thumbstickY) const {
 
@@ -58,7 +61,9 @@ sf::Vector2f Input::getMovementDirection() const {
 
 }
 
-sf::Vector2f Input::getAimDirection() const {
+sf::Vector2f Input::getAimDirection() {
+
+    setAimingMode();
 
     sf::Vector2f direction = {0.0, 0.0};
 
@@ -95,7 +100,7 @@ sf::Vector2f Input::getAimDirection() const {
 }
 
 
-void Input::update() {
+void Input::setAimingMode() {
 
     // Check the current aiming mode
     const sf::Vector2f thumbstickPosition = getThumbstickPosition(sf::Joystick::Axis::U, sf::Joystick::Axis::V);
@@ -103,14 +108,9 @@ void Input::update() {
 
     // Check aiming keys
     const bool areAimingKeysPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Up) ||
-                             sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Left) ||
-                             sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Right) ||
-                             sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Down);
-
-    // Get the x and y coordinates of the mouse relative to the game window
-    const float mousePositionX = static_cast<float>(sf::Mouse::getPosition(GameRoot::instance().renderWindow).x);
-    const float mousePositionY = static_cast<float>(sf::Mouse::getPosition(GameRoot::instance().renderWindow).y);
-    const sf::Vector2f currentMousePosition = {mousePositionX, mousePositionY};
+                                      sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Left) ||
+                                      sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Right) ||
+                                      sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Down);
 
     // Set the aim mode
     if (usingThumbstickToAim)
@@ -120,12 +120,22 @@ void Input::update() {
     else if (currentMousePosition != previousMousePosition)
         aimMode = AimMode::Mouse;
 
+}
+
+void Input::updateMousePosition() {
+
     // Set the previous mouse position
     previousMousePosition = currentMousePosition;
+
+    // Get the x and y coordinates of the mouse relative to the game window
+    const float mousePositionX = static_cast<float>(sf::Mouse::getPosition(GameRoot::instance().renderWindow).x);
+    const float mousePositionY = static_cast<float>(sf::Mouse::getPosition(GameRoot::instance().renderWindow).y);
+
+    currentMousePosition = {mousePositionX, mousePositionY};
     mouseCursor.setPosition(previousMousePosition);
 
-    // NOTE: Go through all button mappings on joystick and test at some point
 }
+
 
 void Input::draw() const {
     if (isMouseVisible())

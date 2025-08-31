@@ -1,5 +1,6 @@
 ﻿#ifndef ART_H
 #define ART_H
+#include "SFML/Graphics/Font.hpp"
 #include "SFML/Graphics/Texture.hpp"
 
 
@@ -12,11 +13,13 @@ struct Art {
         return *instance;
     }
 
-    sf::Texture Player;
-    sf::Texture Seeker;
-    sf::Texture Wanderer;
-    sf::Texture Bullet;
-    sf::Texture Pointer;
+    sf::Texture player;
+    sf::Texture seeker;
+    sf::Texture wanderer;
+    sf::Texture bullet;
+    sf::Texture pointer;
+    sf::Texture enemyPlaceholder;
+    sf::Font font;
 };
 
 

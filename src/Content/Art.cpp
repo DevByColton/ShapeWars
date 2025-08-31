@@ -3,13 +3,17 @@
 #include "SFML/System/Exception.hpp"
 
 Art::Art() {
+
     try {
-        Player = sf::Texture("Content\\Images\\Player.png");
-        Seeker = sf::Texture("Content\\Images\\Seeker.png");
-        Wanderer = sf::Texture("Content\\Images\\Wanderer.png");
-        Bullet = sf::Texture("Content\\Images\\Bullet.png");
-        Pointer = sf::Texture("Content\\Images\\Pointer.png");
+        player = sf::Texture("Content\\Images\\Player.png");
+        seeker = sf::Texture("Content\\Images\\Seeker.png");
+        wanderer = sf::Texture("Content\\Images\\Wanderer.png");
+        bullet = sf::Texture("Content\\Images\\Bullet.png");
+        pointer = sf::Texture("Content\\Images\\Pointer.png");
+        enemyPlaceholder = sf::Texture("Content\\Images\\EnemyPlaceholder.png");
+        font = sf::Font("Content\\Font\\TurretRoad-Regular.ttf");
     } catch (sf::Exception &ex) {
         Logger::printError(ex.what());
     }
+
 }

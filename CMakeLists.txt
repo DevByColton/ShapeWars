@@ -30,11 +30,19 @@ add_executable(ShapeWars src/main.cpp
         src/Entities/Include/Bullets.h
         src/System/Src/Quaternion.cpp
         src/System/Include/Quaternion.h
-        src/UserInterface/Src/UserInterface.cpp
-        src/UserInterface/Include/UserInterface.h
+        src/Entities/Src/Enemies.cpp
+        src/Entities/Include/Enemies.h
+        src/Entities/Src/Collisions.cpp
+        src/Entities/Include/Collisions.h
+        src/PlayerStatus/PlayerStatus.cpp
+        src/PlayerStatus/PlayerStatus.h
+        src/UserInterface/UserInterface.cpp
+        src/UserInterface/UserInterface.h
+        src/Content/Sound.cpp
+        src/Content/Sound.h
 )
 
-target_compile_features(ShapeWars PRIVATE cxx_std_17)
+target_compile_features(ShapeWars PRIVATE cxx_std_20)
 
 target_link_libraries(
         ShapeWars
