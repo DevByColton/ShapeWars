@@ -1,8 +1,9 @@
 ﻿#include <numbers>
-#include "UserInterface.h"
-#include "../GameRoot.h"
-#include "../PlayerStatus/PlayerStatus.h"
-#include "../System/Include/Extensions.h"
+#include <string>
+#include "../Include/UserInterface.h"
+#include "../../GameRoot.h"
+#include "../../PlayerStatus/PlayerStatus.h"
+#include "../../System/Include/Extensions.h"
 
 
 UserInterface::UserInterface() {
@@ -28,6 +29,10 @@ UserInterface::UserInterface() {
     multiplierHeaderText.setPosition({ scoreText.getPosition().x, scoreText.getPosition().y + 60.0f });
     multiplierText.setPosition({ multiplierHeaderText.getPosition().x + 40.0f, multiplierHeaderText.getPosition().y });
 
+    // Set the timer text just under the score and multiplier
+    timerText.setPosition({ scoreText.getPosition().x + 8.0f, scoreText.getPosition().y + 100.0f });
+    timerText.setLetterSpacing(1.5f);
+
     // Justify the pause text slightly under the multiplier text in the middle of the screen
     pausedText.setPosition({GameRoot::instance().windowSizeF.x / 2.0f, 250.0f});
     pausedText.setOrigin({ pausedText.getLocalBounds().size.x / 2.0f, pausedText.getLocalBounds().size.y / 2.0f });
@@ -46,6 +51,23 @@ UserInterface::UserInterface() {
 float UserInterface::playerShipWidthScaled() const {
     const float widthWithPadding = playerShipSprite.getTexture().getSize().x + 16;
     return widthWithPadding * playerShipSprite.getScale().x;
+}
+
+
+std::string UserInterface::formattedTime()
+{
+    const int minutesNumber = static_cast<int>(GameRoot::instance().totalGameTime()) / 60;
+    const int secondsNumber = static_cast<int>(GameRoot::instance().totalGameTime()) % 60;
+
+    std::string timeString {std::to_string(minutesNumber)};
+    timeString.append(":");
+
+    if (secondsNumber < 10)
+        timeString.append("0" + std::to_string(secondsNumber));
+    else
+        timeString.append(std::to_string(secondsNumber));
+
+    return timeString;
 }
 
 
@@ -78,6 +100,14 @@ void UserInterface::draw() {
     float multiplierOriginTextY = multiplierTextRect.size.y / 2.0f;
     multiplierText.setOrigin({multiplierOriginTextX, multiplierOriginTextY});
     GameRoot::instance().renderWindow.draw(multiplierText);
+
+    // Draw the timer text
+    timerText.setString(formattedTime());
+    const sf::FloatRect timerTextRect = timerText.getLocalBounds();
+    float timerOriginTextX = timerTextRect.size.x / 2.0f;
+    float timerOriginTextY = timerTextRect.size.y / 2.0f;
+    timerText.setOrigin({timerOriginTextX, timerOriginTextY});
+    GameRoot::instance().renderWindow.draw(timerText);
 
     // Draw the high score header and text, right align the highscore number
     GameRoot::instance().renderWindow.draw(highScoreHeaderText);

@@ -1,18 +1,17 @@
 ﻿#include <algorithm>
 #include "../Include/PlayerShip.h"
 #include "../../GameRoot.h"
-#include "../../Content/Art.h"
+#include "../../Content/Include/Art.h"
+#include "../../Content/Include/Bloom.h"
 #include "../../Input/Input.h"
 #include "../../PlayerStatus/PlayerStatus.h"
 #include "../../System/Include/Extensions.h"
 #include "../Include/Bullets.h"
 
-PlayerShip::PlayerShip() {
-
+PlayerShip::PlayerShip()
+{
     // Set the players position in the middle of the screen
-    float x = GameRoot::instance().windowSizeF.x / 2;
-    float y = GameRoot::instance().windowSizeF.y / 2;
-    sprite.setPosition({x, y});
+    sprite.setPosition(GameRoot::instance().windowSizeF / 2.0f);
 
     // Set the sprite origin to the middle of the sprite
     float spriteMiddleX = static_cast<float>(Art::instance().player.getSize().x / 2.0);
@@ -23,56 +22,43 @@ PlayerShip::PlayerShip() {
     float width = static_cast<float>(sprite.getTexture().getSize().x);
     float height = static_cast<float>(sprite.getTexture().getSize().y);
     spriteSizeF = {width, height};
-
 }
 
 
-sf::Vector2f PlayerShip::getPosition() const {
+void PlayerShip::centerPlayer()
+{
+    sprite.setPosition(GameRoot::instance().windowSizeF / 2.0f);
+}
+
+
+sf::Vector2f PlayerShip::getPosition() const
+{
     return sprite.getPosition();
 }
 
 
-sf::Vector2<int> PlayerShip::size() const {
-    return sf::Vector2<int>(sprite.getTexture().getSize());
-}
-
-float PlayerShip::halfWidth() const {
+float PlayerShip::halfWidth() const
+{
     return spriteSizeF.x / 2;
 }
 
 
-float PlayerShip::halfHeight() const {
+float PlayerShip::halfHeight() const
+{
     return spriteSizeF.y / 2;
 }
 
 
-bool PlayerShip::isDead() const {
-    return timeUntilRespawn > 0;
+void PlayerShip::applyForce(sf::Vector2f amount)
+{
+    velocity += amount;
 }
 
 
-void PlayerShip::kill() {
-    PlayerStatus::instance().removeLife();
-    timeUntilRespawn = PlayerStatus::instance().isGameOver() ? 5.0f : 1.0;
-}
-
-
-void PlayerShip::update() {
-
-    // Make sure the player is alive
-    if (isDead()) {
-        timeUntilRespawn -= GameRoot::instance().deltaTime;
-
-        if (timeUntilRespawn <= 0 && PlayerStatus::instance().isGameOver()) {
-            PlayerStatus::instance().reset();
-            sprite.setPosition(GameRoot::instance().windowSizeF / 2.0f);
-        }
-
-        return;
-    }
-
+void PlayerShip::update()
+{
     // Move the player and clamp to window bounds
-    velocity = speed * Input::instance().getMovementDirection();
+    velocity += speed * Input::instance().getMovementDirection();
     const sf::Vector2f nextPosition = sprite.getPosition() + velocity;
     float clampedX = std::clamp(nextPosition.x, halfWidth(), GameRoot::instance().windowSizeF.x - halfWidth());
     float clampedY = std::clamp(nextPosition.y, halfHeight(), GameRoot::instance().windowSizeF.y - halfHeight());
@@ -90,17 +76,18 @@ void PlayerShip::update() {
         Bullets::instance().addBulletGroup(getPosition(), aimDirection);
     }
 
+    // Make sure velocity always gets reset
+    velocity = {0.0, 0.0};
+
     // Decrement the bullet cooldown
     if (spawnBulletCooldownRemaining > 0)
         spawnBulletCooldownRemaining -= 1;
-
 }
 
 
-void PlayerShip::draw() const {
-
-    if (!isDead())
-        GameRoot::instance().renderWindow.draw(sprite);
-
+void PlayerShip::draw() const
+{
+    if (!PlayerStatus::instance().isDead())
+        Bloom::instance().drawToBaseBloomTexture(sprite);
 }
 

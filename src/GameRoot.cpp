@@ -3,8 +3,8 @@
 #include "Logger/Logger.h"
 
 
-GameRoot::GameRoot() {
-
+GameRoot::GameRoot()
+{
     // Set fullscreen mode and set the window maximum size to it
     const auto& fullscreenModes = sf::VideoMode::getFullscreenModes();
     const unsigned int width = fullscreenModes[0].size.x;
@@ -20,7 +20,8 @@ GameRoot::GameRoot() {
         sf::State::Fullscreen
     );
     renderWindow.setMaximumSize(maxWindowSize);
-    renderWindow.setFramerateLimit(60);
+    // renderWindow.setFramerateLimit(60);
+    renderWindow.setVerticalSyncEnabled(true);
     renderWindow.setMouseCursorVisible(false);
 
     // Set the screen size in float for easy maths
@@ -35,31 +36,59 @@ GameRoot::GameRoot() {
 }
 
 
-sf::Vector2<int> GameRoot::size() const {
+sf::Vector2<int> GameRoot::size() const
+{
     return sf::Vector2<int>(renderWindow.getSize());
 }
 
 
-float GameRoot::halfWidth() const {
+float GameRoot::halfWidth() const
+{
     return static_cast<float>(renderWindow.getSize().x / 2.0);
 }
 
 
-float GameRoot::halfHeight() const {
+float GameRoot::halfHeight() const
+{
     return static_cast<float>(renderWindow.getSize().y / 2.0);
 }
 
 
-void GameRoot::togglePause() {
+void GameRoot::togglePause()
+{
     isPaused = !isPaused;
+
+    if (isPaused)
+        stopTotalGameClock();
+    else
+        totalGameTimeClock.start();
 }
 
 
-void GameRoot::update() {
+void GameRoot::stopTotalGameClock()
+{
+    totalGameTimeClock.stop();
+}
 
-    const sf::Time elapsed = gameClock.restart();
+
+void GameRoot::restartTotalGameClock()
+{
+    totalGameTimeClock.restart();
+}
+
+
+float GameRoot::totalGameTime() const
+{
+    return totalGameTimeClock.getElapsedTime().asSeconds();
+}
+
+
+
+void GameRoot::update()
+{
+    // Set the delta time
+    const sf::Time elapsed = deltaTimeClock.restart();
     deltaTime = elapsed.asSeconds();
-
 }
 
 

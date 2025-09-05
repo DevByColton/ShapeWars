@@ -10,8 +10,12 @@ private:
     const int maxLives = 5;
     int scoreForExtraLife = baseScoreForExtraLife;
     float multiplierTimeLeft = 0;
+    float timeUntilRespawn = 0.0f;
+    bool shouldKill = false;
 
-    void setDefaultHighscore();
+    void kill();
+    void loadHighscore();
+    void saveHighscore(int) const;
 
 public:
     PlayerStatus();
@@ -26,10 +30,12 @@ public:
     int score = 0;
     int lives = 4;
     int multiplier = 1;
+    bool needTotalReset = false;
+    bool needBaseReset = false;
 
-    void loadHighscore();
-    void saveHighscore(int) const;
+    void markForKill();
     void reset();
+    bool isDead() const;
     void update();
     void addPoints(int);
     void removeLife();

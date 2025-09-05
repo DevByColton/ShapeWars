@@ -1,6 +1,6 @@
 ﻿#ifndef PLAYERSHIP_H
 #define PLAYERSHIP_H
-#include "../../Content/Art.h"
+#include "../../Content/Include/Art.h"
 #include "SFML/Graphics/Sprite.hpp"
 
 
@@ -9,6 +9,13 @@ private:
     sf::Sprite sprite {Art::instance().player};
     const int spawnBulletCooldownFrames = 6;
     int spawnBulletCooldownRemaining = 0;
+
+    sf::Vector2f velocity {0.0, 0.0};
+    sf::Vector2f spriteSizeF {0.0, 0.0};
+    float speed = 8;
+
+    float halfWidth() const;
+    float halfHeight() const;
 
 public:
     PlayerShip();
@@ -19,19 +26,11 @@ public:
         return *instance;
     }
 
-    sf::Vector2f velocity {0.0, 0.0};
-    sf::Vector2f spriteSizeF {0.0, 0.0};
-    float timeUntilRespawn = 0.0f;
-    int lives = 3;
-    float speed = 8;
     float radius = 20;
 
+    void centerPlayer();
     sf::Vector2f getPosition() const;
-    sf::Vector2<int> size() const;
-    float halfWidth() const;
-    float halfHeight() const;
-    bool isDead() const;
-    void kill();
+    void applyForce(sf::Vector2f);
     void update();
     void draw() const;
 };

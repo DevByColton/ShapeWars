@@ -18,6 +18,7 @@ struct Sound {
         return *instance;
     }
 
+    bool playSound = false;
     sf::Music gameplaySong;
 
     // Shot sounds
@@ -78,6 +79,7 @@ struct Sound {
     void playShotSound();
     void playExplosionSound();
     void playSpawnSound();
+    void togglePlaySounds();
 };
 
 

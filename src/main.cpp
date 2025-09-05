@@ -1,14 +1,17 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include "GameRoot.h"
-#include "Content/Sound.h"
+#include "Content/Include/Bloom.h"
+#include "Content/Include/Sound.h"
+#include "Entities/Include/BlackHoles.h"
 #include "Entities/Include/Bullets.h"
 #include "Entities/Include/Collisions.h"
 #include "Entities/Include/Enemies.h"
 #include "Entities/Include/PlayerShip.h"
 #include "Input/Input.h"
 #include "PlayerStatus/PlayerStatus.h"
-#include "UserInterface/UserInterface.h"
+#include "UserInterface/Include/UserInterface.h"
+#include "UserInterface/Include/FloatingKillTexts.h"
 
 int main()
 {
@@ -24,8 +27,8 @@ int main()
             if (event->is<sf::Event::Closed>())
                 GameRoot::instance().renderWindow.close();
 
-            if (event->is<sf::Event::FocusLost>())
-                GameRoot::instance().isPaused = true;
+            // if (event->is<sf::Event::FocusLost>())
+            //     GameRoot::instance().isPaused = true;
 
             // NOTE: I could pass these events to the input handler to process in update
             // Key pressed events
@@ -36,6 +39,13 @@ int main()
 
                 if (keyPressed->scancode == sf::Keyboard::Scancode::P)
                     GameRoot::instance().togglePause();
+
+                if (keyPressed->scancode == sf::Keyboard::Scancode::O)
+                    Sound::instance().togglePlaySounds();
+
+                if (keyPressed->scancode == sf::Keyboard::Scancode::B)
+                    Bloom::instance().bloomEnabled = !Bloom::instance().bloomEnabled;
+
             }
 
             // NOTE: I could pass these events to the input handler to process in update
@@ -60,26 +70,59 @@ int main()
 
         // Pauseable updates
         if (!GameRoot::instance().isPaused) {
-            Enemies::instance().update();
-            PlayerShip::instance().update();
-            PlayerStatus::instance().update();
-            Bullets::instance().update();
-            Collisions::instance().handleEnemyAndPlayer();
 
-            // If the player died, reset all enemies and bullets
-            if (PlayerShip::instance().isDead()) {
+            // Always update the player status first
+            PlayerStatus::instance().update();
+
+            // When the player is alive
+            if (!PlayerStatus::instance().isDead())
+            {
+                Enemies::instance().update();
+                PlayerShip::instance().update();
+                Bullets::instance().update();
+                BlackHoles::instance().update();
+                Collisions::instance().handleEnemyPlayerBullets();
+                Collisions::instance().handleBlackHoles();
+            }
+
+            // At a minimum reset the enemies, black holes, and bullets
+            if (PlayerStatus::instance().needBaseReset)
+            {
                 Bullets::instance().resetAll();
                 Enemies::instance().killAll();
+                BlackHoles::instance().killAll();
+                PlayerStatus::instance().needBaseReset = false;
             }
+
+            // At the restart of a new round, reset the player status, game clock, and center the player
+            if (PlayerStatus::instance().needTotalReset)
+            {
+                PlayerStatus::instance().reset();
+                GameRoot::instance().restartTotalGameClock();
+                PlayerShip::instance().centerPlayer();
+                PlayerStatus::instance().needTotalReset = false;
+            }
+
+            // Independent of player status
+            FloatingKillTexts::instance().update();
         }
 
         // Draws
         GameRoot::instance().renderWindow.clear();
+
+        // Draw stuff with bloom
+        Bloom::instance().clearTextures();
         Enemies::instance().draw();
+        BlackHoles::instance().draw();
         Bullets::instance().draw();
         PlayerShip::instance().draw();
+        Bloom::instance().drawBloomToScreen();
+
+        // Draws without bloom
+        FloatingKillTexts::instance().draw();
         Input::instance().draw();
         UserInterface::instance().draw();
+
         GameRoot::instance().renderWindow.display();
 
     }

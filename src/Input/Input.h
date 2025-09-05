@@ -1,6 +1,6 @@
 ﻿#ifndef INPUT_H
 #define INPUT_H
-#include "../Content/Art.h"
+#include "../Content/Include/Art.h"
 #include "SFML/Graphics/Sprite.hpp"
 #include "SFML/System/Vector2.hpp"
 #include "SFML/Window/Joystick.hpp"

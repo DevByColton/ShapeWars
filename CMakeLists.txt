@@ -19,8 +19,8 @@ add_executable(ShapeWars src/main.cpp
         src/GameRoot.h
         src/Logger/Logger.cpp
         src/Logger/Logger.h
-        src/Content/Art.cpp
-        src/Content/Art.h
+        src/Content/Src/Art.cpp
+        src/Content/Include/Art.h
         src/Entities/Src/PlayerShip.cpp
         src/Entities/Include/PlayerShip.h
         src/Input/Input.cpp
@@ -36,10 +36,18 @@ add_executable(ShapeWars src/main.cpp
         src/Entities/Include/Collisions.h
         src/PlayerStatus/PlayerStatus.cpp
         src/PlayerStatus/PlayerStatus.h
-        src/UserInterface/UserInterface.cpp
-        src/UserInterface/UserInterface.h
-        src/Content/Sound.cpp
-        src/Content/Sound.h
+        src/UserInterface/Src/UserInterface.cpp
+        src/UserInterface/Include/UserInterface.h
+        src/Content/Src/Sound.cpp
+        src/Content/Include/Sound.h
+        src/Content/Src/Bloom.cpp
+        src/Content/Include/Bloom.h
+        src/Entities/Src/BlackHoles.cpp
+        src/Entities/Include/BlackHoles.h
+        src/System/Src/SpawnHelper.cpp
+        src/System/Include/SpawnHelper.h
+        src/UserInterface/Src/FloatingKillTexts.cpp
+        src/UserInterface/Include/FloatingKillTexts.h
 )
 
 target_compile_features(ShapeWars PRIVATE cxx_std_20)

@@ -1,5 +1,5 @@
-﻿#include "Sound.h"
-#include "../Logger/Logger.h"
+﻿#include "../Include/Sound.h"
+#include "../../Logger/Logger.h"
 #include "SFML/Audio/SoundBuffer.hpp"
 #include "SFML/System/Exception.hpp"
 
@@ -44,9 +44,21 @@ Sound::Sound() {
 }
 
 
-void Sound::playGamePlaySong()  {
+void Sound::togglePlaySounds() {
+
+    playSound = !playSound;
 
     if (gameplaySong.getStatus() == sf::SoundSource::Status::Playing)
+        gameplaySong.stop();
+    else
+        gameplaySong.play();
+}
+
+
+
+void Sound::playGamePlaySong()  {
+
+    if (!playSound || gameplaySong.getStatus() == sf::SoundSource::Status::Playing)
         return;
 
     gameplaySong.play();
@@ -54,6 +66,9 @@ void Sound::playGamePlaySong()  {
 
 
 void Sound::playShotSound() {
+
+    if (!playSound)
+        return;
 
     const int nextShotIndex = shotIndex(randEngine);
 
@@ -75,6 +90,9 @@ void Sound::playShotSound() {
 
 
 void Sound::playExplosionSound() {
+
+    if (!playSound)
+        return;
 
     const int nextExplosionIndex = explosionIndex(randEngine);
 
@@ -108,6 +126,9 @@ void Sound::playExplosionSound() {
 
 
 void Sound::playSpawnSound() {
+
+    if (!playSound)
+        return;
 
     const int nextSpawnIndex = spawnIndex(randEngine);
 

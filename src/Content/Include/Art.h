@@ -19,6 +19,7 @@ struct Art {
     sf::Texture bullet;
     sf::Texture pointer;
     sf::Texture enemyPlaceholder;
+    sf::Texture blackHole;
     sf::Font font;
 };
 
