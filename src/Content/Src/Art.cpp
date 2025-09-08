@@ -26,6 +26,12 @@ Art::Art()
         blackHole = sf::Texture("Content\\Images\\Black Hole.png");
         blackHole.setSmooth(true);
 
+        particle = sf::Texture("Content\\Images\\Laser.png");
+        particle.setSmooth(true);
+
+        particleGlow = sf::Texture("Content\\Images\\Glow.png");
+        particleGlow.setSmooth(true);
+
         font = sf::Font("Content\\Font\\TurretRoad-Regular.ttf");
         font.setSmooth(true);
 

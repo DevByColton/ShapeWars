@@ -1,9 +1,11 @@
 ﻿#include "../Include/Bullets.h"
 #include "../../GameRoot.h"
-#include "../../Content/Include/Bloom.h"
+#include "../../Content/Include/GaussianBlur.h"
 #include "../../Content/Include/Sound.h"
+#include "../../Particles/Particles.h"
 #include "../../System/Include/Extensions.h"
 #include "../../System/Include/Quaternion.h"
+#include "../../System/Include/RandomVector.h"
 
 
 Bullets::Bullets()
@@ -77,6 +79,16 @@ bool Bullets::Bullet::getShouldBlowUp() const
 
 void Bullets::Bullet::blowUp()
 {
+    for (int i = 0; i < 30; i++)
+        Particles::instance().create(
+            GameRoot::instance().fps,
+            DontIgnoreGravity,
+            i % 4 == 0 ? Explosion : Spark,
+            sprite.getPosition(),
+            RandomVector::instance().next(0.5f, 8.0f),
+            instance().bulletExplosionColor
+        );
+
     sprite.setPosition({0.0, 0.0});
     sprite.setRotation(sf::Angle::Zero);
     xVelocity = 0.0;
@@ -128,8 +140,9 @@ void Bullets::addBulletGroup(const sf::Vector2f fromPosition, const sf::Vector2f
 void Bullets::resetAll()
 {
     // Blow up all the bullets
-    for (std::size_t i = 0; i < bullets.size(); i++)
-        bullets.at(i).blowUp();
+    for (int i = 0; i < bullets.size(); i++)
+        if (bullets.at(i).isActive)
+            bullets.at(i).blowUp();
 
     resetBulletPool();
 }
@@ -167,7 +180,7 @@ void Bullets::Bullet::update()
 
 void Bullets::draw() const
 {
-    for (std::size_t i = 0; i < bullets.size(); ++i)
+    for (int i = 0; i < bullets.size(); ++i)
         bullets.at(i).draw();
 }
 
@@ -175,7 +188,7 @@ void Bullets::draw() const
 void Bullets::Bullet::draw() const
 {
     if (isActive)
-        Bloom::instance().drawToBaseBloomTexture(sprite);
+        GaussianBlur::instance().drawToBase(sprite);
 }
 
 

@@ -22,11 +22,16 @@ public:
     sf::Rect<float> windowRectangle {};
     bool isPaused = false;
     float deltaTime = 0.0f;
+    int fps = 0;
+
+    // NOTE: Smaller values make it smoother, larger value makes it more responsive
+    const float fpsSmoothingAlpha = 0.4f;
 
     sf::Vector2<int> size() const;
     float halfWidth() const;
     float halfHeight() const;
-    float totalGameTime() const;
+    float totalGameTimeSeconds() const;
+    float totalGameTimeMilliseconds() const;
     void togglePause();
     void stopTotalGameClock();
     void restartTotalGameClock();

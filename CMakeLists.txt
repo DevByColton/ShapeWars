@@ -40,14 +40,20 @@ add_executable(ShapeWars src/main.cpp
         src/UserInterface/Include/UserInterface.h
         src/Content/Src/Sound.cpp
         src/Content/Include/Sound.h
-        src/Content/Src/Bloom.cpp
-        src/Content/Include/Bloom.h
+        src/Content/Src/GaussianBlur.cpp
+        src/Content/Include/GaussianBlur.h
         src/Entities/Src/BlackHoles.cpp
         src/Entities/Include/BlackHoles.h
         src/System/Src/SpawnHelper.cpp
         src/System/Include/SpawnHelper.h
         src/UserInterface/Src/FloatingKillTexts.cpp
         src/UserInterface/Include/FloatingKillTexts.h
+        src/Particles/Particles.cpp
+        src/Particles/Particles.h
+        src/System/Src/RandomVector.cpp
+        src/System/Include/RandomVector.h
+        src/System/Src/ColorPicker.cpp
+        src/System/Include/ColorPicker.h
 )
 
 target_compile_features(ShapeWars PRIVATE cxx_std_20)

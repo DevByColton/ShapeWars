@@ -41,7 +41,7 @@ private:
         Controller
     };
 
-    AimMode aimMode = AimMode::Mouse;
+    AimMode aimMode = AimMode::Controller;
     float thumbStickDeadZone = 15; // SFML thumbsticks value from -100 to 100
 
     [[nodiscard]] bool isMouseVisible() const;

@@ -1,7 +1,11 @@
-﻿#include "../Include/BlackHoles.h"
-#include "../../Content/Include/Bloom.h"
-#include "../../Logger/Logger.h"
+﻿#include <cmath>
+#include <numbers>
+#include "../Include/BlackHoles.h"
+#include "../../Content/Include/GaussianBlur.h"
+#include "../../Particles/Particles.h"
 #include "../../PlayerStatus/PlayerStatus.h"
+#include "../../System/Include/ColorPicker.h"
+#include "../../System/Include/Extensions.h"
 #include "../../System/Include/SpawnHelper.h"
 #include "../../UserInterface/Include/FloatingKillTexts.h"
 
@@ -42,6 +46,7 @@ void BlackHoles::BlackHole::activate()
     hitPoints = 10;
     pointValue = 50;
     isActive = true;
+    particleSprayClock.start();
 }
 
 
@@ -66,6 +71,7 @@ BlackHoles::BlackHole::BlackHole()
     float y = sprite.getTexture().getSize().y / 2;
     sprite.setOrigin({x, y});
     radius = x;
+    particleSprayClock.reset();
 }
 
 
@@ -95,6 +101,27 @@ bool BlackHoles::BlackHole::hit()
 {
     hitPoints -= 1;
     wasHit = false;
+
+    constexpr int numParticles = 150;
+    std::uniform_real_distribution<float> particleStartOffset {0.0f, std::numbers::pi / numParticles};
+    std::uniform_real_distribution<float> magnitude {8.0f, 16.0f};
+    const float hue = std::fmod(3.0f * GameRoot::instance().totalGameTimeSeconds(), 6.0f);
+    const sf::Color color = ColorPicker::instance().hsvToRgb(hue, 0.25f, 1.0f);
+    const float startOffset = particleStartOffset(instance().randEngine);
+
+    for (int i = 0; i < numParticles; i++)
+    {
+        const sf::Vector2f sprayVelocity = fromPolar(std::numbers::pi * 2 * i / numParticles + startOffset, magnitude(instance().randEngine));
+        const sf::Vector2f position = getPosition() + 2.0f * sprayVelocity;
+        Particles::instance().create(
+            GameRoot::instance().fps * 3,
+            IgnoreGravity,
+            Explosion,
+            position,
+            sprayVelocity,
+            color
+        );
+    }
 
     if (hitPoints <= 0)
     {
@@ -128,7 +155,8 @@ sf::Vector2f BlackHoles::BlackHole::getPosition() const
 void BlackHoles::killAll()
 {
     for (int i = 0; i < MAX_BLACK_HOLE_COUNT; i++)
-        blackHoles.at(i).kill(false);
+        if (blackHoles.at(i).isActive)
+            blackHoles.at(i).kill(false);
 
     resetBlackHolePool();
 }
@@ -166,9 +194,32 @@ void BlackHoles::update()
 void BlackHoles::BlackHole::update()
 {
     // Update the scale so the black holes pulse
-    float scaleX = 1 + 0.1f * std::cos(4 * GameRoot::instance().totalGameTime());
-    float scaleY = 1 + 0.1f * std::sin(4 * GameRoot::instance().totalGameTime());
+    float scaleX = 1.0f + 0.1f * std::cos(6 * GameRoot::instance().totalGameTimeSeconds());
+    float scaleY = 1.0f + 0.1f * std::sin(8 * GameRoot::instance().totalGameTimeSeconds());
     sprite.setScale({scaleX, scaleY});
+
+    // Spray some random particles
+    if (particleSprayClock.getElapsedTime() > particleSprayInterval)
+    {
+        particleSprayClock.restart();
+        const sf::Vector2f sprayVelocity = fromPolar(particleSprayAngle, magnitude(instance().randEngine));
+        const sf::Color lightPurple = ColorPicker::instance().hsvToRgb(5.2f, 0.75f, 0.8f);
+        const float sprayAngleValue = sprayAngle(instance().randEngine);
+        sf::Vector2f position = getPosition() + 2.0f * sf::Vector2f(sprayVelocity.y, -sprayVelocity.x);
+        position.x += sprayAngleValue;
+        position.y += sprayAngleValue;
+        Particles::instance().create(
+            GameRoot::instance().fps * 3,
+            DontIgnoreGravity,
+            Explosion,
+            position,
+            sprayVelocity,
+            lightPurple
+        );
+    }
+
+    // Rotate the spray angle
+    particleSprayAngle -= std::numbers::pi * 2.0f / 75.0f;
 }
 
 
@@ -183,6 +234,6 @@ void BlackHoles::draw() const
 void BlackHoles::BlackHole::draw() const
 {
     if (isActive)
-        Bloom::instance().drawToBaseBloomTexture(sprite);
+        GaussianBlur::instance().drawToBase(sprite);
 }
 

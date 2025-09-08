@@ -17,7 +17,6 @@ struct Collisions {
     static constexpr float LARGE_PROXIMITY_RADIUS = 250.0;
     static constexpr float LARGE_PROXIMITY_RADIUS_SQR = LARGE_PROXIMITY_RADIUS * LARGE_PROXIMITY_RADIUS;
 
-
     bool isColliding(float, sf::Vector2f, sf::Vector2f);
     void handleEnemyPlayerBullets();
     void handleBlackHoles();

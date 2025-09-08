@@ -1,4 +1,5 @@
 ﻿#include <string>
+#include <cmath>
 #include "GameRoot.h"
 #include "Logger/Logger.h"
 
@@ -77,11 +78,16 @@ void GameRoot::restartTotalGameClock()
 }
 
 
-float GameRoot::totalGameTime() const
+float GameRoot::totalGameTimeSeconds() const
 {
     return totalGameTimeClock.getElapsedTime().asSeconds();
 }
 
+
+float GameRoot::totalGameTimeMilliseconds() const
+{
+    return totalGameTimeClock.getElapsedTime().asMilliseconds();
+}
 
 
 void GameRoot::update()
@@ -89,6 +95,9 @@ void GameRoot::update()
     // Set the delta time
     const sf::Time elapsed = deltaTimeClock.restart();
     deltaTime = elapsed.asSeconds();
+
+    // Set the current fps
+    fps = static_cast<int>(fpsSmoothingAlpha * (1.0f / deltaTime) + (1.0f - fpsSmoothingAlpha) * fps);
 }
 
 

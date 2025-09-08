@@ -1,5 +1,6 @@
 ﻿#ifndef FLOATINGKILLTEXTS_H
 #define FLOATINGKILLTEXTS_H
+#include <array>
 #include "../../Content/Include/Art.h"
 #include "SFML/Graphics/Text.hpp"
 
@@ -29,13 +30,13 @@ private:
 
         FloatingKillText *getNext() const;
         void setNext(FloatingKillText *);
-
         void activate(int, sf::Vector2f);
         bool fadeIn();
         void reset();
         void draw() const;
     };
 
+    static constexpr int MAX_KILL_TEXT_COUNT = 250;
     FloatingKillText *firstAvailable {nullptr};
 
 public:
@@ -47,7 +48,6 @@ public:
         return *instance;
     }
 
-    static constexpr int MAX_KILL_TEXT_COUNT = 250;
     std::array<FloatingKillText, MAX_KILL_TEXT_COUNT> floatingKillTexts {};
 
     void add(int, sf::Vector2f);

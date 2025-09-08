@@ -1,11 +1,14 @@
 ﻿#include <algorithm>
+#include <cmath>
 #include "../Include/PlayerShip.h"
 #include "../../GameRoot.h"
 #include "../../Content/Include/Art.h"
-#include "../../Content/Include/Bloom.h"
+#include "../../Content/Include/GaussianBlur.h"
 #include "../../Input/Input.h"
+#include "../../Particles/Particles.h"
 #include "../../PlayerStatus/PlayerStatus.h"
 #include "../../System/Include/Extensions.h"
+#include "../../System/Include/RandomVector.h"
 #include "../Include/Bullets.h"
 
 PlayerShip::PlayerShip()
@@ -28,6 +31,7 @@ PlayerShip::PlayerShip()
 void PlayerShip::centerPlayer()
 {
     sprite.setPosition(GameRoot::instance().windowSizeF / 2.0f);
+    sprite.setRotation(sf::Angle::Zero);
 }
 
 
@@ -55,6 +59,52 @@ void PlayerShip::applyForce(sf::Vector2f amount)
 }
 
 
+void PlayerShip::createShipExhaust() const
+{
+    if (velocity.lengthSquared() > 0.1f)
+    {
+        const float orientation = toAngle(velocity);
+        const Quaternion quaternion = Quaternion::createFromYawPitchRoll(0.0f, 0.0f, orientation);
+        const sf::Vector2f baseVelocity = velocity * -0.5f;
+        sf::Vector2f perpendicularVelocity = {baseVelocity.y, -baseVelocity.x};
+        perpendicularVelocity = perpendicularVelocity * (0.6f * std::sin(GameRoot::instance().totalGameTimeSeconds() * 8.0f));
+        const sf::Vector2f exhaustPosition = getPosition() + transform({-25.0f, 0.0f}, quaternion);
+
+        // Center particle stream
+        const sf::Vector2f velMid = baseVelocity + RandomVector::instance().next(0.0f, 1.0f);
+        Particles::instance().create(
+            GameRoot::instance().fps * 0.5,
+            DontIgnoreGravity,
+            Spark,
+            exhaustPosition,
+            velMid,
+            white,
+            orangeYellow
+        );
+
+        // Side particle streams with glow
+        Particles::instance().create(
+            GameRoot::instance().fps * 0.5,
+            DontIgnoreGravity,
+            Spark,
+            exhaustPosition,
+            baseVelocity + perpendicularVelocity,
+            white,
+            deepRed
+        );
+        Particles::instance().create(
+            GameRoot::instance().fps * 0.5,
+            DontIgnoreGravity,
+            Spark,
+            exhaustPosition,
+            baseVelocity - perpendicularVelocity,
+            white,
+            deepRed
+        );
+    }
+}
+
+
 void PlayerShip::update()
 {
     // Move the player and clamp to window bounds
@@ -76,6 +126,9 @@ void PlayerShip::update()
         Bullets::instance().addBulletGroup(getPosition(), aimDirection);
     }
 
+    // Create the ship trail before resetting velocity
+    createShipExhaust();
+
     // Make sure velocity always gets reset
     velocity = {0.0, 0.0};
 
@@ -88,6 +141,6 @@ void PlayerShip::update()
 void PlayerShip::draw() const
 {
     if (!PlayerStatus::instance().isDead())
-        Bloom::instance().drawToBaseBloomTexture(sprite);
+        GaussianBlur::instance().drawToBase(sprite);
 }
 

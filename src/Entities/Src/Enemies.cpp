@@ -1,11 +1,14 @@
 ﻿#include "../Include/Enemies.h"
 #include <algorithm>
 #include "../../GameRoot.h"
-#include "../../Content/Include/Bloom.h"
+#include "../../Content/Include/GaussianBlur.h"
 #include "../../Content/Include/Sound.h"
 #include "../../Logger/Logger.h"
+#include "../../Particles/Particles.h"
 #include "../../PlayerStatus/PlayerStatus.h"
+#include "../../System/Include/ColorPicker.h"
 #include "../../System/Include/Extensions.h"
+#include "../../System/Include/RandomVector.h"
 #include "../../System/Include/SpawnHelper.h"
 #include "../../UserInterface/Include/FloatingKillTexts.h"
 #include "../Include/PlayerShip.h"
@@ -60,6 +63,24 @@ sf::Vector2f Enemies::Enemy::getPosition() const
 
 void Enemies::Enemy::reset()
 {
+    const float hue1 = ColorPicker::instance().generateHue();
+    const float hue2 = ColorPicker::instance().generateShiftedHue(hue1);
+    const sf::Color color1 = ColorPicker::instance().hsvToRgb(hue1, 0.5f, 1.0f);
+    const sf::Color color2 = ColorPicker::instance().hsvToRgb(hue2, 0.5f, 1.0f);
+
+    for (int i = 0; i < 120; i++)
+    {
+        const float speed = Particles::instance().randomStartingSpeed(15.0, 1.0f, 10.0f);
+        Particles::instance().create(
+            GameRoot::instance().fps * 3,
+            DontIgnoreGravity,
+            Explosion,
+            getPosition(),
+            RandomVector::instance().next(speed, speed),
+            ColorPicker::instance().lerp(color1, color2)
+        );
+    }
+
     sprite.setColor(sf::Color::Transparent);
     sprite.setTexture(Art::instance().enemyPlaceholder);
     sprite.setPosition({0.0, 0.0});
@@ -129,23 +150,15 @@ void Enemies::Enemy::killAddPoints()
 }
 
 
-void Enemies::Enemy::killNoPoints()
-{
-    // Particles when I get to it
-
-    // Reset the enemy
-    reset();
-}
-
-
 void Enemies::killAll()
 {
     // Reset the spawn chance
     spawnChance = 60.0f;
 
     // Kill all the enemies
-    for (std::size_t i = 0; i < enemies.size(); i++)
-        enemies.at(i).killNoPoints();
+    for (int i = 0; i < enemies.size(); i++)
+        if (enemies.at(i).isActive)
+            enemies.at(i).reset();
 
     resetEnemyPool();
 }
@@ -218,21 +231,18 @@ void Enemies::Enemy::activateWanderer()
 
         // Move the wanderer, and check if it is at the screen bounds
         const sf::Vector2f nextPosition = getPosition() + velocity;
-        const bool isNextXOutOfBounds = nextPosition.x < halfWidth() || nextPosition.x > GameRoot::instance().windowSizeF.x - halfWidth();
-        const bool isNextYOutOfBounds = nextPosition.y < halfHeight() || nextPosition.y > GameRoot::instance().windowSizeF.y - halfHeight();
 
-        // If is at screen bounds bounce in a direction perpendicular of its current velocity
-        if (isNextXOutOfBounds || isNextYOutOfBounds) {
-            // Clamp the values and set the new position
-            float clampedX = std::clamp(nextPosition.x, halfWidth(), GameRoot::instance().windowSizeF.x - halfWidth());
-            float clampedY = std::clamp(nextPosition.y, halfHeight(), GameRoot::instance().windowSizeF.y - halfHeight());
-            sprite.setPosition({clampedX, clampedY});
+        if (nextPosition.x < 0)
+            velocity.x = std::abs(velocity.x);
+        else if (nextPosition.x > GameRoot::instance().windowSizeF.x)
+            velocity.x = -std::abs(velocity.x);
 
-            // Set the velocity perpendicular to its current velocity
-            velocity = {velocity.y, -velocity.x};
-        } else {
-            sprite.setPosition(nextPosition);
-        }
+        if (nextPosition.y < 0)
+            velocity.y = std::abs(velocity.y);
+        else if (nextPosition.y > GameRoot::instance().windowSizeF.y)
+            velocity.y = -std::abs(velocity.y);
+
+        sprite.setPosition(nextPosition);
 
         // Basic friction
         velocity *= 0.75f;
@@ -324,6 +334,6 @@ void Enemies::draw() const
 void Enemies::Enemy::draw() const
 {
     if (isActive)
-        Bloom::instance().drawToBaseBloomTexture(sprite);
+        GaussianBlur::instance().drawToBase(sprite);
 }
 

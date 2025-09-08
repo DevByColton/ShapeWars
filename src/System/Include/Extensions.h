@@ -40,7 +40,7 @@ static sf::Vector3f multiply(const sf::Vector3f vector1, const sf::Vector3f vect
 }
 
 
-static sf::Vector2f transform(const sf::Vector2f vector, Quaternion rotation) {
+static sf::Vector2f transform(const sf::Vector2f vector, const Quaternion rotation) {
     const sf::Vector3f vector3_1 = {rotation.x + rotation.x, rotation.y + rotation.y, rotation.z + rotation.z};
     const sf::Vector3f vector3_2 = {rotation.x, rotation.x, rotation.w};
     const sf::Vector3f vector3_3 = {1.0f, rotation.y, rotation.z};

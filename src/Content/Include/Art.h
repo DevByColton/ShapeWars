@@ -20,6 +20,8 @@ struct Art {
     sf::Texture pointer;
     sf::Texture enemyPlaceholder;
     sf::Texture blackHole;
+    sf::Texture particle;
+    sf::Texture particleGlow;
     sf::Font font;
 };
 

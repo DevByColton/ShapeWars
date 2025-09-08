@@ -1,85 +1,88 @@
 ﻿#include <cmath>
 #include <numbers>
-#include "../Include/Bloom.h"
+#include "../Include/GaussianBlur.h"
 #include "../../GameRoot.h"
 #include "../../Logger/Logger.h"
 
 
-Bloom::Bloom()
+GaussianBlur::GaussianBlur()
 {
-    // Load bloom extract shader and set properties on success
-    if (!bloomExtract.loadFromFile("Content\\Shaders\\BloomExtract.frag", sf::Shader::Type::Fragment))
+    // Load saturate shader
+    if (!saturate.loadFromFile("Content\\Shaders\\Saturate.frag", sf::Shader::Type::Fragment))
     {
-        bloomEnabled = false;
-        Logger::printError("Unable to load BloomExtract.frag");
+        gaussianBlurEnabled = false;
+        Logger::printError("Unable to load Saturate.frag");
     }
 
     // Load gaussian blur shader
     if (!gaussianBlur.loadFromFile("Content\\Shaders\\GaussianBlur.frag", sf::Shader::Type::Fragment))
     {
-        bloomEnabled = false;
+        gaussianBlurEnabled = false;
         Logger::printError("Unable to load GaussianBlur.frag");
     }
 
-    // Load bloom combine shader and set properties on success
-    if (!bloomCombine.loadFromFile("Content\\Shaders\\BloomCombine.frag", sf::Shader::Type::Fragment))
+    // Load blur saturate shader
+    if (!blurSaturateCombine.loadFromFile("Content\\Shaders\\BlurSaturateCombine.frag", sf::Shader::Type::Fragment))
     {
-        bloomEnabled = false;
-        Logger::printError("Unable to load BloomCombine.frag");
+        gaussianBlurEnabled = false;
+        Logger::printError("Unable to load BlurSaturateCombine.frag");
     }
+
+    // Make sure the textures are set to smooth for smooth blending
+    baseTexture.setSmooth(true);
+    saturationTexture.setSmooth(true);
+    gaussianBlurTexture.setSmooth(true);
+
+    // Set the gaussian render state to additive to preserve the saturation when blurring
+    gaussianRenderState = {&gaussianBlur};
+    gaussianRenderState.blendMode = sf::BlendAdd;
 }
 
 
-void Bloom::clearTextures()
+void GaussianBlur::clearTextures()
 {
     baseTexture.clear();
-    bloomExtractTexture.clear();
+    saturationTexture.clear();
     gaussianBlurTexture.clear();
 }
 
 
-void Bloom::drawToBaseBloomTexture(const sf::Sprite &sprite)
+void GaussianBlur::drawToBase(const sf::Sprite &sprite)
 {
     baseTexture.draw(sprite);
     baseTexture.display();
 }
 
 
-void Bloom::drawBloomToScreen()
+void GaussianBlur::drawToScreen()
 {
-    if (bloomEnabled)
+    if (gaussianBlurEnabled)
     {
         sf::Sprite baseTextureSprite {baseTexture.getTexture()};
 
-        // Pass 1: Extract bright parts (saturate)
-        bloomExtract.setUniform("bloomThreshold", bloomThreshold);
-        bloomExtractTexture.draw(baseTextureSprite, &bloomExtract);
-        bloomExtractTexture.display();
-        const sf::Sprite bloomExtractSprite{bloomExtractTexture.getTexture()};
+        // Pass 1: Saturate
+        saturate.setUniform("saturationSigma", saturationSigma);
+        saturationTexture.draw(baseTextureSprite, &saturate);
+        saturationTexture.display();
+        const sf::Sprite saturationSprite{saturationTexture.getTexture()};
 
         // Pass 2: Horizontal gaussian blur
-        const float dx = 1.0f / bloomExtractTexture.getSize().x;
+        const float dx = 1.0f / saturationTexture.getSize().x;
         setGaussianBlurParameters(dx, 0.0);
-        gaussianBlurTexture.draw(bloomExtractSprite, &gaussianBlur);
+        gaussianBlurTexture.draw(saturationSprite, gaussianRenderState);
         gaussianBlurTexture.display();
-        const sf::Sprite gaussianSprite {gaussianBlurTexture.getTexture()};
+        const sf::Sprite gaussianBlurSprite {gaussianBlurTexture.getTexture()};
 
-        // Pass 3: Vertical gaussian blur
-        const float dy = 1.0f / bloomExtractTexture.getSize().y;
+        // Pass 3: Vertical gaussian blur, draw back into the saturation sprite
+        const float dy = 1.0f / saturationTexture.getSize().y;
         setGaussianBlurParameters(0.0, dy);
-        bloomExtractTexture.draw(gaussianSprite, &gaussianBlur);
-        bloomExtractTexture.display();
+        saturationTexture.draw(gaussianBlurSprite, gaussianRenderState);
+        saturationTexture.display();
 
-        // Final pass: Combine the extract and blur textures with the base texture
-        bloomCombine.setUniform("bloomIntensity", bloomIntensity);
-        bloomCombine.setUniform("baseIntensity", baseIntensity);
-        bloomCombine.setUniform("bloomSaturation", bloomSaturation);
-        bloomCombine.setUniform("baseSaturation", baseSaturation);
-        bloomCombine.setUniform("baseTexture", baseTexture.getTexture());
-        bloomCombine.setUniform("bloomTexture", bloomExtractTexture.getTexture());
-
-        // Finally the blurred and saturated texture to the screen
-        GameRoot::instance().renderWindow.draw(bloomExtractSprite, &bloomCombine);
+        // Final pass: Combine the saturation and blur textures with the base texture and draw to screen
+        blurSaturateCombine.setUniform("baseTexture", baseTexture.getTexture());
+        blurSaturateCombine.setUniform("saturationTexture", saturationTexture.getTexture());
+        GameRoot::instance().renderWindow.draw(saturationSprite, &blurSaturateCombine);
     }
     else
     {
@@ -89,7 +92,7 @@ void Bloom::drawBloomToScreen()
 }
 
 
-void Bloom::setGaussianBlurParameters(const float dx, const float dy)
+void GaussianBlur::setGaussianBlurParameters(const float dx, const float dy)
 {
     // Effect parameters
     constexpr int sampleCount = 15;
@@ -143,13 +146,11 @@ void Bloom::setGaussianBlurParameters(const float dx, const float dy)
 }
 
 
-float Bloom::computeGaussian(const float n) const
+float GaussianBlur::computeGaussian(const float n) const
 {
-    const float sigma = blurAmount;
-
     // Gaussian function
-    const float x = 1.0f / std::sqrt(2 * std::numbers::pi * sigma);
-    const float y = std::exp(-(n * n) / (2 * (sigma * sigma)));
+    const float x = 1.0f / std::sqrt(2 * std::numbers::pi * blurAmount);
+    const float y = std::exp(-(n * n) / (2 * (blurAmount * blurAmount)));
     return x * y;
 }
 

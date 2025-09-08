@@ -6,8 +6,8 @@
 #include "../../System/Include/Extensions.h"
 
 
-UserInterface::UserInterface() {
-
+UserInterface::UserInterface()
+{
     // Set the player ship sprite properties for lives counter
     livesText.setPosition({ 25.0f, 10.0f });
     float originX = playerShipSprite.getTexture().getSize().x / 2;
@@ -45,10 +45,13 @@ UserInterface::UserInterface() {
     highScoreHeaderText.setOrigin({ highscoreHeaderTextRect.size.x, highscoreHeaderTextRect.size.y});
     highScoreHeaderText.setPosition({ GameRoot::instance().windowSizeF.x - 22.0f, 25.0f });
 
+    // Set the fps text to the bottom left of the screen
+    fpsText.setPosition({ 10.0f, GameRoot::instance().windowSizeF.y - 30 });
 }
 
 
-float UserInterface::playerShipWidthScaled() const {
+float UserInterface::playerShipWidthScaled() const
+{
     const float widthWithPadding = playerShipSprite.getTexture().getSize().x + 16;
     return widthWithPadding * playerShipSprite.getScale().x;
 }
@@ -56,8 +59,8 @@ float UserInterface::playerShipWidthScaled() const {
 
 std::string UserInterface::formattedTime()
 {
-    const int minutesNumber = static_cast<int>(GameRoot::instance().totalGameTime()) / 60;
-    const int secondsNumber = static_cast<int>(GameRoot::instance().totalGameTime()) % 60;
+    const int minutesNumber = static_cast<int>(GameRoot::instance().totalGameTimeSeconds()) / 60;
+    const int secondsNumber = static_cast<int>(GameRoot::instance().totalGameTimeSeconds()) % 60;
 
     std::string timeString {std::to_string(minutesNumber)};
     timeString.append(":");
@@ -71,8 +74,8 @@ std::string UserInterface::formattedTime()
 }
 
 
-void UserInterface::draw() {
-
+void UserInterface::draw()
+{
     // Draw the number of lives in the top left of the screen
     GameRoot::instance().renderWindow.draw(livesText);
     for (std::size_t i = 0; i < PlayerStatus::instance().lives; i++) {
@@ -117,6 +120,12 @@ void UserInterface::draw() {
     highScoreText.setPosition({ GameRoot::instance().windowSizeF.x - highscoreTextRect.size.x - 22.0f, 30.0f });
     GameRoot::instance().renderWindow.draw(highScoreText);
 
+    // Draw fps text
+    std::string fpsString {fpsHeaderText};
+    fpsString.append(std::to_string(GameRoot::instance().fps));
+    fpsText.setString(fpsString);
+    GameRoot::instance().renderWindow.draw(fpsText);
+
     // Draw paused text
     if (GameRoot::instance().isPaused)
         GameRoot::instance().renderWindow.draw(pausedText);
@@ -132,5 +141,4 @@ void UserInterface::draw() {
         gameOverText.setOrigin({gameOverText.getLocalBounds().size.x / 2.0f, gameOverText.getLocalBounds().size.y / 2.0f});
         GameRoot::instance().renderWindow.draw(gameOverText);
     }
-
 }

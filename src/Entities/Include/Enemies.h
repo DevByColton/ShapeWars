@@ -6,7 +6,6 @@
 #include <numbers>
 #include "../../Content/Include/Art.h"
 #include "SFML/Graphics/Sprite.hpp"
-#include "SFML/Graphics/Text.hpp"
 #include "SFML/System/Vector2.hpp"
 
 
@@ -55,7 +54,6 @@ private:
         bool getShouldKill() const;
         void markForKill();
         void killAddPoints();
-        void killNoPoints();
         void update();
         void draw() const;
     };

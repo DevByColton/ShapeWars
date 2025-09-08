@@ -1,7 +1,7 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include "GameRoot.h"
-#include "Content/Include/Bloom.h"
+#include "Content/Include/GaussianBlur.h"
 #include "Content/Include/Sound.h"
 #include "Entities/Include/BlackHoles.h"
 #include "Entities/Include/Bullets.h"
@@ -9,6 +9,7 @@
 #include "Entities/Include/Enemies.h"
 #include "Entities/Include/PlayerShip.h"
 #include "Input/Input.h"
+#include "Particles/Particles.h"
 #include "PlayerStatus/PlayerStatus.h"
 #include "UserInterface/Include/UserInterface.h"
 #include "UserInterface/Include/FloatingKillTexts.h"
@@ -44,7 +45,7 @@ int main()
                     Sound::instance().togglePlaySounds();
 
                 if (keyPressed->scancode == sf::Keyboard::Scancode::B)
-                    Bloom::instance().bloomEnabled = !Bloom::instance().bloomEnabled;
+                    GaussianBlur::instance().gaussianBlurEnabled = !GaussianBlur::instance().gaussianBlurEnabled;
 
             }
 
@@ -105,18 +106,20 @@ int main()
 
             // Independent of player status
             FloatingKillTexts::instance().update();
+            Particles::instance().update();
         }
 
         // Draws
         GameRoot::instance().renderWindow.clear();
 
         // Draw stuff with bloom
-        Bloom::instance().clearTextures();
+        GaussianBlur::instance().clearTextures();
+        Particles::instance().draw();
         Enemies::instance().draw();
         BlackHoles::instance().draw();
         Bullets::instance().draw();
         PlayerShip::instance().draw();
-        Bloom::instance().drawBloomToScreen();
+        GaussianBlur::instance().drawToScreen();
 
         // Draws without bloom
         FloatingKillTexts::instance().draw();

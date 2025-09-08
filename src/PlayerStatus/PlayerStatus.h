@@ -1,5 +1,6 @@
 ﻿#ifndef PLAYERSTATUS_H
 #define PLAYERSTATUS_H
+#include "SFML/Graphics/Color.hpp"
 
 
 class PlayerStatus {
@@ -12,6 +13,7 @@ private:
     float multiplierTimeLeft = 0;
     float timeUntilRespawn = 0.0f;
     bool shouldKill = false;
+    const sf::Color playerExplosionColor {235, 218, 8, 255};
 
     void kill();
     void loadHighscore();

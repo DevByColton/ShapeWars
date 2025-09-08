@@ -21,13 +21,13 @@ void Collisions::handleEnemyPlayerBullets()
     auto &bullets = Bullets::instance().bullets;
 
     // Loop through all the enemies once to check other enemies, the player ship, and bullets
-    for (std::size_t i = 0; i < enemies.size(); i++)
+    for (int i = 0; i < enemies.size(); i++)
     {
         // Check enemies
         if (auto &enemy = enemies.at(i); enemy.isActive && enemy.isActing)
         {
             // Check other enemies
-            for (std::size_t j = i + 1; j < enemies.size(); j++)
+            for (int j = i + 1; j < enemies.size(); j++)
                 if (auto &enemy2 = enemies.at(j); enemy2.isActive)
                     if (isColliding(enemy.radius + enemy2.radius, enemy.getPosition(), enemy2.getPosition())) {
                         enemy.pushApartBy(enemy2);
@@ -35,7 +35,7 @@ void Collisions::handleEnemyPlayerBullets()
                     }
 
             // Check bullets
-            for (std::size_t b = 0; b < bullets.size(); b++)
+            for (int b = 0; b < bullets.size(); b++)
                 if (auto &bullet = bullets.at(b); bullet.isActive)
                     if (isColliding(bullet.radius + enemy.radius, bullet.getPosition(), enemy.getPosition())) {
                         enemy.markForKill();
@@ -62,7 +62,7 @@ void Collisions::handleBlackHoles()
         if (auto &blackHole = blackHoles.at(bh); blackHole.isActive)
         {
             // Check bullets
-            for (std::size_t b = 0; b < bullets.size(); b++)
+            for (int b = 0; b < bullets.size(); b++)
             {
                 if (auto &bullet = bullets.at(b); bullet.isActive)
                 {

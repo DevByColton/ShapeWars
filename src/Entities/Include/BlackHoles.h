@@ -3,6 +3,8 @@
 #include <random>
 #include "../../Content/Include/Art.h"
 #include "SFML/Graphics/Sprite.hpp"
+#include "SFML/System/Clock.hpp"
+#include "SFML/System/Time.hpp"
 
 
 class BlackHoles {
@@ -27,8 +29,13 @@ private:
     public:
         BlackHole();
 
+        float particleSprayAngle = 0.0f;
         float radius = 0.0;
         bool isActive = false;
+        sf::Clock particleSprayClock {};
+        sf::Time particleSprayInterval = sf::seconds(0.025f);
+        std::uniform_real_distribution<float> magnitude {8.0f, 15.0f};
+        std::uniform_real_distribution<float> sprayAngle {2.0f, 6.0f};
 
         BlackHole* getNext() const;
         void setNext(BlackHole* next);
@@ -43,10 +50,9 @@ private:
         void draw() const;
     };
 
-    static constexpr int MAX_BLACK_HOLE_COUNT = 4;
     BlackHole *firstAvailable {nullptr};
     std::default_random_engine randEngine {std::random_device{}()};
-    std::uniform_int_distribution<int> spawnDistribution {0, 600};
+    std::uniform_int_distribution<int> spawnDistribution {0, 60};
 
     void spawnBlackHole();
     void resetBlackHolePool();
@@ -60,6 +66,7 @@ public:
         return *instance;
     }
 
+    static constexpr int MAX_BLACK_HOLE_COUNT = 4;
     std::array<BlackHole, MAX_BLACK_HOLE_COUNT> blackHoles {};
 
     void resetAll();

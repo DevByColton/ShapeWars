@@ -1,6 +1,10 @@
 ﻿#include <fstream>
 #include "PlayerStatus.h"
 #include "../GameRoot.h"
+#include "../Entities/Include/PlayerShip.h"
+#include "../Particles/Particles.h"
+#include "../System/Include/ColorPicker.h"
+#include "../System/Include/RandomVector.h"
 
 
 PlayerStatus::PlayerStatus()
@@ -65,7 +69,20 @@ void PlayerStatus::removeLife()
     }
     else
     {
-        timeUntilRespawn = 1.0;
+        timeUntilRespawn = 3.0;
+    }
+
+    for (int i = 0; i < 1200; i++)
+    {
+        const float speed = Particles::instance().randomStartingSpeed(22.0f, 1.0f, 50.0f);
+        Particles::instance().create(
+            GameRoot::instance().fps * 3,
+            DontIgnoreGravity,
+            Massive,
+            PlayerShip::instance().getPosition(),
+            RandomVector::instance().next(speed, speed),
+            ColorPicker::instance().lerp(sf::Color::White, playerExplosionColor)
+        );
     }
 }
 
