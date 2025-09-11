@@ -21,8 +21,8 @@ private:
             FloatingKillText *next {nullptr};
         };
 
-        const float baseFadeTime = 1.0f;
-        const float baseFadeScale = 1.0f;
+        const float baseFadeTime = 1.f;
+        const float baseFadeScale = 1.f;
         sf::Text text {Art::instance().font, {}, 16};
 
     public:

@@ -10,29 +10,29 @@ float ColorPicker::generateHue()
 
 float ColorPicker::generateShiftedHue(const float fromHue)
 {
-    return std::fmod(fromHue + randomHueShifted(randEngine), 6.0f);
+    return std::fmod(fromHue + randomHueShifted(randEngine), 6.f);
 }
 
 
 sf::Color ColorPicker::hsvToRgb(const float hue, const float saturation, const float value)
 {
-    if (hue == 0.0f || saturation == 0.0f)
+    if (hue == 0.f || saturation == 0.f)
         return sf::Color::White;
 
     const float c = saturation * value;
-    const float x = c * (1 - std::abs(std::fmod(hue, 2) - 1.0f));
+    const float x = c * (1 - std::abs(std::fmod(hue, 2) - 1.f));
     const float m = value - c;
 
-    if (hue < 1.0f)
+    if (hue < 1.f)
         return sf::Color((c + m) * 255, (x + m) * 255, m * 255, 255);
 
-    if (hue < 2.0f)
+    if (hue < 2.f)
         return sf::Color((x + m) * 255, (c + m) * 255, m * 255, 255);
 
-    if (hue < 3.0f)
+    if (hue < 3.f)
         return sf::Color(m * 255, (c + m) * 255, (x + m) * 255, 255);
 
-    if (hue < 4.0f)
+    if (hue < 4.f)
         return sf::Color(m * 255, (x + m) * 255, (c + m) * 255, 255);
 
     if (hue < 5.0)

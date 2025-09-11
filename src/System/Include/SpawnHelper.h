@@ -15,8 +15,8 @@ struct SpawnHelper {
     }
 
     std::default_random_engine randEngine {std::random_device{}()};
-    std::uniform_real_distribution<float> xPositionDistribution {0.0f, GameRoot::instance().windowSizeF.x};
-    std::uniform_real_distribution<float> yPositionDistribution {0.0f, GameRoot::instance().windowSizeF.y};
+    std::uniform_real_distribution<float> xPositionDistribution {0.f, GameRoot::instance().windowSizeF.x};
+    std::uniform_real_distribution<float> yPositionDistribution {0.f, GameRoot::instance().windowSizeF.y};
     float positionOffset = 250.0;
 
     sf::Vector2f createSpawnPosition();

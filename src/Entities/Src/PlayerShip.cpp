@@ -14,7 +14,7 @@
 PlayerShip::PlayerShip()
 {
     // Set the players position in the middle of the screen
-    sprite.setPosition(GameRoot::instance().windowSizeF / 2.0f);
+    sprite.setPosition(GameRoot::instance().windowSizeF / 2.f);
 
     // Set the sprite origin to the middle of the sprite
     float spriteMiddleX = static_cast<float>(Art::instance().player.getSize().x / 2.0);
@@ -30,7 +30,7 @@ PlayerShip::PlayerShip()
 
 void PlayerShip::centerPlayer()
 {
-    sprite.setPosition(GameRoot::instance().windowSizeF / 2.0f);
+    sprite.setPosition(GameRoot::instance().windowSizeF / 2.f);
     sprite.setRotation(sf::Angle::Zero);
 }
 
@@ -63,15 +63,15 @@ void PlayerShip::createShipExhaust() const
 {
     if (velocity.lengthSquared() > 0.1f)
     {
-        const float orientation = toAngle(velocity);
-        const Quaternion quaternion = Quaternion::createFromYawPitchRoll(0.0f, 0.0f, orientation);
+        const float orientation = Extensions::toAngle(velocity);
+        const Quaternion quaternion = Quaternion::createFromYawPitchRoll(0.f, 0.f, orientation);
         const sf::Vector2f baseVelocity = velocity * -0.5f;
         sf::Vector2f perpendicularVelocity = {baseVelocity.y, -baseVelocity.x};
-        perpendicularVelocity = perpendicularVelocity * (0.6f * std::sin(GameRoot::instance().totalGameTimeSeconds() * 8.0f));
-        const sf::Vector2f exhaustPosition = getPosition() + transform({-25.0f, 0.0f}, quaternion);
+        perpendicularVelocity = perpendicularVelocity * (0.6f * std::sin(GameRoot::instance().totalGameTimeSeconds() * 8.f));
+        const sf::Vector2f exhaustPosition = getPosition() + Extensions::transform({-25.f, 0.f}, quaternion);
 
         // Center particle stream
-        const sf::Vector2f velMid = baseVelocity + RandomVector::instance().next(0.0f, 1.0f);
+        const sf::Vector2f velMid = baseVelocity + RandomVector::instance().next(0.f, 1.f);
         Particles::instance().create(
             GameRoot::instance().fps * 0.5,
             DontIgnoreGravity,
@@ -116,7 +116,7 @@ void PlayerShip::update()
 
     // Rotation the player ship in the direction of its velocity
     if (velocity.lengthSquared() > 0)
-        sprite.setRotation(sf::radians(toAngle(velocity)));
+        sprite.setRotation(sf::radians(Extensions::toAngle(velocity)));
 
     // Check aiming direction and fire bullets
     const sf::Vector2f aimDirection = Input::instance().getAimDirection();

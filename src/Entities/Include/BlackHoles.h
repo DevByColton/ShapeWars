@@ -29,13 +29,13 @@ private:
     public:
         BlackHole();
 
-        float particleSprayAngle = 0.0f;
+        float particleSprayAngle = 0.f;
         float radius = 0.0;
         bool isActive = false;
         sf::Clock particleSprayClock {};
         sf::Time particleSprayInterval = sf::seconds(0.025f);
-        std::uniform_real_distribution<float> magnitude {8.0f, 15.0f};
-        std::uniform_real_distribution<float> sprayAngle {2.0f, 6.0f};
+        std::uniform_real_distribution<float> magnitude {8.f, 15.f};
+        std::uniform_real_distribution<float> sprayAngle {2.f, 6.f};
 
         BlackHole* getNext() const;
         void setNext(BlackHole* next);

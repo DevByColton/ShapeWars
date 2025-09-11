@@ -21,11 +21,11 @@ public:
     sf::Vector2f windowSizeF {0.0, 0.0};
     sf::Rect<float> windowRectangle {};
     bool isPaused = false;
-    float deltaTime = 0.0f;
+    float deltaTime = 0.f;
     int fps = 0;
 
     // NOTE: Smaller values make it smoother, larger value makes it more responsive
-    const float fpsSmoothingAlpha = 0.4f;
+    const float fpsSmoothingAlpha = 0.25f;
 
     sf::Vector2<int> size() const;
     float halfWidth() const;

@@ -2,6 +2,7 @@
 #include <numbers>
 #include "../Include/BlackHoles.h"
 #include "../../Content/Include/GaussianBlur.h"
+#include "../../Grid/Grid.h"
 #include "../../Particles/Particles.h"
 #include "../../PlayerStatus/PlayerStatus.h"
 #include "../../System/Include/ColorPicker.h"
@@ -103,16 +104,16 @@ bool BlackHoles::BlackHole::hit()
     wasHit = false;
 
     constexpr int numParticles = 150;
-    std::uniform_real_distribution<float> particleStartOffset {0.0f, std::numbers::pi / numParticles};
-    std::uniform_real_distribution<float> magnitude {8.0f, 16.0f};
-    const float hue = std::fmod(3.0f * GameRoot::instance().totalGameTimeSeconds(), 6.0f);
-    const sf::Color color = ColorPicker::instance().hsvToRgb(hue, 0.25f, 1.0f);
+    std::uniform_real_distribution<float> particleStartOffset {0.f, std::numbers::pi / numParticles};
+    std::uniform_real_distribution<float> magnitude {8.f, 16.f};
+    const float hue = std::fmod(3.f * GameRoot::instance().totalGameTimeSeconds(), 6.f);
+    const sf::Color color = ColorPicker::instance().hsvToRgb(hue, 0.25f, 1.f);
     const float startOffset = particleStartOffset(instance().randEngine);
 
     for (int i = 0; i < numParticles; i++)
     {
-        const sf::Vector2f sprayVelocity = fromPolar(std::numbers::pi * 2 * i / numParticles + startOffset, magnitude(instance().randEngine));
-        const sf::Vector2f position = getPosition() + 2.0f * sprayVelocity;
+        const sf::Vector2f sprayVelocity = Extensions::fromPolar(std::numbers::pi * 2 * i / numParticles + startOffset, magnitude(instance().randEngine));
+        const sf::Vector2f position = getPosition() + 2.f * sprayVelocity;
         Particles::instance().create(
             GameRoot::instance().fps * 3,
             IgnoreGravity,
@@ -194,18 +195,21 @@ void BlackHoles::update()
 void BlackHoles::BlackHole::update()
 {
     // Update the scale so the black holes pulse
-    float scaleX = 1.0f + 0.1f * std::cos(6 * GameRoot::instance().totalGameTimeSeconds());
-    float scaleY = 1.0f + 0.1f * std::sin(8 * GameRoot::instance().totalGameTimeSeconds());
+    float scaleX = 1.f + 0.1f * std::cos(6 * GameRoot::instance().totalGameTimeSeconds());
+    float scaleY = 1.f + 0.1f * std::sin(8 * GameRoot::instance().totalGameTimeSeconds());
     sprite.setScale({scaleX, scaleY});
+
+    // Pull the grid in around the black hole, with some variation using sin
+    Grid::instance().applyImplosiveForce(getPosition(), std::sin(particleSprayAngle / 2.f) * 5.f + 20.f, 200.f);
 
     // Spray some random particles
     if (particleSprayClock.getElapsedTime() > particleSprayInterval)
     {
         particleSprayClock.restart();
-        const sf::Vector2f sprayVelocity = fromPolar(particleSprayAngle, magnitude(instance().randEngine));
+        const sf::Vector2f sprayVelocity = Extensions::fromPolar(particleSprayAngle, magnitude(instance().randEngine));
         const sf::Color lightPurple = ColorPicker::instance().hsvToRgb(5.2f, 0.75f, 0.8f);
         const float sprayAngleValue = sprayAngle(instance().randEngine);
-        sf::Vector2f position = getPosition() + 2.0f * sf::Vector2f(sprayVelocity.y, -sprayVelocity.x);
+        sf::Vector2f position = getPosition() + 2.f * sf::Vector2f(sprayVelocity.y, -sprayVelocity.x);
         position.x += sprayAngleValue;
         position.y += sprayAngleValue;
         Particles::instance().create(
@@ -219,7 +223,7 @@ void BlackHoles::BlackHole::update()
     }
 
     // Rotate the spray angle
-    particleSprayAngle -= std::numbers::pi * 2.0f / 75.0f;
+    particleSprayAngle -= std::numbers::pi * 2.f / 75.f;
 }
 
 

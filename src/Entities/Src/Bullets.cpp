@@ -2,6 +2,7 @@
 #include "../../GameRoot.h"
 #include "../../Content/Include/GaussianBlur.h"
 #include "../../Content/Include/Sound.h"
+#include "../../Grid/Grid.h"
 #include "../../Particles/Particles.h"
 #include "../../System/Include/Extensions.h"
 #include "../../System/Include/Quaternion.h"
@@ -85,7 +86,7 @@ void Bullets::Bullet::blowUp()
             DontIgnoreGravity,
             i % 4 == 0 ? Explosion : Spark,
             sprite.getPosition(),
-            RandomVector::instance().next(0.5f, 8.0f),
+            RandomVector::instance().next(0.5f, 8.f),
             instance().bulletExplosionColor
         );
 
@@ -122,14 +123,14 @@ void Bullets::addBulletGroup(const sf::Vector2f fromPosition, const sf::Vector2f
         // Create a random spread so the bullets mimic a machine gun like effect
         // Use a quaternion to rotate the initial position of the bullets in the direction they're travelling
         const float randomSpread = spreadDistribution(randEngine) + spreadDistribution(randEngine);
-        const float aimAngle = toAngle(aimDirection);
+        const float aimAngle = Extensions::toAngle(aimDirection);
         const Quaternion aimQuat = Quaternion::createFromYawPitchRoll(0, 0, aimAngle);
-        const sf::Vector2f velocity = fromPolar(aimAngle + randomSpread, 20.0);
+        const sf::Vector2f velocity = Extensions::fromPolar(aimAngle + randomSpread, 20.0);
 
         // Add a group of 2 bullets with a small amount of offset so they are parallel
-        sf::Vector2f offset = transform({15, -8.0}, aimQuat);
+        sf::Vector2f offset = Extensions::transform({15, -8.0}, aimQuat);
         bullet->activate(velocity, fromPosition + offset);
-        offset = transform({15.0, 8.0}, aimQuat);
+        offset = Extensions::transform({15.0, 8.0}, aimQuat);
         bullet2->activate(velocity, fromPosition + offset);
 
         Sound::instance().playShotSound();
@@ -170,11 +171,15 @@ void Bullets::Bullet::update()
 {
     // Rotate the bullet in the direction of its velocity
     const sf::Vector2f velocity {xVelocity, yVelocity};
+
     if (velocity.lengthSquared() > 0)
-        sprite.setRotation(sf::radians(toAngle(velocity)));
+        sprite.setRotation(sf::radians(Extensions::toAngle(velocity)));
 
     // Move the bullet by its velocity
     sprite.move(velocity);
+
+    // Make some waves on the grid
+    Grid::instance().applyExplosiveForce(getPosition(), 0.35f * velocity.length(), 80.f, 0.4f);
 }
 
 

@@ -39,6 +39,12 @@ GaussianBlur::GaussianBlur()
 }
 
 
+void GaussianBlur::toggleGaussianBlur()
+{
+    gaussianBlurEnabled = !gaussianBlurEnabled;
+}
+
+
 void GaussianBlur::clearTextures()
 {
     baseTexture.clear();
@@ -54,6 +60,13 @@ void GaussianBlur::drawToBase(const sf::Sprite &sprite)
 }
 
 
+void GaussianBlur::drawToBase(const std::vector<sf::Vertex> &lines)
+{
+    baseTexture.draw(lines.data(), lines.size(), sf::PrimitiveType::Lines);
+    baseTexture.display();
+}
+
+
 void GaussianBlur::drawToScreen()
 {
     if (gaussianBlurEnabled)
@@ -64,17 +77,17 @@ void GaussianBlur::drawToScreen()
         saturate.setUniform("saturationSigma", saturationSigma);
         saturationTexture.draw(baseTextureSprite, &saturate);
         saturationTexture.display();
-        const sf::Sprite saturationSprite{saturationTexture.getTexture()};
+        const sf::Sprite saturationSprite {saturationTexture.getTexture()};
 
         // Pass 2: Horizontal gaussian blur
-        const float dx = 1.0f / saturationTexture.getSize().x;
+        const float dx = 1.f / saturationTexture.getSize().x;
         setGaussianBlurParameters(dx, 0.0);
         gaussianBlurTexture.draw(saturationSprite, gaussianRenderState);
         gaussianBlurTexture.display();
         const sf::Sprite gaussianBlurSprite {gaussianBlurTexture.getTexture()};
 
         // Pass 3: Vertical gaussian blur, draw back into the saturation sprite
-        const float dy = 1.0f / saturationTexture.getSize().y;
+        const float dy = 1.f / saturationTexture.getSize().y;
         setGaussianBlurParameters(0.0, dy);
         saturationTexture.draw(gaussianBlurSprite, gaussianRenderState);
         saturationTexture.display();
@@ -149,7 +162,7 @@ void GaussianBlur::setGaussianBlurParameters(const float dx, const float dy)
 float GaussianBlur::computeGaussian(const float n) const
 {
     // Gaussian function
-    const float x = 1.0f / std::sqrt(2 * std::numbers::pi * blurAmount);
+    const float x = 1.f / std::sqrt(2 * std::numbers::pi * blurAmount);
     const float y = std::exp(-(n * n) / (2 * (blurAmount * blurAmount)));
     return x * y;
 }

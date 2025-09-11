@@ -56,11 +56,11 @@ bool FloatingKillTexts::FloatingKillText::fadeIn()
         if (fadeTime < baseFadeTime) {
 
             // Fade
-            auto a = static_cast<std::uint8_t>(255 * (1.0f - fadeTime / baseFadeTime));
+            auto a = static_cast<std::uint8_t>(255 * (1.f - fadeTime / baseFadeTime));
             text.setFillColor({255, 255, 255, a});
 
             // Scale
-            auto scale = static_cast<float>(1.10 * (1.0f - fadeScale / baseFadeScale));
+            auto scale = static_cast<float>(1.10 * (1.f - fadeScale / baseFadeScale));
             text.setScale({ scale, scale });
             return false;
         }

@@ -12,30 +12,30 @@ Sound::Sound() {
         gameplaySong.setLoopPoints({sf::milliseconds(0), sf::seconds(gameplaySong.getDuration().asSeconds())});
 
         // Set the shot volumes
-        shot1Sound.setVolume(50.0f);
-        shot2Sound.setVolume(50.0f);
-        shot3Sound.setVolume(50.0f);
-        shot4Sound.setVolume(50.0f);
+        shot1Sound.setVolume(50.f);
+        shot2Sound.setVolume(50.f);
+        shot3Sound.setVolume(50.f);
+        shot4Sound.setVolume(50.f);
 
         // Set the explosion volumes
-        explosion1Sound.setVolume(70.0f);
-        explosion2Sound.setVolume(70.0f);
-        explosion3Sound.setVolume(70.0f);
-        explosion4Sound.setVolume(70.0f);
-        explosion5Sound.setVolume(70.0f);
-        explosion6Sound.setVolume(70.0f);
-        explosion7Sound.setVolume(70.0f);
-        explosion8Sound.setVolume(70.0f);
+        explosion1Sound.setVolume(70.f);
+        explosion2Sound.setVolume(70.f);
+        explosion3Sound.setVolume(70.f);
+        explosion4Sound.setVolume(70.f);
+        explosion5Sound.setVolume(70.f);
+        explosion6Sound.setVolume(70.f);
+        explosion7Sound.setVolume(70.f);
+        explosion8Sound.setVolume(70.f);
 
         // Set the spawn volumes
-        spawn1Sound.setVolume(60.0f);
-        spawn2Sound.setVolume(60.0f);
-        spawn3Sound.setVolume(60.0f);
-        spawn4Sound.setVolume(60.0f);
-        spawn5Sound.setVolume(60.0f);
-        spawn6Sound.setVolume(60.0f);
-        spawn7Sound.setVolume(60.0f);
-        spawn8Sound.setVolume(60.0f);
+        spawn1Sound.setVolume(60.f);
+        spawn2Sound.setVolume(60.f);
+        spawn3Sound.setVolume(60.f);
+        spawn4Sound.setVolume(60.f);
+        spawn5Sound.setVolume(60.f);
+        spawn6Sound.setVolume(60.f);
+        spawn7Sound.setVolume(60.f);
+        spawn8Sound.setVolume(60.f);
 
     } catch (sf::Exception &ex) {
         Logger::printError(ex.what());

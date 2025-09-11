@@ -17,9 +17,9 @@ struct ColorPicker {
     sf::Color lerp(sf::Color, sf::Color);
 
     std::default_random_engine randEngine {std::random_device{}()};
-    std::uniform_real_distribution<float> randomLerpValue {0.0f, 1.0f};
-    std::uniform_real_distribution<float> randomHue {0.0f, 6.0f};
-    std::uniform_real_distribution<float> randomHueShifted {0.0f, 2.0f};
+    std::uniform_real_distribution<float> randomLerpValue {0.f, 1.f};
+    std::uniform_real_distribution<float> randomHue {0.f, 6.f};
+    std::uniform_real_distribution<float> randomHueShifted {0.f, 2.f};
 };
 
 

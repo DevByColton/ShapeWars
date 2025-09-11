@@ -1,6 +1,5 @@
 ﻿#ifndef QUATERNION_H
 #define QUATERNION_H
-#include "SFML/System/Vector2.hpp"
 
 
 struct Quaternion {

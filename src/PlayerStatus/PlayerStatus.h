@@ -11,7 +11,7 @@ private:
     const int maxLives = 5;
     int scoreForExtraLife = baseScoreForExtraLife;
     float multiplierTimeLeft = 0;
-    float timeUntilRespawn = 0.0f;
+    float timeUntilRespawn = 0.f;
     bool shouldKill = false;
     const sf::Color playerExplosionColor {235, 218, 8, 255};
 

@@ -45,13 +45,13 @@ sf::Vector2<int> GameRoot::size() const
 
 float GameRoot::halfWidth() const
 {
-    return static_cast<float>(renderWindow.getSize().x / 2.0);
+    return renderWindow.getSize().x / 2.f;
 }
 
 
 float GameRoot::halfHeight() const
 {
-    return static_cast<float>(renderWindow.getSize().y / 2.0);
+    return renderWindow.getSize().y / 2.f;
 }
 
 
@@ -97,7 +97,7 @@ void GameRoot::update()
     deltaTime = elapsed.asSeconds();
 
     // Set the current fps
-    fps = static_cast<int>(fpsSmoothingAlpha * (1.0f / deltaTime) + (1.0f - fpsSmoothingAlpha) * fps);
+    fps = static_cast<int>(fpsSmoothingAlpha * std::ceil(1.f / deltaTime) + (1.f - fpsSmoothingAlpha) * fps);
 }
 
 

@@ -13,7 +13,7 @@ struct RandomVector {
     }
 
     std::default_random_engine randEngine {std::random_device{}()};
-    std::uniform_real_distribution<float> nextFloatZeroAndOne {0.0f, 1.0f};
+    std::uniform_real_distribution<float> nextFloatZeroAndOne {0.f, 1.f};
 
     sf::Vector2f next(float, float);
 };

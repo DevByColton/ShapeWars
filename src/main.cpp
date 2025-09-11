@@ -8,6 +8,7 @@
 #include "Entities/Include/Collisions.h"
 #include "Entities/Include/Enemies.h"
 #include "Entities/Include/PlayerShip.h"
+#include "Grid/Grid.h"
 #include "Input/Input.h"
 #include "Particles/Particles.h"
 #include "PlayerStatus/PlayerStatus.h"
@@ -16,10 +17,6 @@
 
 int main()
 {
-
-    // long cpp_version = __cplusplus;
-    // std::cout << "C++ Standard Version: " << cpp_version << std::endl;
-
     // Main game loop
     while (GameRoot::instance().renderWindow.isOpen()) {
 
@@ -31,21 +28,35 @@ int main()
             // if (event->is<sf::Event::FocusLost>())
             //     GameRoot::instance().isPaused = true;
 
-            // NOTE: I could pass these events to the input handler to process in update
-            // Key pressed events
+            // NOTE: Key pressed events, I could pass these events to the input handler to process in update
             if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()) {
 
-                if (keyPressed->scancode == sf::Keyboard::Scancode::Escape)
-                    GameRoot::instance().renderWindow.close();
+                switch (keyPressed->scancode)
+                {
+                    case sf::Keyboard::Scancode::Escape:
+                        GameRoot::instance().renderWindow.close();
+                        break;
 
-                if (keyPressed->scancode == sf::Keyboard::Scancode::P)
-                    GameRoot::instance().togglePause();
+                    case sf::Keyboard::Scancode::K:
+                        PlayerStatus::instance().markForKill();
+                        break;
 
-                if (keyPressed->scancode == sf::Keyboard::Scancode::O)
-                    Sound::instance().togglePlaySounds();
+                    case sf::Keyboard::Scancode::P:
+                        GameRoot::instance().togglePause();
+                        break;
 
-                if (keyPressed->scancode == sf::Keyboard::Scancode::B)
-                    GaussianBlur::instance().gaussianBlurEnabled = !GaussianBlur::instance().gaussianBlurEnabled;
+                    case sf::Keyboard::Scancode::O:
+                        Sound::instance().togglePlaySounds();
+                        break;
+
+                    case sf::Keyboard::Scancode::B:
+                        GaussianBlur::instance().toggleGaussianBlur();
+                        break;
+
+                    // Just to get clion to stop complaining about missing cases
+                    default:
+                        break;
+                }
 
             }
 
@@ -107,6 +118,7 @@ int main()
             // Independent of player status
             FloatingKillTexts::instance().update();
             Particles::instance().update();
+            Grid::instance().update();
         }
 
         // Draws
@@ -114,6 +126,7 @@ int main()
 
         // Draw stuff with bloom
         GaussianBlur::instance().clearTextures();
+        Grid::instance().draw();
         Particles::instance().draw();
         Enemies::instance().draw();
         BlackHoles::instance().draw();

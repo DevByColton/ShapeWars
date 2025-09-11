@@ -2,6 +2,7 @@
 #include "PlayerStatus.h"
 #include "../GameRoot.h"
 #include "../Entities/Include/PlayerShip.h"
+#include "../Grid/Grid.h"
 #include "../Particles/Particles.h"
 #include "../System/Include/ColorPicker.h"
 #include "../System/Include/RandomVector.h"
@@ -72,9 +73,10 @@ void PlayerStatus::removeLife()
         timeUntilRespawn = 3.0;
     }
 
+    // Add effects
     for (int i = 0; i < 1200; i++)
     {
-        const float speed = Particles::instance().randomStartingSpeed(22.0f, 1.0f, 50.0f);
+        const float speed = Particles::instance().randomStartingSpeed(22.f, 1.f, 50.f);
         Particles::instance().create(
             GameRoot::instance().fps * 3,
             DontIgnoreGravity,
@@ -84,6 +86,9 @@ void PlayerStatus::removeLife()
             ColorPicker::instance().lerp(sf::Color::White, playerExplosionColor)
         );
     }
+
+    // Grid explosions
+    Grid::instance().applyExplosiveForce(PlayerShip::instance().getPosition(), 500.f, 200.f, 0.3f);
 }
 
 

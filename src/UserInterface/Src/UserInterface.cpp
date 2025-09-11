@@ -9,44 +9,44 @@
 UserInterface::UserInterface()
 {
     // Set the player ship sprite properties for lives counter
-    livesText.setPosition({ 25.0f, 10.0f });
+    livesText.setPosition({ 25.f, 10.f });
     float originX = playerShipSprite.getTexture().getSize().x / 2;
     float originY = playerShipSprite.getTexture().getSize().y / 2;
     playerShipSprite.setOrigin({originX, originY});
-    playerShipSprite.setPosition({40.0f, 62.0f});
+    playerShipSprite.setPosition({40.f, 62.f});
     playerShipSprite.setScale({0.75f, 0.75f});
     playerShipSprite.setRotation(sf::radians(-std::numbers::pi / 2));
 
     // Set the score to be in the top middle of the screen
     float scoreTextX = GameRoot::instance().windowSizeF.x / 2;
-    scoreText.setPosition({scoreTextX, 28.0f});
+    scoreText.setPosition({scoreTextX, 28.f});
 
     // Set the multiplier text to be in the right top of the window
     const sf::FloatRect multiplierHeaderTextRect = multiplierHeaderText.getLocalBounds();
-    float multiplierOriginHeaderTextX = multiplierHeaderTextRect.size.x / 2.0f;
-    float multiplierOriginHeaderTextY = multiplierHeaderTextRect.size.y / 2.0f;
+    float multiplierOriginHeaderTextX = multiplierHeaderTextRect.size.x / 2.f;
+    float multiplierOriginHeaderTextY = multiplierHeaderTextRect.size.y / 2.f;
     multiplierHeaderText.setOrigin({multiplierOriginHeaderTextX, multiplierOriginHeaderTextY});
-    multiplierHeaderText.setPosition({ scoreText.getPosition().x, scoreText.getPosition().y + 60.0f });
-    multiplierText.setPosition({ multiplierHeaderText.getPosition().x + 40.0f, multiplierHeaderText.getPosition().y });
+    multiplierHeaderText.setPosition({ scoreText.getPosition().x, scoreText.getPosition().y + 60.f });
+    multiplierText.setPosition({ multiplierHeaderText.getPosition().x + 40.f, multiplierHeaderText.getPosition().y });
 
     // Set the timer text just under the score and multiplier
-    timerText.setPosition({ scoreText.getPosition().x + 8.0f, scoreText.getPosition().y + 100.0f });
+    timerText.setPosition({ scoreText.getPosition().x + 8.f, scoreText.getPosition().y + 100.f });
     timerText.setLetterSpacing(1.5f);
 
     // Justify the pause text slightly under the multiplier text in the middle of the screen
-    pausedText.setPosition({GameRoot::instance().windowSizeF.x / 2.0f, 250.0f});
-    pausedText.setOrigin({ pausedText.getLocalBounds().size.x / 2.0f, pausedText.getLocalBounds().size.y / 2.0f });
+    pausedText.setPosition({GameRoot::instance().windowSizeF.x / 2.f, 250.f});
+    pausedText.setOrigin({ pausedText.getLocalBounds().size.x / 2.f, pausedText.getLocalBounds().size.y / 2.f });
 
     // Set the game over text in the middle of the screen
-    gameOverText.setPosition({GameRoot::instance().windowSizeF.x / 2.0f, GameRoot::instance().windowSizeF.y / 2.0f});
+    gameOverText.setPosition({GameRoot::instance().windowSizeF.x / 2.f, GameRoot::instance().windowSizeF.y / 2.f});
 
     // Set the highscore text to be in the top right of the window, right aligned
     const sf::FloatRect highscoreHeaderTextRect = highScoreHeaderText.getLocalBounds();
     highScoreHeaderText.setOrigin({ highscoreHeaderTextRect.size.x, highscoreHeaderTextRect.size.y});
-    highScoreHeaderText.setPosition({ GameRoot::instance().windowSizeF.x - 22.0f, 25.0f });
+    highScoreHeaderText.setPosition({ GameRoot::instance().windowSizeF.x - 22.f, 25.f });
 
     // Set the fps text to the bottom left of the screen
-    fpsText.setPosition({ 10.0f, GameRoot::instance().windowSizeF.y - 30 });
+    fpsText.setPosition({ 10.f, GameRoot::instance().windowSizeF.y - 30 });
 }
 
 
@@ -88,10 +88,10 @@ void UserInterface::draw()
     }
 
     // Draw the score text
-    scoreText.setString(formatNumberWithCommas(PlayerStatus::instance().score));
+    scoreText.setString(Extensions::formatNumberWithCommas(PlayerStatus::instance().score));
     const sf::FloatRect scoreTextRect = scoreText.getLocalBounds();
-    float scoreTextOriginX = scoreTextRect.size.x / 2.0f;
-    float scoreTextOriginY = scoreTextRect.size.y / 2.0f;
+    float scoreTextOriginX = scoreTextRect.size.x / 2.f;
+    float scoreTextOriginY = scoreTextRect.size.y / 2.f;
     scoreText.setOrigin({scoreTextOriginX, scoreTextOriginY});
     GameRoot::instance().renderWindow.draw(scoreText);
 
@@ -99,25 +99,25 @@ void UserInterface::draw()
     GameRoot::instance().renderWindow.draw(multiplierHeaderText);
     multiplierText.setString(std::to_string(PlayerStatus::instance().multiplier));
     const sf::FloatRect multiplierTextRect = multiplierText.getLocalBounds();
-    float multiplierOriginTextX = multiplierTextRect.size.x / 2.0f;
-    float multiplierOriginTextY = multiplierTextRect.size.y / 2.0f;
+    float multiplierOriginTextX = multiplierTextRect.size.x / 2.f;
+    float multiplierOriginTextY = multiplierTextRect.size.y / 2.f;
     multiplierText.setOrigin({multiplierOriginTextX, multiplierOriginTextY});
     GameRoot::instance().renderWindow.draw(multiplierText);
 
     // Draw the timer text
     timerText.setString(formattedTime());
     const sf::FloatRect timerTextRect = timerText.getLocalBounds();
-    float timerOriginTextX = timerTextRect.size.x / 2.0f;
-    float timerOriginTextY = timerTextRect.size.y / 2.0f;
+    float timerOriginTextX = timerTextRect.size.x / 2.f;
+    float timerOriginTextY = timerTextRect.size.y / 2.f;
     timerText.setOrigin({timerOriginTextX, timerOriginTextY});
     GameRoot::instance().renderWindow.draw(timerText);
 
     // Draw the high score header and text, right align the highscore number
     GameRoot::instance().renderWindow.draw(highScoreHeaderText);
-    highScoreText.setString(formatNumberWithCommas(PlayerStatus::instance().highScore));
+    highScoreText.setString(Extensions::formatNumberWithCommas(PlayerStatus::instance().highScore));
     const sf::FloatRect highscoreTextRect = highScoreText.getLocalBounds();
     multiplierText.setOrigin({highscoreTextRect.size.x, highscoreTextRect.size.y});
-    highScoreText.setPosition({ GameRoot::instance().windowSizeF.x - highscoreTextRect.size.x - 22.0f, 30.0f });
+    highScoreText.setPosition({ GameRoot::instance().windowSizeF.x - highscoreTextRect.size.x - 22.f, 30.f });
     GameRoot::instance().renderWindow.draw(highScoreText);
 
     // Draw fps text
@@ -134,11 +134,11 @@ void UserInterface::draw()
     if (PlayerStatus::instance().isGameOver()) {
         std::string text {"== [ game over ]== \n"};
         text.append("your score: ");
-        text.append(formatNumberWithCommas(PlayerStatus::instance().score) + "\n");
+        text.append(Extensions::formatNumberWithCommas(PlayerStatus::instance().score) + "\n");
         text.append("high score: ");
-        text.append(formatNumberWithCommas(PlayerStatus::instance().highScore));
+        text.append(Extensions::formatNumberWithCommas(PlayerStatus::instance().highScore));
         gameOverText.setString(text);
-        gameOverText.setOrigin({gameOverText.getLocalBounds().size.x / 2.0f, gameOverText.getLocalBounds().size.y / 2.0f});
+        gameOverText.setOrigin({gameOverText.getLocalBounds().size.x / 2.f, gameOverText.getLocalBounds().size.y / 2.f});
         GameRoot::instance().renderWindow.draw(gameOverText);
     }
 }

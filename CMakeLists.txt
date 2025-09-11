@@ -54,6 +54,9 @@ add_executable(ShapeWars src/main.cpp
         src/System/Include/RandomVector.h
         src/System/Src/ColorPicker.cpp
         src/System/Include/ColorPicker.h
+        src/Grid/Grid.cpp
+        src/Grid/Grid.h
+        src/System/Src/Extensions.cpp
 )
 
 target_compile_features(ShapeWars PRIVATE cxx_std_20)

@@ -69,11 +69,11 @@ struct Sound {
 
     std::default_random_engine randEngine {std::random_device{}()};
     std::uniform_int_distribution<int> shotIndex {1, 4 };
-    std::uniform_real_distribution<float> shotPitch {0.6f, 1.0f };
+    std::uniform_real_distribution<float> shotPitch {0.6f, 1.f };
     std::uniform_int_distribution<int> explosionIndex {1, 8 };
-    std::uniform_real_distribution<float> explosionPitch {0.6f, 1.0f };
+    std::uniform_real_distribution<float> explosionPitch {0.6f, 1.f };
     std::uniform_int_distribution<int> spawnIndex {1, 8 };
-    std::uniform_real_distribution<float> spawnPitch {0.6f, 1.0f };
+    std::uniform_real_distribution<float> spawnPitch {0.6f, 1.f };
 
     void playGamePlaySong();
     void playShotSound();

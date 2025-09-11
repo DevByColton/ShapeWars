@@ -11,7 +11,7 @@
 
 bool Collisions::isColliding(const float radii, const sf::Vector2f position1, const sf::Vector2f position2)
 {
-    return distanceSquared(position1, position2) < radii * radii;
+    return Extensions::distanceSquared(position1, position2) < radii * radii;
 }
 
 
@@ -67,7 +67,7 @@ void Collisions::handleBlackHoles()
                 if (auto &bullet = bullets.at(b); bullet.isActive)
                 {
                     // See if the bullet is in proximity
-                    if (distanceSquared(blackHole.getPosition(), bullet.getPosition()) < SMALL_PROXIMITY_RADIUS_SQR)
+                    if (Extensions::distanceSquared(blackHole.getPosition(), bullet.getPosition()) < SMALL_PROXIMITY_RADIUS_SQR)
                     {
                         // Apply repulsive constant force
                         sf::Vector2f direction = bullet.getPosition() - blackHole.getPosition();
@@ -84,7 +84,7 @@ void Collisions::handleBlackHoles()
             }
 
             // Check player
-            if (distanceSquared(blackHole.getPosition(), PlayerShip::instance().getPosition()) < LARGE_PROXIMITY_RADIUS_SQR)
+            if (Extensions::distanceSquared(blackHole.getPosition(), PlayerShip::instance().getPosition()) < LARGE_PROXIMITY_RADIUS_SQR)
             {
                 // Apply attractive linear force
                 sf::Vector2f direction = blackHole.getPosition() - PlayerShip::instance().getPosition();

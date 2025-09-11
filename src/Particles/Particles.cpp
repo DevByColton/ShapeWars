@@ -23,13 +23,13 @@ Particles::Particles()
 Particles::Particle::Particle()
 {
     // Set the particle sprite origin to the middle of the sprite
-    float x = Art::instance().particle.getSize().x / 2.0f;
-    float y = Art::instance().particle.getSize().y / 2.0f;
+    float x = Art::instance().particle.getSize().x / 2.f;
+    float y = Art::instance().particle.getSize().y / 2.f;
     particleSprite.setOrigin({x, y});
 
     // Set the particle sprite origin to the middle of the sprite
-    float xg = Art::instance().particleGlow.getSize().x / 2.0f;
-    float yg = Art::instance().particleGlow.getSize().y / 2.0f;
+    float xg = Art::instance().particleGlow.getSize().x / 2.f;
+    float yg = Art::instance().particleGlow.getSize().y / 2.f;
     glowSprite.setOrigin({xg, yg});
 }
 
@@ -90,7 +90,7 @@ void Particles::Particle::reset()
     particleSprite.setColor(sf::Color::White);
     setPosition({0.0, 0.0});
     setRotation(sf::Angle::Zero);
-    setScale({1.0f, 1.0f});
+    setScale({1.f, 1.f});
     resetColors();
     particleType = DontIgnoreGravity;
     particleSize = Explosion;
@@ -183,7 +183,7 @@ void Particles::create(const float duration,
 float Particles::randomStartingSpeed(const float size, const float min, const float max)
 {
     std::uniform_real_distribution particleSpeed {min, max};
-    return size * (1.0f - 1.0f / particleSpeed(randEngine));
+    return size * (1.f - 1.f / particleSpeed(randEngine));
 }
 
 
@@ -208,37 +208,37 @@ bool Particles::Particle::animate()
     move(velocity);
 
     // Set the alpha by the lower of the speed or percent life left, or 1 if they are bigger than 1
-    float alpha = std::min(1.0f, std::min(percentLife * 2, speed));
+    float alpha = std::min(1.f, std::min(percentLife * 2, speed));
     alpha *= alpha;
-    particleSprite.setColor({particleSprite.getColor().r, particleSprite.getColor().g, particleSprite.getColor().b, static_cast<uint8_t>(255.0f * alpha)});
-    glowSprite.setColor({glowSprite.getColor().r, glowSprite.getColor().g, glowSprite.getColor().b, static_cast<uint8_t>(255.0f * alpha)});
+    particleSprite.setColor({particleSprite.getColor().r, particleSprite.getColor().g, particleSprite.getColor().b, static_cast<uint8_t>(255.f * alpha)});
+    glowSprite.setColor({glowSprite.getColor().r, glowSprite.getColor().g, glowSprite.getColor().b, static_cast<uint8_t>(255.f * alpha)});
 
     // Update the x scale of the particle
     float scaleX = 0.0;
     switch (particleSize)
     {
     case Spark:
-        scaleX = std::min(std::min(1.0f, 0.1f * speed + 0.1f), alpha);
+        scaleX = std::min(std::min(1.f, 0.1f * speed + 0.1f), alpha);
         break;
     case Explosion:
-        scaleX = std::min(std::min(1.0f, 0.2f * speed + 0.1f), alpha);
+        scaleX = std::min(std::min(1.f, 0.2f * speed + 0.1f), alpha);
         break;
     case Massive:
-        scaleX = std::min(std::min(1.0f, 0.3f * speed + 0.1f), alpha);
+        scaleX = std::min(std::min(1.f, 0.3f * speed + 0.1f), alpha);
         break;
     }
     setScale({scaleX, particleSprite.getScale().y});
 
     // Update the angle of the particle
-    setRotation(sf::radians(toAngle(velocity)));
+    setRotation(sf::radians(Extensions::toAngle(velocity)));
 
     // Update the velocity, make sure they collide with the bounds of the screen
-    if (particleSprite.getPosition().x < 0.0f)
+    if (particleSprite.getPosition().x < 0.f)
         velocity.x = std::abs(velocity.x);
     else if (particleSprite.getPosition().x > GameRoot::instance().windowSizeF.x)
         velocity.x = -std::abs(velocity.x);
 
-    if (particleSprite.getPosition().y < 0.0f)
+    if (particleSprite.getPosition().y < 0.f)
         velocity.y = std::abs(velocity.y);
     else if (particleSprite.getPosition().y > GameRoot::instance().windowSizeF.y)
         velocity.y = -std::abs(velocity.y);
@@ -254,25 +254,25 @@ bool Particles::Particle::animate()
                 sf::Vector2f direction = blackHoles.at(i).getPosition() - particleSprite.getPosition();
                 const float distance = direction.length();
                 const sf::Vector2f n = direction / distance;
-                velocity.x += 10'000.0f * n.x / (distance * distance + 10'000.0f);
-                velocity.y += 10'000.0f * n.y / (distance * distance + 10'000.0f);
+                velocity.x += 10'000.f * n.x / (distance * distance + 10'000.f);
+                velocity.y += 10'000.f * n.y / (distance * distance + 10'000.f);
 
                 // Add tangential acceleration for nearby particles
-                if (distance < 400.0f)
+                if (distance < 400.f)
                 {
                     const sf::Vector2f perpendicular = {n.y, -n.x};
-                    velocity.x += 45 * perpendicular.x / (distance + 100.0f);
-                    velocity.y += 45 * perpendicular.y / (distance + 100.0f);
+                    velocity.x += 45 * perpendicular.x / (distance + 100.f);
+                    velocity.y += 45 * perpendicular.y / (distance + 100.f);
                 }
             }
     }
 
     // Update the particle life
-    percentLife -= 1.0f / duration;
+    percentLife -= 1.f / duration;
 
     // If the percent life is expired or the velocity is very, very small, reset the particle
     // NOTE: Denormalized floats cause performance issues
-    if (percentLife < 0.0f || std::abs(velocity.x) + std::abs(velocity.y) < 0.0001f)
+    if (percentLife < 0.f || std::abs(velocity.x) + std::abs(velocity.y) < 0.001f)
     {
         reset();
         return true;

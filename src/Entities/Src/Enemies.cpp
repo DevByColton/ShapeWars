@@ -65,12 +65,12 @@ void Enemies::Enemy::reset()
 {
     const float hue1 = ColorPicker::instance().generateHue();
     const float hue2 = ColorPicker::instance().generateShiftedHue(hue1);
-    const sf::Color color1 = ColorPicker::instance().hsvToRgb(hue1, 0.5f, 1.0f);
-    const sf::Color color2 = ColorPicker::instance().hsvToRgb(hue2, 0.5f, 1.0f);
+    const sf::Color color1 = ColorPicker::instance().hsvToRgb(hue1, 0.5f, 1.f);
+    const sf::Color color2 = ColorPicker::instance().hsvToRgb(hue2, 0.5f, 1.f);
 
     for (int i = 0; i < 120; i++)
     {
-        const float speed = Particles::instance().randomStartingSpeed(15.0, 1.0f, 10.0f);
+        const float speed = Particles::instance().randomStartingSpeed(15.0, 1.f, 10.f);
         Particles::instance().create(
             GameRoot::instance().fps * 3,
             DontIgnoreGravity,
@@ -112,7 +112,7 @@ bool Enemies::Enemy::canAct()
         timeUntilAct -= GameRoot::instance().deltaTime;
 
         if (timeUntilAct > 0) {
-            auto a = static_cast<std::uint8_t>(255 * (1.0f - timeUntilAct / maxTimeUntilAct));
+            auto a = static_cast<std::uint8_t>(255 * (1.f - timeUntilAct / maxTimeUntilAct));
             sprite.setColor({255, 255, 255, a});
             return false;
         }
@@ -153,7 +153,7 @@ void Enemies::Enemy::killAddPoints()
 void Enemies::killAll()
 {
     // Reset the spawn chance
-    spawnChance = 60.0f;
+    spawnChance = 60.f;
 
     // Kill all the enemies
     for (int i = 0; i < enemies.size(); i++)
@@ -167,7 +167,7 @@ void Enemies::killAll()
 void Enemies::Enemy::pushApartBy(const Enemy &other)
 {
     const sf::Vector2f distance = getPosition() - other.getPosition();
-    const sf::Vector2f amount = 20.0f * distance / (distance.lengthSquared() + 1);
+    const sf::Vector2f amount = 20.f * distance / (distance.lengthSquared() + 1);
     xVelocity += amount.x;
     yVelocity += amount.y;
 }
@@ -186,8 +186,8 @@ void Enemies::Enemy::activateSeeker()
     behavior = [this] () mutable
     {
         sf::Vector2f velocity {xVelocity, yVelocity};
-        const float direction = toAngle(PlayerShip::instance().getPosition() - getPosition());
-        velocity += fromPolar(direction, speed);
+        const float direction = Extensions::toAngle(PlayerShip::instance().getPosition() - getPosition());
+        velocity += Extensions::fromPolar(direction, speed);
 
         // Move the seeker and make sure they are clamped into the screen
         const sf::Vector2f nextPosition = getPosition() + velocity;
@@ -197,7 +197,7 @@ void Enemies::Enemy::activateSeeker()
 
         // Rotation the seeker in the direction of its velocity
         if (velocity.lengthSquared() > 0)
-            sprite.setRotation(sf::radians(toAngle(velocity)));
+            sprite.setRotation(sf::radians(Extensions::toAngle(velocity)));
 
         velocity *= 0.9f;
         xVelocity = velocity.x;
@@ -217,14 +217,14 @@ void Enemies::Enemy::activateWanderer()
     timeUntilAct = maxTimeUntilAct;
     speed = 1.1f;
     pointValue = 3;
-    const sf::Vector2f startingDirection = fromPolar(instance().directionDistribution(instance().randEngine), speed);
+    const sf::Vector2f startingDirection = Extensions::fromPolar(instance().directionDistribution(instance().randEngine), speed);
     xVelocity = startingDirection.x;
     yVelocity = startingDirection.y;
     behavior = [this] () mutable
     {
         sf::Vector2f velocity {xVelocity, yVelocity};
-        const float direction = toAngle(velocity);
-        velocity += fromPolar(direction, speed);
+        const float direction = Extensions::toAngle(velocity);
+        velocity += Extensions::fromPolar(direction, speed);
 
         // Just rotate the sprite iteratively
         sprite.rotate(sf::radians(-0.075));
@@ -286,7 +286,7 @@ void Enemies::spawnWanderer()
 void Enemies::update()
 {
     // Check spawn of new enemies
-    std::uniform_real_distribution spawnDistribution {0.0f, spawnChance};
+    std::uniform_real_distribution spawnDistribution {0.f, spawnChance};
 
     // Seeker chance
     if (static_cast<int>(spawnDistribution(randEngine)) == 0)

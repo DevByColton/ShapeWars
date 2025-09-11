@@ -11,7 +11,7 @@ sf::Vector2f SpawnHelper::createSpawnPosition()
 
     do {
         position = {xPositionDistribution(randEngine), yPositionDistribution(randEngine)};
-    } while (distanceSquared(position, PlayerShip::instance().getPosition()) < positionOffset * positionOffset);
+    } while (Extensions::distanceSquared(position, PlayerShip::instance().getPosition()) < positionOffset * positionOffset);
 
     return position;
 }
