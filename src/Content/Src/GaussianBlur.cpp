@@ -3,6 +3,7 @@
 #include "../Include/GaussianBlur.h"
 #include "../../GameRoot.h"
 #include "../../Logger/Logger.h"
+#include "../../System/Include/Extensions.h"
 
 
 GaussianBlur::GaussianBlur()
@@ -162,7 +163,7 @@ void GaussianBlur::setGaussianBlurParameters(const float dx, const float dy)
 float GaussianBlur::computeGaussian(const float n) const
 {
     // Gaussian function
-    const float x = 1.f / std::sqrt(2 * std::numbers::pi * blurAmount);
+    const float x = 1.f / std::sqrt(2 * PI * blurAmount);
     const float y = std::exp(-(n * n) / (2 * (blurAmount * blurAmount)));
     return x * y;
 }

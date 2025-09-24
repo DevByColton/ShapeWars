@@ -3,7 +3,6 @@
 #include "../../GameRoot.h"
 #include "../../Content/Include/GaussianBlur.h"
 #include "../../Content/Include/Sound.h"
-#include "../../Logger/Logger.h"
 #include "../../Particles/Particles.h"
 #include "../../PlayerStatus/PlayerStatus.h"
 #include "../../System/Include/ColorPicker.h"
@@ -61,6 +60,12 @@ sf::Vector2f Enemies::Enemy::getPosition() const
 }
 
 
+sf::Vector2f Enemies::Enemy::getVelocity() const
+{
+    return {xVelocity, yVelocity};
+}
+
+
 void Enemies::Enemy::reset()
 {
     const float hue1 = ColorPicker::instance().generateHue();
@@ -86,6 +91,7 @@ void Enemies::Enemy::reset()
     sprite.setPosition({0.0, 0.0});
     sprite.setRotation(sf::Angle::Zero);
     behavior = [] {};
+    enemyType = None;
     isActive = false;
     isActing = false;
     shouldKill = false;
@@ -173,23 +179,32 @@ void Enemies::Enemy::pushApartBy(const Enemy &other)
 }
 
 
+void Enemies::Enemy::applyForce(const sf::Vector2f velocity)
+{
+    xVelocity += velocity.x;
+    yVelocity += velocity.y;
+}
+
+
 void Enemies::Enemy::activateSeeker()
 {
     sprite.setTexture(Art::instance().seeker);
     sprite.setPosition(SpawnHelper::instance().createSpawnPosition());
     radius = 20;
     timeUntilAct = maxTimeUntilAct;
-    speed = 1.05f;
+    speed = 1.f;
     pointValue = 5;
     xVelocity = 0.0;
     yVelocity = 0.0;
+    enemyType = Seeker;
+
     behavior = [this] () mutable
     {
-        sf::Vector2f velocity {xVelocity, yVelocity};
+        sf::Vector2f velocity = getVelocity();
         const float direction = Extensions::toAngle(PlayerShip::instance().getPosition() - getPosition());
         velocity += Extensions::fromPolar(direction, speed);
 
-        // Move the seeker and make sure they are clamped into the screen
+        // Move the seeker and make sure it is clamped into the screen
         const sf::Vector2f nextPosition = getPosition() + velocity;
         float clampedX = std::clamp(nextPosition.x, halfWidth(), GameRoot::instance().windowSizeF.x - halfWidth());
         float clampedY = std::clamp(nextPosition.y, halfHeight(), GameRoot::instance().windowSizeF.y - halfHeight());
@@ -215,19 +230,21 @@ void Enemies::Enemy::activateWanderer()
     sprite.setPosition(SpawnHelper::instance().createSpawnPosition());
     radius = 20;
     timeUntilAct = maxTimeUntilAct;
-    speed = 1.1f;
+    speed = 1.f;
     pointValue = 3;
     const sf::Vector2f startingDirection = Extensions::fromPolar(instance().directionDistribution(instance().randEngine), speed);
     xVelocity = startingDirection.x;
     yVelocity = startingDirection.y;
+    enemyType = Wanderer;
+
     behavior = [this] () mutable
     {
-        sf::Vector2f velocity {xVelocity, yVelocity};
+        sf::Vector2f velocity = getVelocity();
         const float direction = Extensions::toAngle(velocity);
         velocity += Extensions::fromPolar(direction, speed);
 
         // Just rotate the sprite iteratively
-        sprite.rotate(sf::radians(-0.075));
+        sprite.rotate(sf::radians(GameRoot::instance().deltaTime * 5.f));
 
         // Move the wanderer, and check if it is at the screen bounds
         const sf::Vector2f nextPosition = getPosition() + velocity;
@@ -245,7 +262,7 @@ void Enemies::Enemy::activateWanderer()
         sprite.setPosition(nextPosition);
 
         // Basic friction
-        velocity *= 0.75f;
+        velocity *= 0.8f;
         xVelocity = velocity.x;
         yVelocity = velocity.y;
     };
@@ -255,30 +272,97 @@ void Enemies::Enemy::activateWanderer()
 }
 
 
-void Enemies::spawnSeeker()
+void Enemies::Enemy::activateDodger()
 {
-    assert(firstAvailable != nullptr);
+    sprite.setTexture(Art::instance().dodger);
+    sprite.setPosition(SpawnHelper::instance().createSpawnPosition());
+    radius = 20;
+    timeUntilAct = maxTimeUntilAct;
+    speed = 1.f;
+    pointValue = 7;
+    xVelocity = 0.0;
+    yVelocity = 0.0;
+    enemyType = Dodger;
 
-    // Make sure it is not the last in the list
-    Enemy *seeker = firstAvailable;
-    if (seeker->getNext() != nullptr)
+    behavior = [this] () mutable
     {
-        firstAvailable = seeker->getNext();
-        seeker->activateSeeker();
+        sf::Vector2f velocity = getVelocity();
+        const float direction = Extensions::toAngle(PlayerShip::instance().getPosition() - getPosition());
+        velocity += Extensions::fromPolar(direction, speed);
+
+        // Move the dodger and make sure it is clamped into the screen
+        const sf::Vector2f nextPosition = getPosition() + velocity;
+        float clampedX = std::clamp(nextPosition.x, halfWidth(), GameRoot::instance().windowSizeF.x - halfWidth());
+        float clampedY = std::clamp(nextPosition.y, halfHeight(), GameRoot::instance().windowSizeF.y - halfHeight());
+        sprite.setPosition({clampedX, clampedY});
+
+        // Rotation the dodger in the direction of its velocity
+        if (velocity.lengthSquared() > 0)
+            sprite.setRotation(sf::radians(std::sin(6.f * GameRoot::instance().totalGameTimeSeconds())));
+
+        velocity *= 0.9f;
+        xVelocity = velocity.x;
+        yVelocity = velocity.y;
+    };
+
+    isActive = true;
+    Sound::instance().playSpawnSound();
+}
+
+
+void Enemies::checkSpawnSeeker()
+{
+    std::uniform_real_distribution spawnChanceDistribution {0.f, spawnChance};
+
+    if (static_cast<int>(spawnChanceDistribution(randEngine)) == 0)
+    {
+        assert(firstAvailable != nullptr);
+
+        // Make sure it is not the last in the list
+        Enemy *seeker = firstAvailable;
+        if (seeker->getNext() != nullptr)
+        {
+            firstAvailable = seeker->getNext();
+            seeker->activateSeeker();
+        }
     }
 }
 
 
-void Enemies::spawnWanderer()
+void Enemies::checkSpawnWanderer()
 {
-    assert(firstAvailable != nullptr);
+    std::uniform_real_distribution spawnChanceDistribution {0.f, spawnChance};
 
-    // Make sure it is not the last in the list
-    Enemy *wanderer = firstAvailable;
-    if (wanderer->getNext() != nullptr)
+    if (static_cast<int>(spawnChanceDistribution(randEngine)) == 0)
     {
-        firstAvailable = wanderer->getNext();
-        wanderer->activateWanderer();
+        assert(firstAvailable != nullptr);
+
+        // Make sure it is not the last in the list
+        Enemy *wanderer = firstAvailable;
+        if (wanderer->getNext() != nullptr)
+        {
+            firstAvailable = wanderer->getNext();
+            wanderer->activateWanderer();
+        }
+    }
+}
+
+
+void Enemies::checkSpawnDodger()
+{
+    std::uniform_real_distribution spawnChanceDistribution {0.f, spawnChance};
+
+    if (static_cast<int>(spawnChanceDistribution(randEngine)) == 0)
+    {
+        assert(firstAvailable != nullptr);
+
+        // Make sure it is not last in the list
+        Enemy *dodger = firstAvailable;
+        if (dodger->getNext() != nullptr)
+        {
+            firstAvailable = dodger->getNext();
+            dodger->activateDodger();
+        }
     }
 }
 
@@ -286,16 +370,11 @@ void Enemies::spawnWanderer()
 void Enemies::update()
 {
     // Check spawn of new enemies
-    std::uniform_real_distribution spawnDistribution {0.f, spawnChance};
+    checkSpawnSeeker();
+    checkSpawnWanderer();
+    checkSpawnDodger();
 
-    // Seeker chance
-    if (static_cast<int>(spawnDistribution(randEngine)) == 0)
-        spawnSeeker();
-
-    // Wanderer spawn chance
-    if (static_cast<int>(spawnDistribution(randEngine)) == 0)
-        spawnWanderer();
-
+    // TODO: Remove this and add individual spawn chances per method
     // Reduce the spawn chance until it becomes 1 in 20
     if (spawnChance > 20.0)
         spawnChance -= GameRoot::instance().deltaTime;

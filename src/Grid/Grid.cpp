@@ -174,7 +174,7 @@ void Grid::PointMass::update()
         velocity = {0.0, 0.0};
 
     velocity *= damping;
-    damping = 0.98f;
+    damping = DEFAULT_DAMPING;
 }
 
 

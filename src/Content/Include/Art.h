@@ -16,6 +16,7 @@ struct Art {
     sf::Texture player;
     sf::Texture seeker;
     sf::Texture wanderer;
+    sf::Texture dodger;
     sf::Texture bullet;
     sf::Texture pointer;
     sf::Texture enemyPlaceholder;

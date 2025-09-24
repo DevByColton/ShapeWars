@@ -1,7 +1,6 @@
 ﻿#ifndef GAUSSIANBLUR_H
 #define GAUSSIANBLUR_H
 #include "../../GameRoot.h"
-#include "SFML/Graphics/RectangleShape.hpp"
 #include "SFML/Graphics/RenderTexture.hpp"
 #include "SFML/Graphics/Shader.hpp"
 #include "SFML/Graphics/Sprite.hpp"

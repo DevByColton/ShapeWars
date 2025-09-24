@@ -25,6 +25,7 @@ private:
 
         bool wasHit = false;
         sf::Sprite sprite {Art::instance().blackHole};
+        sf::Color particleSprayColor {115, 255, 173, 255};
 
     public:
         BlackHole();
@@ -33,9 +34,9 @@ private:
         float radius = 0.0;
         bool isActive = false;
         sf::Clock particleSprayClock {};
-        sf::Time particleSprayInterval = sf::seconds(0.025f);
+        sf::Time particleSprayInterval = sf::seconds(0.015f);
         std::uniform_real_distribution<float> magnitude {8.f, 15.f};
-        std::uniform_real_distribution<float> sprayAngle {2.f, 6.f};
+        std::uniform_real_distribution<float> sprayAngle {-4.f, 4.f};
 
         BlackHole* getNext() const;
         void setNext(BlackHole* next);
@@ -52,7 +53,7 @@ private:
 
     BlackHole *firstAvailable {nullptr};
     std::default_random_engine randEngine {std::random_device{}()};
-    std::uniform_int_distribution<int> spawnDistribution {0, 60};
+    std::uniform_int_distribution<int> spawnDistribution {0, 70};
 
     void spawnBlackHole();
     void resetBlackHolePool();
@@ -66,7 +67,7 @@ public:
         return *instance;
     }
 
-    static constexpr int MAX_BLACK_HOLE_COUNT = 4;
+    static constexpr int MAX_BLACK_HOLE_COUNT = 2;
     std::array<BlackHole, MAX_BLACK_HOLE_COUNT> blackHoles {};
 
     void resetAll();

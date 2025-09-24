@@ -1,6 +1,7 @@
 ﻿#include <cmath>
 #include "../Include/Collisions.h"
 #include "../../GameRoot.h"
+#include "../../Logger/Logger.h"
 #include "../../PlayerStatus/PlayerStatus.h"
 #include "../../System/Include/Extensions.h"
 #include "../Include/BlackHoles.h"
@@ -37,10 +38,27 @@ void Collisions::handleEnemyPlayerBullets()
             // Check bullets
             for (int b = 0; b < bullets.size(); b++)
                 if (auto &bullet = bullets.at(b); bullet.isActive)
+                {
+                    // Special case for dodger enemies, see if they are in proximity to dodge the bullet
+                    if (enemy.enemyType == Dodger && Extensions::distanceSquared(enemy.getPosition(), bullet.getPosition()) < SMALL_PROXIMITY_RADIUS_SQR)
+                    {
+                        const sf::Vector2f p = bullet.getPosition() - enemy.getPosition();
+                        const sf::Vector2f v = bullet.getVelocity() - enemy.getVelocity();
+
+                        // Only dodge the bullet if the bullet is traveling towards the dodger
+                        if (p.dot(v) < 0.f)
+                        {
+                            const sf::Vector2f direction = enemy.getPosition() - bullet.getPosition();
+                            enemy.applyForce(direction * GameRoot::instance().deltaTime);
+                        }
+                    }
+
+                    // Check if it is colliding
                     if (isColliding(bullet.radius + enemy.radius, bullet.getPosition(), enemy.getPosition())) {
                         enemy.markForKill();
                         bullet.markForBlowUp();
                     }
+                }
 
             // Check player
             if (isColliding(enemy.radius + PlayerShip::instance().radius, enemy.getPosition(), PlayerShip::instance().getPosition()))
@@ -67,12 +85,15 @@ void Collisions::handleBlackHoles()
                 if (auto &bullet = bullets.at(b); bullet.isActive)
                 {
                     // See if the bullet is in proximity
-                    if (Extensions::distanceSquared(blackHole.getPosition(), bullet.getPosition()) < SMALL_PROXIMITY_RADIUS_SQR)
+                    if (Extensions::distanceSquared(blackHole.getPosition(), bullet.getPosition()) < MEDIUM_PROXIMITY_RADIS_SQR)
                     {
-                        // Apply repulsive constant force
+                        // Apply repulsive constant force, normalize to make sure all angles apply the same force
                         sf::Vector2f direction = bullet.getPosition() - blackHole.getPosition();
-                        direction *= GameRoot::instance().deltaTime;
-                        bullet.applyForce(direction);
+                        if (direction.lengthSquared() > 1.f)
+                        {
+                            direction = direction.normalized() * GameRoot::instance().deltaTime * 105.f;
+                            bullet.applyForce(direction);
+                        }
 
                         if (isColliding(bullet.radius + blackHole.radius, bullet.getPosition(), blackHole.getPosition()))
                         {
@@ -88,7 +109,7 @@ void Collisions::handleBlackHoles()
             {
                 // Apply attractive linear force
                 sf::Vector2f direction = blackHole.getPosition() - PlayerShip::instance().getPosition();
-                const float lerpValue = std::lerp(3.0, 0.0, direction.length() / LARGE_PROXIMITY_RADIUS);
+                const float lerpValue = std::lerp(3.f, 0.f, direction.length() / LARGE_PROXIMITY_RADIUS);
                 direction *= lerpValue * GameRoot::instance().deltaTime;
                 PlayerShip::instance().applyForce(direction);
 

@@ -54,7 +54,7 @@ sf::Vector2f Input::getMovementDirection() const {
         direction.y += 1;
 
     // Normalize direction
-    if (direction.lengthSquared() > 1)
+    if (direction.lengthSquared() > 1.f)
         direction = direction.normalized();
 
     return direction;
@@ -92,7 +92,7 @@ sf::Vector2f Input::getAimDirection() {
     }
 
     // Normalize direction
-    if (direction.lengthSquared() > 1)
+    if (direction.lengthSquared() > 1.f)
         direction = direction.normalized();
 
     return direction;

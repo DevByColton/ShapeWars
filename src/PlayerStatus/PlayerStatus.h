@@ -9,11 +9,11 @@ private:
     const int maxMultiplier = 20;
     const int baseScoreForExtraLife = 10'000;
     const int maxLives = 5;
+    const sf::Color explosionWhiteBaseColor {175, 175, 175, 255};
     int scoreForExtraLife = baseScoreForExtraLife;
     float multiplierTimeLeft = 0;
     float timeUntilRespawn = 0.f;
     bool shouldKill = false;
-    const sf::Color playerExplosionColor {235, 218, 8, 255};
 
     void kill();
     void loadHighscore();

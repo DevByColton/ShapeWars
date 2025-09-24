@@ -56,6 +56,12 @@ sf::Vector2f Bullets::Bullet::getPosition() const
 }
 
 
+sf::Vector2f Bullets::Bullet::getVelocity() const
+{
+    return {xVelocity, yVelocity};
+}
+
+
 void Bullets::Bullet::applyForce(const sf::Vector2f amount)
 {
     xVelocity += amount.x;
@@ -179,7 +185,7 @@ void Bullets::Bullet::update()
     sprite.move(velocity);
 
     // Make some waves on the grid
-    Grid::instance().applyExplosiveForce(getPosition(), 0.35f * velocity.length(), 80.f, 0.4f);
+    Grid::instance().applyExplosiveForce(getPosition(), 0.5f * velocity.length(), 80.f, 0.4f);
 }
 
 

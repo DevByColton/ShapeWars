@@ -8,6 +8,9 @@
 #include "SFML/System/Vector3.hpp"
 
 
+static constexpr float PI = 3.14159265359;
+static constexpr float TWO_PI = PI * 2;
+
 struct Extensions
 {
     static float toAngle(const sf::Vector2f &vector);

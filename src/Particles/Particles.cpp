@@ -261,8 +261,8 @@ bool Particles::Particle::animate()
                 if (distance < 400.f)
                 {
                     const sf::Vector2f perpendicular = {n.y, -n.x};
-                    velocity.x += 45 * perpendicular.x / (distance + 100.f);
-                    velocity.y += 45 * perpendicular.y / (distance + 100.f);
+                    velocity.x += 45.f * perpendicular.x / (distance + 85.f);
+                    velocity.y += 45.f * perpendicular.y / (distance + 85.f);
                 }
             }
     }

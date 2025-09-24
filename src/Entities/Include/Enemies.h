@@ -3,10 +3,19 @@
 #include <array>
 #include <functional>
 #include <random>
-#include <numbers>
 #include "../../Content/Include/Art.h"
+#include "../../System/Include/Extensions.h"
 #include "SFML/Graphics/Sprite.hpp"
 #include "SFML/System/Vector2.hpp"
+
+
+enum EnemyType
+{
+    None,
+    Dodger,
+    Seeker,
+    Wanderer
+};
 
 
 class Enemies {
@@ -42,13 +51,17 @@ private:
         float radius = 0;
         bool isActive = false;
         bool isActing = false;
+        EnemyType enemyType = None;
 
         Enemy *getNext() const;
         void setNext(Enemy *);
         sf::Vector2f getPosition() const;
+        sf::Vector2f getVelocity() const;
         void activateSeeker();
         void activateWanderer();
+        void activateDodger();
         void pushApartBy(const Enemy &);
+        void applyForce(sf::Vector2f);
         void reset();
         bool canAct();
         bool getShouldKill() const;
@@ -58,11 +71,12 @@ private:
         void draw() const;
     };
 
-    static constexpr int MAX_ENEMY_COUNT = 200;
+    static constexpr int MAX_ENEMY_COUNT = 10;
     Enemy *firstAvailable {nullptr};
 
-    void spawnSeeker();
-    void spawnWanderer();
+    void checkSpawnSeeker();
+    void checkSpawnWanderer();
+    void checkSpawnDodger();
     void resetEnemyPool();
 
 public:
@@ -76,7 +90,7 @@ public:
     std::array<Enemy, MAX_ENEMY_COUNT> enemies {};
 
     std::default_random_engine randEngine {std::random_device{}()};
-    std::uniform_real_distribution<float> directionDistribution {0.f, std::numbers::pi * 2 };
+    std::uniform_real_distribution<float> directionDistribution {0.f, PI * 2 };
     float spawnChance = 60.f;
 
     void killAll();

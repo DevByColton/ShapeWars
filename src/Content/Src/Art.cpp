@@ -14,16 +14,19 @@ Art::Art()
         wanderer = sf::Texture("Content\\Images\\Wanderer.png");
         wanderer.setSmooth(true);
 
+        dodger = sf::Texture("Content\\Images\\Dodger.png");
+        dodger.setSmooth(true);
+
         bullet = sf::Texture("Content\\Images\\Bullet.png");
         bullet.setSmooth(true);
 
-        pointer = sf::Texture("Content\\Images\\Pointer.png");
+        pointer = sf::Texture("Content\\Images\\Cursor.png");
         pointer.setSmooth(true);
 
         enemyPlaceholder = sf::Texture("Content\\Images\\EnemyPlaceholder.png");
         enemyPlaceholder.setSmooth(true);
 
-        blackHole = sf::Texture("Content\\Images\\Black Hole.png");
+        blackHole = sf::Texture("Content\\Images\\BlackHole.png");
         blackHole.setSmooth(true);
 
         particle = sf::Texture("Content\\Images\\Laser.png");

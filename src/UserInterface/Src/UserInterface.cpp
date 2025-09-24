@@ -15,7 +15,7 @@ UserInterface::UserInterface()
     playerShipSprite.setOrigin({originX, originY});
     playerShipSprite.setPosition({40.f, 62.f});
     playerShipSprite.setScale({0.75f, 0.75f});
-    playerShipSprite.setRotation(sf::radians(-std::numbers::pi / 2));
+    playerShipSprite.setRotation(sf::radians(-PI / 2));
 
     // Set the score to be in the top middle of the screen
     float scoreTextX = GameRoot::instance().windowSizeF.x / 2;

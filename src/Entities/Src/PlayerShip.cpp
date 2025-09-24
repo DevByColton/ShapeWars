@@ -53,7 +53,7 @@ float PlayerShip::halfHeight() const
 }
 
 
-void PlayerShip::applyForce(sf::Vector2f amount)
+void PlayerShip::applyForce(const sf::Vector2f amount)
 {
     velocity += amount;
 }

@@ -73,7 +73,12 @@ void PlayerStatus::removeLife()
         timeUntilRespawn = 3.0;
     }
 
-    // Add effects
+    // Add particles for player explosion
+    float hue1 = ColorPicker::instance().generateHue();
+    float hue2 = ColorPicker::instance().generateShiftedHue(hue1);
+    sf::Color color1 = ColorPicker::instance().hsvToRgb(hue1, 0.75f, 1.f);
+    sf::Color color2 = ColorPicker::instance().hsvToRgb(hue2, 0.75f, 1.f);
+
     for (int i = 0; i < 1200; i++)
     {
         const float speed = Particles::instance().randomStartingSpeed(22.f, 1.f, 50.f);
@@ -83,8 +88,17 @@ void PlayerStatus::removeLife()
             Massive,
             PlayerShip::instance().getPosition(),
             RandomVector::instance().next(speed, speed),
-            ColorPicker::instance().lerp(sf::Color::White, playerExplosionColor)
+            ColorPicker::instance().lerp(color1, color2)
         );
+
+        // Every 200 particles pick new colors
+        if (i % 200 == 0)
+        {
+            hue1 = ColorPicker::instance().generateHue();
+            hue2 = ColorPicker::instance().generateShiftedHue(hue1);
+            color1 = ColorPicker::instance().hsvToRgb(hue1, 0.75f, 1.f);
+            color2 = ColorPicker::instance().hsvToRgb(hue2, 0.75f, 1.f);
+        }
     }
 
     // Grid explosions
@@ -133,8 +147,8 @@ bool PlayerStatus::isGameOver() const
 
 void PlayerStatus::markForKill()
 {
-    // Only set should kill to true if it was not already marked this frame
-    if (!shouldKill)
+    // Only set should kill to true if it was not already marked this frame and is not dead
+    if (!shouldKill && !isDead())
         shouldKill = true;
 }
 
