@@ -177,7 +177,7 @@ void GameRoot::update()
             Enemies::instance().update();
             PlayerShip::instance().update();
             Bullets::instance().update();
-            BlackHoles::instance().update();
+            //BlackHoles::instance().update();
             Collisions::instance().handleEnemyPlayerBullets();
             Collisions::instance().handleBlackHoles();
         }

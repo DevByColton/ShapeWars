@@ -39,7 +39,6 @@ private:
         };
 
         const float maxTimeUntilAct = 1.0;
-        const float halfMaxTimeUntilAct = maxTimeUntilAct / 2.f;
         std::function<void()> behavior;
         sf::Vector2f spriteSizeF {0.0, 0.0};
         sf::Sprite sprite {Art::instance().enemyPlaceholder};

@@ -49,7 +49,7 @@ void Collisions::handleEnemyPlayerBullets()
                         if (p.dot(v) < 0.f)
                         {
                             const sf::Vector2f direction = enemy.getPosition() - bullet.getPosition();
-                            enemy.applyForce(direction * 0.019f);
+                            enemy.applyForce(direction * 0.015f);
                         }
                     }
 

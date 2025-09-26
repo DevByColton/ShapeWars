@@ -75,13 +75,12 @@ void UserInterface::draw()
 {
     // Draw the number of lives in the top left of the screen
     GameRoot::instance().renderWindow.draw(livesText);
-    for (std::size_t i = 0; i < PlayerStatus::instance().lives; i++) {
-
+    for (std::size_t i = 0; i < PlayerStatus::instance().lives; i++)
+    {
         sf::Sprite nextSprite = playerShipSprite;
         sf::Vector2f basePositon = playerShipSprite.getPosition();
         nextSprite.setPosition({ basePositon.x + i * playerShipWidthScaled(), basePositon.y });
         GameRoot::instance().renderWindow.draw(nextSprite);
-
     }
 
     // Draw the score text
