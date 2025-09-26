@@ -16,6 +16,7 @@
 Enemies::Enemies()
 {
     resetEnemyPool();
+    resetSpawnChances();
 }
 
 
@@ -30,6 +31,14 @@ void Enemies::resetEnemyPool()
 
     // The last one in the list terminates
     enemies.at(MAX_ENEMY_COUNT - 1).setNext(nullptr);
+}
+
+
+void Enemies::resetSpawnChances()
+{
+    seekerSpawnChance = 60.f;
+    wandererSpawnChance = 60.f;
+    dodgerSpawnChance = 100.f;
 }
 
 
@@ -51,6 +60,7 @@ Enemies::Enemy::Enemy()
     float x = Art::instance().enemyPlaceholder.getSize().x / 2;
     float y = Art::instance().enemyPlaceholder.getSize().y / 2;
     sprite.setOrigin({x, y});
+    sprite.setColor(sf::Color::White);
 }
 
 
@@ -77,7 +87,7 @@ void Enemies::Enemy::reset()
     {
         const float speed = Particles::instance().randomStartingSpeed(15.0, 1.f, 10.f);
         Particles::instance().create(
-            GameRoot::instance().fps * 3,
+            3.f,
             DontIgnoreGravity,
             Explosion,
             getPosition(),
@@ -86,7 +96,7 @@ void Enemies::Enemy::reset()
         );
     }
 
-    sprite.setColor(sf::Color::Transparent);
+    sprite.setColor(sf::Color::White);
     sprite.setTexture(Art::instance().enemyPlaceholder);
     sprite.setPosition({0.0, 0.0});
     sprite.setRotation(sf::Angle::Zero);
@@ -112,29 +122,40 @@ float Enemies::Enemy::halfHeight() const
 
 bool Enemies::Enemy::canAct()
 {
-    // Update the alpha of the sprite to fade in
-    if (timeUntilAct > 0) {
+    timeUntilAct -= GameRoot::instance().deltaTime;
 
-        timeUntilAct -= GameRoot::instance().deltaTime;
-
-        if (timeUntilAct > 0) {
-            auto a = static_cast<std::uint8_t>(255 * (1.f - timeUntilAct / maxTimeUntilAct));
-            sprite.setColor({255, 255, 255, a});
-            return false;
-        }
-
+    if (timeUntilAct <= 0.f)
+    {
         // Make sure the sprite is fully visible at this point
         sprite.setColor(sf::Color::White);
+        sprite.setScale({1.f, 1.f});
+        isActing = true;
+        return true;
     }
 
-    isActing = true;
-    return true;
-}
+    // Update the spawning animation
+    if (timeUntilAct < halfMaxTimeUntilAct)
+    {
+        // Grow bigger and fade out
+        auto a = static_cast<std::uint8_t>(255 * (1.f - timeUntilAct / halfMaxTimeUntilAct));
+        sprite.setColor({255, 255, 255, a});
+        sprite.setScale({
+            (timeUntilAct + halfMaxTimeUntilAct) * 1.5f,
+            (timeUntilAct + halfMaxTimeUntilAct) * 1.5f
+        });
+    }
+    else
+    {
+        // Now fade back in and bring the scale back down to about 1
+        const auto b = static_cast<std::uint8_t>(255 * (timeUntilAct - halfMaxTimeUntilAct));
+        sprite.setColor({255, 255, 255, b});
+        sprite.setScale({
+            1.5f - (timeUntilAct - halfMaxTimeUntilAct),
+            1.5f - (timeUntilAct - halfMaxTimeUntilAct)
+        });
+    }
 
-
-bool Enemies::Enemy::getShouldKill() const
-{
-    return shouldKill;
+    return false;
 }
 
 
@@ -158,14 +179,12 @@ void Enemies::Enemy::killAddPoints()
 
 void Enemies::killAll()
 {
-    // Reset the spawn chance
-    spawnChance = 60.f;
-
     // Kill all the enemies
     for (int i = 0; i < enemies.size(); i++)
         if (enemies.at(i).isActive)
             enemies.at(i).reset();
 
+    resetSpawnChances();
     resetEnemyPool();
 }
 
@@ -244,7 +263,7 @@ void Enemies::Enemy::activateWanderer()
         velocity += Extensions::fromPolar(direction, speed);
 
         // Just rotate the sprite iteratively
-        sprite.rotate(sf::radians(GameRoot::instance().deltaTime * 5.f));
+        sprite.rotate(sf::radians(0.1f));
 
         // Move the wanderer, and check if it is at the screen bounds
         const sf::Vector2f nextPosition = getPosition() + velocity;
@@ -298,7 +317,7 @@ void Enemies::Enemy::activateDodger()
 
         // Rotation the dodger in the direction of its velocity
         if (velocity.lengthSquared() > 0)
-            sprite.setRotation(sf::radians(std::sin(6.f * GameRoot::instance().totalGameTimeSeconds())));
+            sprite.setRotation(sf::radians(std::sin(6.f * GameRoot::instance().elapsedGameTime)));
 
         velocity *= 0.9f;
         xVelocity = velocity.x;
@@ -312,8 +331,12 @@ void Enemies::Enemy::activateDodger()
 
 void Enemies::checkSpawnSeeker()
 {
-    std::uniform_real_distribution spawnChanceDistribution {0.f, spawnChance};
+    // Decrease the spawn chance every frame, until its about 1 in 15
+    if (seekerSpawnChance > 15.f)
+        seekerSpawnChance -= GameRoot::instance().deltaTime;
 
+    // Roll the dice
+    std::uniform_real_distribution spawnChanceDistribution {0.f, seekerSpawnChance};
     if (static_cast<int>(spawnChanceDistribution(randEngine)) == 0)
     {
         assert(firstAvailable != nullptr);
@@ -331,8 +354,12 @@ void Enemies::checkSpawnSeeker()
 
 void Enemies::checkSpawnWanderer()
 {
-    std::uniform_real_distribution spawnChanceDistribution {0.f, spawnChance};
+    // Decrease the spawn chance every frame, until its about 1 in 20
+    if (wandererSpawnChance > 20.f)
+        wandererSpawnChance -= GameRoot::instance().deltaTime;
 
+    // Roll the dice
+    std::uniform_real_distribution spawnChanceDistribution {0.f, wandererSpawnChance};
     if (static_cast<int>(spawnChanceDistribution(randEngine)) == 0)
     {
         assert(firstAvailable != nullptr);
@@ -350,8 +377,12 @@ void Enemies::checkSpawnWanderer()
 
 void Enemies::checkSpawnDodger()
 {
-    std::uniform_real_distribution spawnChanceDistribution {0.f, spawnChance};
+    // Decrease the spawn chance every frame, until its about 1 in 30
+    if (dodgerSpawnChance > 30.f)
+        dodgerSpawnChance -= GameRoot::instance().deltaTime;
 
+    // Roll the dice
+    std::uniform_real_distribution spawnChanceDistribution {0.f, dodgerSpawnChance};
     if (static_cast<int>(spawnChanceDistribution(randEngine)) == 0)
     {
         assert(firstAvailable != nullptr);
@@ -374,15 +405,10 @@ void Enemies::update()
     checkSpawnWanderer();
     checkSpawnDodger();
 
-    // TODO: Remove this and add individual spawn chances per method
-    // Reduce the spawn chance until it becomes 1 in 20
-    if (spawnChance > 20.0)
-        spawnChance -= GameRoot::instance().deltaTime;
-
     // Update all the enemies and check the kill status
     for (int i = 0; i < MAX_ENEMY_COUNT; i++)
         if (enemies.at(i).isActive)
-            if (enemies.at(i).getShouldKill())
+            if (enemies.at(i).shouldKill)
             {
                 // Kill and reset, then set enemy to the front of the list
                 enemies.at(i).killAddPoints();
@@ -398,8 +424,10 @@ void Enemies::update()
 
 void Enemies::Enemy::update()
 {
-    if (canAct())
+    if (isActing)
         behavior();
+    else
+        canAct();
 }
 
 

@@ -1,23 +1,25 @@
 ﻿#ifndef PLAYERSTATUS_H
 #define PLAYERSTATUS_H
-#include "SFML/Graphics/Color.hpp"
+#include <random>
+#include "SFML/System/Clock.hpp"
 
 
 class PlayerStatus {
 private:
-    const float multiplierMaxTime = 0.8;
+    const int killParticleCount = 1400;
     const int maxMultiplier = 20;
     const int baseScoreForExtraLife = 10'000;
     const int maxLives = 5;
-    const sf::Color explosionWhiteBaseColor {175, 175, 175, 255};
+    const float maxMultiplierTime = 2.f;
+    sf::Clock roundClock {};
+    float respawnTime = 0.f;
+    float multiplierTime = maxMultiplierTime;
     int scoreForExtraLife = baseScoreForExtraLife;
-    float multiplierTimeLeft = 0;
-    float timeUntilRespawn = 0.f;
     bool shouldKill = false;
 
     void kill();
     void loadHighscore();
-    void saveHighscore(int) const;
+    static void saveHighscore(int);
 
 public:
     PlayerStatus();
@@ -34,7 +36,11 @@ public:
     int multiplier = 1;
     bool needTotalReset = false;
     bool needBaseReset = false;
+    float roundTimeSeconds = 0.f;
+    std::default_random_engine randEngine {std::random_device{}()};
 
+    void stopRoundClock();
+    void startRoundClock();
     void markForKill();
     void reset();
     bool isDead() const;

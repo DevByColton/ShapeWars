@@ -44,9 +44,6 @@ UserInterface::UserInterface()
     const sf::FloatRect highscoreHeaderTextRect = highScoreHeaderText.getLocalBounds();
     highScoreHeaderText.setOrigin({ highscoreHeaderTextRect.size.x, highscoreHeaderTextRect.size.y});
     highScoreHeaderText.setPosition({ GameRoot::instance().windowSizeF.x - 22.f, 25.f });
-
-    // Set the fps text to the bottom left of the screen
-    fpsText.setPosition({ 10.f, GameRoot::instance().windowSizeF.y - 30 });
 }
 
 
@@ -59,16 +56,16 @@ float UserInterface::playerShipWidthScaled() const
 
 std::string UserInterface::formattedTime()
 {
-    const int minutesNumber = static_cast<int>(GameRoot::instance().totalGameTimeSeconds()) / 60;
-    const int secondsNumber = static_cast<int>(GameRoot::instance().totalGameTimeSeconds()) % 60;
+    const int minutes = static_cast<int>(PlayerStatus::instance().roundTimeSeconds) / 60;
+    const int seconds = static_cast<int>(PlayerStatus::instance().roundTimeSeconds) % 60;
 
-    std::string timeString {std::to_string(minutesNumber)};
+    std::string timeString {std::to_string(minutes)};
     timeString.append(":");
 
-    if (secondsNumber < 10)
-        timeString.append("0" + std::to_string(secondsNumber));
+    if (seconds < 10)
+        timeString.append("0" + std::to_string(seconds));
     else
-        timeString.append(std::to_string(secondsNumber));
+        timeString.append(std::to_string(seconds));
 
     return timeString;
 }
@@ -119,12 +116,6 @@ void UserInterface::draw()
     multiplierText.setOrigin({highscoreTextRect.size.x, highscoreTextRect.size.y});
     highScoreText.setPosition({ GameRoot::instance().windowSizeF.x - highscoreTextRect.size.x - 22.f, 30.f });
     GameRoot::instance().renderWindow.draw(highScoreText);
-
-    // Draw fps text
-    std::string fpsString {fpsHeaderText};
-    fpsString.append(std::to_string(GameRoot::instance().fps));
-    fpsText.setString(fpsString);
-    GameRoot::instance().renderWindow.draw(fpsText);
 
     // Draw paused text
     if (GameRoot::instance().isPaused)
