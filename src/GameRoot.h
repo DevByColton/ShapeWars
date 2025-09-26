@@ -1,5 +1,6 @@
 ﻿#ifndef GAMEROOT_H
 #define GAMEROOT_H
+#include <chrono>
 #include "SFML/Graphics/RenderWindow.hpp"
 
 
@@ -8,8 +9,17 @@ private:
     GameRoot();
     ~GameRoot() = default;
 
-    sf::Clock deltaTimeClock {};
-    sf::Clock totalGameTimeClock {};
+    bool vsyncEnabled = true;
+    const std::chrono::milliseconds MS_PER_FRAME {16};
+    sf::Clock gameClock {};
+    sf::Clock deltaClock {};
+
+    std::chrono::milliseconds getCurrentTime();
+    void toggleVsync();
+    void togglePause();
+    void processInput();
+    void update();
+    void render();
 
 public:
     static GameRoot &instance() {
@@ -21,21 +31,11 @@ public:
     sf::Vector2f windowSizeF {0.0, 0.0};
     sf::Rect<float> windowRectangle {};
     bool isPaused = false;
+
+    float elapsedGameTime = 0.f;
     float deltaTime = 0.f;
-    int fps = 0;
 
-    // NOTE: Smaller values make it smoother, larger value makes it more responsive
-    const float fpsSmoothingAlpha = 0.25f;
-
-    sf::Vector2<int> size() const;
-    float halfWidth() const;
-    float halfHeight() const;
-    float totalGameTimeSeconds() const;
-    float totalGameTimeMilliseconds() const;
-    void togglePause();
-    void stopTotalGameClock();
-    void restartTotalGameClock();
-    void update();
+    void run();
 };
 
 

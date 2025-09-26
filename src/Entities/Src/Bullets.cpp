@@ -88,7 +88,7 @@ void Bullets::Bullet::blowUp()
 {
     for (int i = 0; i < 30; i++)
         Particles::instance().create(
-            GameRoot::instance().fps,
+            1.f,
             DontIgnoreGravity,
             i % 4 == 0 ? Explosion : Spark,
             sprite.getPosition(),

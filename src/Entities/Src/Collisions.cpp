@@ -49,7 +49,7 @@ void Collisions::handleEnemyPlayerBullets()
                         if (p.dot(v) < 0.f)
                         {
                             const sf::Vector2f direction = enemy.getPosition() - bullet.getPosition();
-                            enemy.applyForce(direction * GameRoot::instance().deltaTime);
+                            enemy.applyForce(direction * 0.019f);
                         }
                     }
 
@@ -91,7 +91,7 @@ void Collisions::handleBlackHoles()
                         sf::Vector2f direction = bullet.getPosition() - blackHole.getPosition();
                         if (direction.lengthSquared() > 1.f)
                         {
-                            direction = direction.normalized() * GameRoot::instance().deltaTime * 105.f;
+                            direction = direction.normalized() * 1.8f;
                             bullet.applyForce(direction);
                         }
 
@@ -110,7 +110,7 @@ void Collisions::handleBlackHoles()
                 // Apply attractive linear force
                 sf::Vector2f direction = blackHole.getPosition() - PlayerShip::instance().getPosition();
                 const float lerpValue = std::lerp(3.f, 0.f, direction.length() / LARGE_PROXIMITY_RADIUS);
-                direction *= lerpValue * GameRoot::instance().deltaTime;
+                direction *= lerpValue * 0.02f;
                 PlayerShip::instance().applyForce(direction);
 
                 // Check collision with player ship

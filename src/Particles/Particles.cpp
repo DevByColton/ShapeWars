@@ -109,7 +109,7 @@ void Particles::Particle::activate(const float duration,
     this->particleType = particleType;
     this->particleSize = particleSize;
     this->duration = duration;
-    percentLife = 1.0;
+    percentLife = 1.f;
     xVelocity = initialVelocity.x;
     yVelocity = initialVelocity.y;
     setPosition(position);
@@ -129,7 +129,7 @@ void Particles::Particle::activate(const float duration,
     this->particleType = particleType;
     this->particleSize = particleSize;
     this->duration = duration;
-    percentLife = 1.0;
+    percentLife = 1.f;
     xVelocity = initialVelocity.x;
     yVelocity = initialVelocity.y;
     setPosition(position);
@@ -221,10 +221,10 @@ bool Particles::Particle::animate()
         scaleX = std::min(std::min(1.f, 0.1f * speed + 0.1f), alpha);
         break;
     case Explosion:
-        scaleX = std::min(std::min(1.f, 0.2f * speed + 0.1f), alpha);
+        scaleX = std::min(std::min(1.f, 0.3f * speed + 0.1f), alpha);
         break;
     case Massive:
-        scaleX = std::min(std::min(1.f, 0.3f * speed + 0.1f), alpha);
+        scaleX = std::min(std::min(1.f, 0.2f * speed + 0.1f), alpha);
         break;
     }
     setScale({scaleX, particleSprite.getScale().y});
@@ -268,7 +268,7 @@ bool Particles::Particle::animate()
     }
 
     // Update the particle life
-    percentLife -= 1.f / duration;
+    percentLife -= GameRoot::instance().deltaTime / duration;
 
     // If the percent life is expired or the velocity is very, very small, reset the particle
     // NOTE: Denormalized floats cause performance issues

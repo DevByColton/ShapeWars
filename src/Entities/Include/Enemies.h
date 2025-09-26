@@ -6,6 +6,8 @@
 #include "../../Content/Include/Art.h"
 #include "../../System/Include/Extensions.h"
 #include "SFML/Graphics/Sprite.hpp"
+#include "SFML/System/Clock.hpp"
+#include "SFML/System/Time.hpp"
 #include "SFML/System/Vector2.hpp"
 
 
@@ -37,7 +39,7 @@ private:
         };
 
         const float maxTimeUntilAct = 1.0;
-        bool shouldKill = false;
+        const float halfMaxTimeUntilAct = maxTimeUntilAct / 2.f;
         std::function<void()> behavior;
         sf::Vector2f spriteSizeF {0.0, 0.0};
         sf::Sprite sprite {Art::instance().enemyPlaceholder};
@@ -49,6 +51,7 @@ private:
         Enemy();
 
         float radius = 0;
+        bool shouldKill = false;
         bool isActive = false;
         bool isActing = false;
         EnemyType enemyType = None;
@@ -64,20 +67,23 @@ private:
         void applyForce(sf::Vector2f);
         void reset();
         bool canAct();
-        bool getShouldKill() const;
         void markForKill();
         void killAddPoints();
         void update();
         void draw() const;
     };
 
-    static constexpr int MAX_ENEMY_COUNT = 10;
+    static constexpr int MAX_ENEMY_COUNT = 200;
     Enemy *firstAvailable {nullptr};
+    float seekerSpawnChance = 60.f;
+    float wandererSpawnChance = 60.f;
+    float dodgerSpawnChance = 100.f;
 
     void checkSpawnSeeker();
     void checkSpawnWanderer();
     void checkSpawnDodger();
     void resetEnemyPool();
+    void resetSpawnChances();
 
 public:
     Enemies();
@@ -91,7 +97,6 @@ public:
 
     std::default_random_engine randEngine {std::random_device{}()};
     std::uniform_real_distribution<float> directionDistribution {0.f, PI * 2 };
-    float spawnChance = 60.f;
 
     void killAll();
     void update();

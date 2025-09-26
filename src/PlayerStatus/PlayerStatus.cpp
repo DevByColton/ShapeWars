@@ -5,12 +5,25 @@
 #include "../Grid/Grid.h"
 #include "../Particles/Particles.h"
 #include "../System/Include/ColorPicker.h"
-#include "../System/Include/RandomVector.h"
+#include "../System/Include/Extensions.h"
 
 
 PlayerStatus::PlayerStatus()
 {
     loadHighscore();
+    roundClock.restart();
+}
+
+
+void PlayerStatus::stopRoundClock()
+{
+    roundClock.stop();
+}
+
+
+void PlayerStatus::startRoundClock()
+{
+    roundClock.start();
 }
 
 
@@ -25,8 +38,8 @@ void PlayerStatus::reset()
     score = 0;
     scoreForExtraLife = baseScoreForExtraLife;
     multiplier = 1;
-    lives = 4;
-    multiplierTimeLeft = 0;
+    multiplierTime = maxMultiplierTime;
+    lives = maxLives - 2;
 }
 
 
@@ -51,7 +64,7 @@ void PlayerStatus::increaseMultiplier()
     if (isDead())
         return;
 
-    multiplierTimeLeft = multiplierMaxTime;
+    multiplierTime = maxMultiplierTime;
 
     if (multiplier < maxMultiplier)
         multiplier += 1;
@@ -61,38 +74,44 @@ void PlayerStatus::increaseMultiplier()
 void PlayerStatus::removeLife()
 {
     lives -= 1;
+    multiplier = 1;
+    multiplierTime = maxMultiplierTime;
     needBaseReset = true;
 
     if (isGameOver())
     {
-        timeUntilRespawn = 5.0;
-        GameRoot::instance().stopTotalGameClock();
+        stopRoundClock();
+        respawnTime = 5.f;
     }
     else
     {
-        timeUntilRespawn = 3.0;
+        respawnTime = 3.f;
     }
 
-    // Add particles for player explosion
+    // Add particles for a grand player explosion!
     float hue1 = ColorPicker::instance().generateHue();
     float hue2 = ColorPicker::instance().generateShiftedHue(hue1);
     sf::Color color1 = ColorPicker::instance().hsvToRgb(hue1, 0.75f, 1.f);
     sf::Color color2 = ColorPicker::instance().hsvToRgb(hue2, 0.75f, 1.f);
+    std::uniform_real_distribution<float> particleStartOffset {0.f, PI / killParticleCount};
+    std::uniform_real_distribution<float> magnitude {2.f, 24.f};
+    const float startOffset = particleStartOffset(randEngine);
 
-    for (int i = 0; i < 1200; i++)
+    for (int i = 0; i < killParticleCount; i++)
     {
-        const float speed = Particles::instance().randomStartingSpeed(22.f, 1.f, 50.f);
+        const sf::Vector2f sprayVelocity = Extensions::fromPolar(PI * 2 * i / killParticleCount + startOffset, magnitude(instance().randEngine));
+        const sf::Vector2f position = PlayerShip::instance().getPosition() + 2.f * sprayVelocity;
         Particles::instance().create(
-            GameRoot::instance().fps * 3,
+            3.f,
             DontIgnoreGravity,
             Massive,
-            PlayerShip::instance().getPosition(),
-            RandomVector::instance().next(speed, speed),
+            position,
+            sprayVelocity,
             ColorPicker::instance().lerp(color1, color2)
         );
 
-        // Every 200 particles pick new colors
-        if (i % 200 == 0)
+        // Every particles pick new colors
+        if (i % 16 == 0)
         {
             hue1 = ColorPicker::instance().generateHue();
             hue2 = ColorPicker::instance().generateShiftedHue(hue1);
@@ -124,7 +143,7 @@ void PlayerStatus::loadHighscore()
 }
 
 
-void PlayerStatus::saveHighscore(const int newHighscore) const
+void PlayerStatus::saveHighscore(const int newHighscore)
 {
     std::ofstream highscoreFile {"Content\\Data\\highscores.txt"};
 
@@ -162,22 +181,29 @@ void PlayerStatus::kill()
 
 bool PlayerStatus::isDead() const
 {
-    return timeUntilRespawn > 0.0;
+    return respawnTime > 0.f;
 }
 
 
 void PlayerStatus::update()
 {
+    // Update the round time seconds
+    roundTimeSeconds = roundClock.getElapsedTime().asSeconds();
+
     if (shouldKill)
         kill();
 
     // Make sure the player is alive
-    if (isDead()) {
-        timeUntilRespawn -= GameRoot::instance().deltaTime;
+    if (isDead())
+    {
+        respawnTime -= GameRoot::instance().deltaTime;
 
         // When the game was over and the long respawn ends
-        if (timeUntilRespawn <= 0 && isGameOver())
+        if (respawnTime <= 0 && isGameOver())
+        {
             needTotalReset = true;
+            roundClock.restart();
+        }
 
         return;
     }
@@ -185,11 +211,11 @@ void PlayerStatus::update()
     // Multiplier updates
     if (multiplier > 1)
     {
-        multiplierTimeLeft -= GameRoot::instance().deltaTime;
+        multiplierTime -= GameRoot::instance().deltaTime;
 
-        if (multiplierTimeLeft <= 0)
+        if (multiplierTime <= 0)
         {
-            multiplierTimeLeft = multiplierMaxTime;
+            multiplierTime = maxMultiplierTime;
             multiplier = 1;
         }
     }

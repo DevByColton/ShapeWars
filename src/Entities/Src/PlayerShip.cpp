@@ -67,13 +67,13 @@ void PlayerShip::createShipExhaust() const
         const Quaternion quaternion = Quaternion::createFromYawPitchRoll(0.f, 0.f, orientation);
         const sf::Vector2f baseVelocity = velocity * -0.5f;
         sf::Vector2f perpendicularVelocity = {baseVelocity.y, -baseVelocity.x};
-        perpendicularVelocity = perpendicularVelocity * (0.6f * std::sin(GameRoot::instance().totalGameTimeSeconds() * 8.f));
+        perpendicularVelocity = perpendicularVelocity * (0.6f * std::sin(GameRoot::instance().elapsedGameTime * 8.f));
         const sf::Vector2f exhaustPosition = getPosition() + Extensions::transform({-25.f, 0.f}, quaternion);
 
         // Center particle stream
         const sf::Vector2f velMid = baseVelocity + RandomVector::instance().next(0.f, 1.f);
         Particles::instance().create(
-            GameRoot::instance().fps * 0.5,
+            0.5f,
             DontIgnoreGravity,
             Spark,
             exhaustPosition,
@@ -84,7 +84,7 @@ void PlayerShip::createShipExhaust() const
 
         // Side particle streams with glow
         Particles::instance().create(
-            GameRoot::instance().fps * 0.5,
+            0.5f,
             DontIgnoreGravity,
             Spark,
             exhaustPosition,
@@ -93,7 +93,7 @@ void PlayerShip::createShipExhaust() const
             deepRed
         );
         Particles::instance().create(
-            GameRoot::instance().fps * 0.5,
+            0.5f,
             DontIgnoreGravity,
             Spark,
             exhaustPosition,

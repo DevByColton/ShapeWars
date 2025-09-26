@@ -40,39 +40,32 @@ void FloatingKillTexts::FloatingKillText::activate(const int amount, const sf::V
 {
     text.setString(std::to_string(amount));
     text.setPosition(position);
-    fadeScale = 0.0;
-    fadeTime = 0.0;
+    fadeScale = 1.f;
+    fadeTime = 1.f;
     isActive = true;
 }
 
 
 bool FloatingKillTexts::FloatingKillText::fadeIn()
 {
-    if (fadeTime < baseFadeTime) {
+    fadeTime -= GameRoot::instance().deltaTime;
 
-        fadeTime += GameRoot::instance().deltaTime;
-        fadeScale += GameRoot::instance().deltaTime;
-
-        if (fadeTime < baseFadeTime) {
-
-            // Fade
-            auto a = static_cast<std::uint8_t>(255 * (1.f - fadeTime / baseFadeTime));
-            text.setFillColor({255, 255, 255, a});
-
-            // Scale
-            auto scale = static_cast<float>(1.10 * (1.f - fadeScale / baseFadeScale));
-            text.setScale({ scale, scale });
-            return false;
-        }
-
-        // Make sure it is not visible at this point
-        text.setFillColor({255, 255, 255, 0});
+    // Check if the text is at full fade, if it is reset it
+    if (fadeTime <= 0.f)
+    {
+        reset();
+        return true;
     }
 
-    // The text is at full fade, reset it
-    reset();
+    // Color
+    auto a = static_cast<std::uint8_t>(255 * fadeTime);
+    text.setFillColor({255, 255, 255, a});
 
-    return true;
+    // Scale
+    auto scale = static_cast<float>(1.10 * fadeTime);
+    text.setScale({ scale, scale });
+
+    return false;
 }
 
 
