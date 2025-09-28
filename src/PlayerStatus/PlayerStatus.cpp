@@ -3,6 +3,7 @@
 #include "../GameRoot.h"
 #include "../Entities/Include/PlayerShip.h"
 #include "../Grid/Grid.h"
+#include "../Logger/Logger.h"
 #include "../Particles/Particles.h"
 #include "../System/Include/ColorPicker.h"
 #include "../System/Include/Extensions.h"
@@ -166,7 +167,6 @@ bool PlayerStatus::isGameOver() const
 
 void PlayerStatus::markForKill()
 {
-    // Only set should kill to true if it was not already marked this frame and is not dead
     if (!shouldKill && !isDead())
         shouldKill = true;
 }

@@ -385,9 +385,12 @@ void Enemies::checkSpawnDodger()
 void Enemies::update()
 {
     // Check spawn of new enemies
-    //checkSpawnSeeker();
-    //checkSpawnWanderer();
-    checkSpawnDodger();
+    if (canSpawn)
+    {
+        checkSpawnSeeker();
+        checkSpawnWanderer();
+        checkSpawnDodger();
+    }
 
     // Update all the enemies and check the kill status
     for (int i = 0; i < MAX_ENEMY_COUNT; i++)

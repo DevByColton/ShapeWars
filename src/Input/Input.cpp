@@ -1,21 +1,18 @@
 ﻿#include "Input.h"
-
 #include "../GameRoot.h"
-#include "../Entities/Include/PlayerShip.h"
-#include "../Logger/Logger.h"
-#include "../System/Include/Extensions.h"
 #include "SFML/Window/Joystick.hpp"
 #include "SFML/Window/Keyboard.hpp"
 #include "SFML/Window/Mouse.hpp"
 
 
-bool Input::isMouseVisible() const {
+bool Input::isMouseVisible() const
+{
     return aimMode == AimMode::Mouse;
 }
 
 
-sf::Vector2f Input::getThumbstickPosition(const sf::Joystick::Axis thumbstickX, const sf::Joystick::Axis thumbstickY) const {
-
+sf::Vector2f Input::getThumbstickPosition(const sf::Joystick::Axis thumbstickX, const sf::Joystick::Axis thumbstickY) const
+{
     sf::Vector2f position {0.0, 0.0};
 
     // Get the positions of the left thumbstick, x and y
@@ -34,12 +31,11 @@ sf::Vector2f Input::getThumbstickPosition(const sf::Joystick::Axis thumbstickX, 
 
     // Vector is un-normalized. Returns a zero vector if the thumbstick is not above dead zone range
     return position;
-
 }
 
 
-sf::Vector2f Input::getMovementDirection() const {
-
+sf::Vector2f Input::getMovementDirection() const
+{
     // Get the left thumbstick position
     sf::Vector2f direction = getThumbstickPosition(sf::Joystick::Axis::X, sf::Joystick::Axis::Y);
 
@@ -58,16 +54,15 @@ sf::Vector2f Input::getMovementDirection() const {
         direction = direction.normalized();
 
     return direction;
-
 }
 
-sf::Vector2f Input::getAimDirection() {
-
+sf::Vector2f Input::getAimDirection(const sf::Vector2f& fromPosition)
+{
     setAimingMode();
-
     sf::Vector2f direction = {0.0, 0.0};
 
-    switch (aimMode) {
+    switch (aimMode)
+    {
         case AimMode::Keyboard:
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Left))
                 direction.x -= 1;
@@ -87,8 +82,8 @@ sf::Vector2f Input::getAimDirection() {
             const float mousePositionX = static_cast<float>(sf::Mouse::getPosition(GameRoot::instance().renderWindow).x);
             const float mousePositionY = static_cast<float>(sf::Mouse::getPosition(GameRoot::instance().renderWindow).y);
 
-            // Set the direction to point from the player to the mouse
-            direction = {mousePositionX - PlayerShip::instance().getPosition().x, mousePositionY - PlayerShip::instance().getPosition().y};
+            // Set the direction to point from the position to the mouse
+            direction = {mousePositionX - fromPosition.x, mousePositionY - fromPosition.y};
     }
 
     // Normalize direction
@@ -96,12 +91,28 @@ sf::Vector2f Input::getAimDirection() {
         direction = direction.normalized();
 
     return direction;
-
 }
 
 
-void Input::setAimingMode() {
+bool Input::isAxisRightTrigger(const sf::Event::JoystickMoved* joystickMoved) const
+{
+    // Todo: Parse controller mappings to check different axis for right trigger
+    const bool isRightTrigger = joystickMoved->axis == sf::Joystick::Axis::Z;
 
+    return isRightTrigger;
+}
+
+
+bool Input::wasRightTriggerReleased(const sf::Event::JoystickMoved* joystickMoved)
+{
+    previousRightTriggerPressed = currentRightTriggerPressed;
+    currentRightTriggerPressed = joystickMoved->position < -triggerDeadZone;
+    return previousRightTriggerPressed != currentRightTriggerPressed && !currentRightTriggerPressed;
+}
+
+
+void Input::setAimingMode()
+{
     // Check the current aiming mode
     const sf::Vector2f thumbstickPosition = getThumbstickPosition(sf::Joystick::Axis::U, sf::Joystick::Axis::V);
     const bool usingThumbstickToAim = thumbstickPosition.x != 0 || thumbstickPosition.y != 0;
@@ -119,11 +130,17 @@ void Input::setAimingMode() {
         aimMode = AimMode::Keyboard;
     else if (currentMousePosition != previousMousePosition)
         aimMode = AimMode::Mouse;
-
 }
 
-void Input::updateMousePosition() {
 
+void Input::update()
+{
+    updateMousePosition();
+}
+
+
+void Input::updateMousePosition()
+{
     // Set the previous mouse position
     previousMousePosition = currentMousePosition;
 
@@ -133,11 +150,11 @@ void Input::updateMousePosition() {
 
     currentMousePosition = {mousePositionX, mousePositionY};
     mouseCursor.setPosition(previousMousePosition);
-
 }
 
 
-void Input::draw() const {
+void Input::draw() const
+{
     if (isMouseVisible())
         GameRoot::instance().renderWindow.draw(mouseCursor);
 }

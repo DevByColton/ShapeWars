@@ -61,6 +61,13 @@ void GaussianBlur::drawToBase(const sf::Sprite &sprite)
 }
 
 
+void GaussianBlur::drawToBase(const sf::Shape &shape)
+{
+    baseTexture.draw(shape);
+    baseTexture.display();
+}
+
+
 void GaussianBlur::drawToBase(const std::vector<sf::Vertex> &lines)
 {
     baseTexture.draw(lines.data(), lines.size(), sf::PrimitiveType::Lines);

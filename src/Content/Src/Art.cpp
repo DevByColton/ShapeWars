@@ -4,9 +4,13 @@
 
 Art::Art()
 {
-    try {
+    try
+    {
         player = sf::Texture("Content\\Images\\Player.png");
         player.setSmooth(true);
+
+        nuke = sf::Texture("Content\\Images\\Nuke.png");
+        nuke.setSmooth(true);
 
         seeker = sf::Texture("Content\\Images\\Seeker.png");
         seeker.setSmooth(true);
@@ -38,7 +42,9 @@ Art::Art()
         font = sf::Font("Content\\Font\\TurretRoad-Regular.ttf");
         font.setSmooth(true);
 
-    } catch (sf::Exception &ex) {
+    }
+    catch (sf::Exception &ex)
+    {
         Logger::printError(ex.what());
     }
 }

@@ -92,8 +92,8 @@ public:
         return *instance;
     }
 
+    bool canSpawn = true;
     std::array<Enemy, MAX_ENEMY_COUNT> enemies {};
-
     std::default_random_engine randEngine {std::random_device{}()};
     std::uniform_real_distribution<float> directionDistribution {0.f, PI * 2 };
 

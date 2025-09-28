@@ -89,17 +89,20 @@ bool BlackHoles::BlackHole::getWasHit() const
 }
 
 
-void BlackHoles::BlackHole::markHit()
+void BlackHoles::BlackHole::markHit(const bool wasKillShot)
 {
     // Only mark was hit if not already hit this frame
     if (!wasHit)
+    {
         wasHit = true;
+        this->wasKillShot = wasKillShot;
+    }
 }
 
 
 bool BlackHoles::BlackHole::hit()
 {
-    hitPoints -= 1;
+    hitPoints -= wasKillShot ? hitPoints : 1;
     wasHit = false;
 
     std::uniform_real_distribution<float> particleStartOffset {0.f, PI / hitParticleCount};
@@ -116,7 +119,7 @@ bool BlackHoles::BlackHole::hit()
             Explosion,
             position,
             sprayVelocity,
-            i % 2 == 0 ? particleSprayColor : hitColor
+            i % 2 == 0 ? hitParticleColorPrimary : hitParticleColorSecondary
         );
     }
 
@@ -169,7 +172,7 @@ void BlackHoles::resetAll()
 void BlackHoles::update()
 {
     // Check spawn chance
-    if (spawnDistribution(randEngine) == 0)
+    if (canSpawn && spawnDistribution(randEngine) == 0)
         spawnBlackHole();
 
     // Update all the black holes and check hit status

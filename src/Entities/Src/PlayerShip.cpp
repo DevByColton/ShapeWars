@@ -119,7 +119,7 @@ void PlayerShip::update()
         sprite.setRotation(sf::radians(Extensions::toAngle(velocity)));
 
     // Check aiming direction and fire bullets
-    const sf::Vector2f aimDirection = Input::instance().getAimDirection();
+    const sf::Vector2f aimDirection = Input::instance().getAimDirection(getPosition());
     if (aimDirection.lengthSquared() > 0 && spawnBulletCooldownRemaining <= 0) {
         // Reset fire bullets cooldown
         spawnBulletCooldownRemaining = spawnBulletCooldownFrames;
