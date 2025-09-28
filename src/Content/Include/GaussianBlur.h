@@ -1,6 +1,7 @@
 ﻿#ifndef GAUSSIANBLUR_H
 #define GAUSSIANBLUR_H
 #include "../../GameRoot.h"
+#include "SFML/Graphics/CircleShape.hpp"
 #include "SFML/Graphics/RenderTexture.hpp"
 #include "SFML/Graphics/Shader.hpp"
 #include "SFML/Graphics/Sprite.hpp"
@@ -35,6 +36,7 @@ public:
     void toggleGaussianBlur();
     void clearTextures();
     void drawToBase(const sf::Sprite&);
+    void drawToBase(const sf::Shape&);
     void drawToBase(const std::vector<sf::Vertex>&);
     void drawToScreen();
 };

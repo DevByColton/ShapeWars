@@ -21,10 +21,12 @@ private:
             BlackHole *next {nullptr};
         };
 
+        bool wasKillShot = false;
         bool wasHit = false;
         sf::Sprite sprite {Art::instance().blackHole};
         sf::Color particleSprayColor {115, 255, 173, 255};
-        sf::Color hitColor {255, 124, 115, 255};
+        sf::Color hitParticleColorPrimary {119, 115, 255, 255};
+        sf::Color hitParticleColorSecondary {255, 231, 115, 255};
         const int hitParticleCount = 150;
 
     public:
@@ -44,7 +46,7 @@ private:
         void activate();
         void reset();
         bool getWasHit() const;
-        void markHit();
+        void markHit(bool wasKillShot);
         bool hit();
         void kill(bool);
         void update();
@@ -67,6 +69,7 @@ public:
         return *instance;
     }
 
+    bool canSpawn = true;
     static constexpr int MAX_BLACK_HOLE_COUNT = 4;
     std::array<BlackHole, MAX_BLACK_HOLE_COUNT> blackHoles {};
 

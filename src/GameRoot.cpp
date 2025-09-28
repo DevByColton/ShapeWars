@@ -7,6 +7,7 @@
 #include "Entities/Include/Bullets.h"
 #include "Entities/Include/Collisions.h"
 #include "Entities/Include/Enemies.h"
+#include "Entities/Include/Nukes.h"
 #include "Entities/Include/PlayerShip.h"
 #include "Grid/Grid.h"
 #include "Input/Input.h"
@@ -41,8 +42,12 @@ GameRoot::GameRoot()
     // Set the screen size in float for easy maths
     windowSizeF = {static_cast<float>(width), static_cast<float>(height)};
     windowRectangle = {{0.0, 0.0}, {windowSizeF.x, windowSizeF.y}};
+    topLeftCorner = {windowRectangle.position.x, windowRectangle.position.y};
+    topRightCorner = {windowRectangle.size.x, windowRectangle.position.y};
+    bottomRightCorner = {windowRectangle.size.x, windowRectangle.size.y};
+    bottomLeftCorner = {windowRectangle.position.x, windowRectangle.size.y};
 
-    Logger::printOut(
+     Logger::printOut(
         "Created fullscreen window with size " + std::to_string(width) +
         " x " + std::to_string(height) + " and " +
         std::to_string(bitsPerPixel) + " bits per pixel"
@@ -105,66 +110,119 @@ void GameRoot::run()
 
 void GameRoot::processInput()
 {
+    // Event polling and handling
     while (const std::optional event = renderWindow.pollEvent())
     {
-        if (event->is<sf::Event::Closed>())
-            renderWindow.close();
-
         // if (event->is<sf::Event::FocusLost>())
         //     isPaused = true;
 
+        if (event->is<sf::Event::Closed>())
+            renderWindow.close();
+
+        // Keyboard pressed events (these are hold events)
         if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>())
-        {
-            switch (keyPressed->scancode)
-            {
-            case sf::Keyboard::Scancode::Escape:
-                renderWindow.close();
-                break;
+            processKeyPressed(keyPressed);
 
-            case sf::Keyboard::Scancode::K:
-                PlayerStatus::instance().markForKill();
-                break;
+        // Keyboard released events (these are single press events that trigger on release)
+        if (const auto* keyReleased = event->getIf<sf::Event::KeyReleased>())
+            processKeyReleased(keyReleased);
 
-            case sf::Keyboard::Scancode::P:
-                togglePause();
-                break;
-
-            case sf::Keyboard::Scancode::O:
-                Sound::instance().togglePlaySounds();
-                break;
-
-            case sf::Keyboard::Scancode::B:
-                GaussianBlur::instance().toggleGaussianBlur();
-                break;
-
-            case sf::Keyboard::Scancode::V:
-                toggleVsync();
-                break;
-
-                // Just to get clion to stop complaining about missing cases
-            default:
-                break;
-            }
-
-        }
-
-        // Button pressed events
+        // Joystick buttons pressed events (these are hold events)
         if (const auto* joystickButtonPressed = event->getIf<sf::Event::JoystickButtonPressed>())
-        {
-            if (joystickButtonPressed->button == 6)
-                renderWindow.close();
+            processJoystickButtonPressed(joystickButtonPressed);
 
-            if (joystickButtonPressed->button == 7)
-                togglePause();
-        }
+        // Joystick buttons released events (these are single press events that trigger on release)
+        if (const auto* joystickButtonReleased = event->getIf<sf::Event::JoystickButtonReleased>())
+            processJoystickButtonReleased(joystickButtonReleased);
+
+        // Joystick axis moved event
+        if (const auto* joystickMoved = event->getIf<sf::Event::JoystickMoved>())
+            processJoystickAxisMoved(joystickMoved);
+
+        if (const auto* joystickConnected = event->getIf<sf::Event::JoystickConnected>())
+            Logger::printOut("joystick connected: " + std::to_string(joystickConnected->joystickId));
+
+        if (const auto* joystickDisconnected = event->getIf<sf::Event::JoystickDisconnected>())
+            Logger::printOut("joystick disconnected: " + std::to_string(joystickDisconnected->joystickId));
     }
 
-    // NOTE: Key pressed and button pushed events should eventually just be passed the input handler to be processed
-    Input::instance().updateMousePosition();
+    Input::instance().update();
 }
 
 
-void GameRoot::update()
+void GameRoot::processKeyPressed(const sf::Event::KeyPressed* keyPressed)
+{
+    // No hold event implements currently
+}
+
+
+void GameRoot::processKeyReleased(const sf::Event::KeyReleased* keyReleased)
+{
+    switch (keyReleased->scancode)
+    {
+    case sf::Keyboard::Scancode::Escape:
+        renderWindow.close();
+        break;
+
+    case sf::Keyboard::Scancode::K:
+        PlayerStatus::instance().markForKill();
+        break;
+
+    case sf::Keyboard::Scancode::Space:
+        Nukes::instance().markDetonate(PlayerShip::instance().getPosition());
+        break;
+
+    case sf::Keyboard::Scancode::P:
+        togglePause();
+        break;
+
+    case sf::Keyboard::Scancode::O:
+        Sound::instance().togglePlaySounds();
+        break;
+
+    case sf::Keyboard::Scancode::B:
+        GaussianBlur::instance().toggleGaussianBlur();
+        break;
+
+    case sf::Keyboard::Scancode::V:
+        toggleVsync();
+        break;
+
+    default:
+        // Just to get clion to stop complaining about missing cases
+        break;
+    }
+}
+
+
+void GameRoot::processJoystickButtonPressed(const sf::Event::JoystickButtonPressed* joystickButtonPressed)
+{
+    // No hold events implemented currently
+}
+
+
+void GameRoot::processJoystickButtonReleased(const sf::Event::JoystickButtonReleased* joystickButtonReleased)
+{
+    if (joystickButtonReleased->button == 6)
+        renderWindow.close();
+
+    if (joystickButtonReleased->button == 7)
+        togglePause();
+}
+
+
+void GameRoot::processJoystickAxisMoved(const sf::Event::JoystickMoved* joystickMoved)
+{
+    if (Input::instance().isAxisRightTrigger(joystickMoved) && Input::instance().wasRightTriggerReleased(joystickMoved))
+    {
+        Nukes::instance().markDetonate(PlayerShip::instance().getPosition());
+        Enemies::instance().canSpawn = false;
+        BlackHoles::instance().canSpawn = false;
+    }
+}
+
+
+void GameRoot::update() const
 {
     if (!isPaused)
     {
@@ -174,6 +232,12 @@ void GameRoot::update()
         // When the player is alive
         if (!PlayerStatus::instance().isDead())
         {
+            if (Nukes::instance().update())
+            {
+                Enemies::instance().canSpawn = true;
+                BlackHoles::instance().canSpawn = true;
+            }
+
             Enemies::instance().update();
             PlayerShip::instance().update();
             Bullets::instance().update();
@@ -196,6 +260,7 @@ void GameRoot::update()
         {
             PlayerStatus::instance().reset();
             PlayerShip::instance().centerPlayer();
+            Nukes::instance().resetNukeCount();
             PlayerStatus::instance().needTotalReset = false;
         }
 
@@ -215,6 +280,7 @@ void GameRoot::render()
     GaussianBlur::instance().clearTextures();
     Grid::instance().draw();
     Particles::instance().draw();
+    Nukes::instance().draw();
     Enemies::instance().draw();
     BlackHoles::instance().draw();
     Bullets::instance().draw();

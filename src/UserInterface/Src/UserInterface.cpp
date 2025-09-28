@@ -2,30 +2,37 @@
 #include <string>
 #include "../Include/UserInterface.h"
 #include "../../GameRoot.h"
+#include "../../Entities/Include/Nukes.h"
 #include "../../PlayerStatus/PlayerStatus.h"
 #include "../../System/Include/Extensions.h"
 
 
 UserInterface::UserInterface()
 {
-    // Set the player ship sprite properties for lives counter
-    livesText.setPosition({ 25.f, 10.f });
-    float originX = playerShipSprite.getTexture().getSize().x / 2;
-    float originY = playerShipSprite.getTexture().getSize().y / 2;
-    playerShipSprite.setOrigin({originX, originY});
+    // Set the player ship sprite properties for lives counter, and nukes
+    livesAndNukesText.setPosition({ 25.f, 10.f });
+    playerShipSprite.setOrigin({
+        playerShipSprite.getTexture().getSize().x / 2.f,
+        playerShipSprite.getTexture().getSize().y / 2.f
+    });
     playerShipSprite.setPosition({40.f, 62.f});
     playerShipSprite.setScale({0.75f, 0.75f});
     playerShipSprite.setRotation(sf::radians(-PI / 2));
+    nukeSprite.setOrigin({
+        nukeSprite.getTexture().getSize().x / 2.f,
+        nukeSprite.getTexture().getSize().y / 2.f
+    });
+    nukeSprite.setPosition({40.f, 107.f});
+    nukeSprite.setScale({0.75f, 0.75f});
 
     // Set the score to be in the top middle of the screen
-    float scoreTextX = GameRoot::instance().windowSizeF.x / 2;
-    scoreText.setPosition({scoreTextX, 28.f});
+    scoreText.setPosition({GameRoot::instance().windowSizeF.x / 2.f, 28.f});
 
     // Set the multiplier text to be in the right top of the window
-    const sf::FloatRect multiplierHeaderTextRect = multiplierHeaderText.getLocalBounds();
-    float multiplierOriginHeaderTextX = multiplierHeaderTextRect.size.x / 2.f;
-    float multiplierOriginHeaderTextY = multiplierHeaderTextRect.size.y / 2.f;
-    multiplierHeaderText.setOrigin({multiplierOriginHeaderTextX, multiplierOriginHeaderTextY});
+    multiplierHeaderText.setOrigin({
+        multiplierHeaderText.getLocalBounds().size.x / 2.f,
+        multiplierHeaderText.getLocalBounds().size.y / 2.f
+    });
     multiplierHeaderText.setPosition({ scoreText.getPosition().x, scoreText.getPosition().y + 60.f });
     multiplierText.setPosition({ multiplierHeaderText.getPosition().x + 40.f, multiplierHeaderText.getPosition().y });
 
@@ -41,16 +48,8 @@ UserInterface::UserInterface()
     gameOverText.setPosition({GameRoot::instance().windowSizeF.x / 2.f, GameRoot::instance().windowSizeF.y / 2.f});
 
     // Set the highscore text to be in the top right of the window, right aligned
-    const sf::FloatRect highscoreHeaderTextRect = highScoreHeaderText.getLocalBounds();
-    highScoreHeaderText.setOrigin({ highscoreHeaderTextRect.size.x, highscoreHeaderTextRect.size.y});
+    highScoreHeaderText.setOrigin({ highScoreHeaderText.getLocalBounds().size.x, highScoreHeaderText.getLocalBounds().size.y});
     highScoreHeaderText.setPosition({ GameRoot::instance().windowSizeF.x - 22.f, 25.f });
-}
-
-
-float UserInterface::playerShipWidthScaled() const
-{
-    const float widthWithPadding = playerShipSprite.getTexture().getSize().x + 16;
-    return widthWithPadding * playerShipSprite.getScale().x;
 }
 
 
@@ -73,15 +72,19 @@ std::string UserInterface::formattedTime()
 
 void UserInterface::draw()
 {
-    // Draw the number of lives in the top left of the screen
-    GameRoot::instance().renderWindow.draw(livesText);
-    for (std::size_t i = 0; i < PlayerStatus::instance().lives; i++) {
-
+    // Draw the number of lives and nukes in the top left of the screen
+    GameRoot::instance().renderWindow.draw(livesAndNukesText);
+    for (int i = 0; i < PlayerStatus::instance().lives; i++)
+    {
         sf::Sprite nextSprite = playerShipSprite;
-        sf::Vector2f basePositon = playerShipSprite.getPosition();
-        nextSprite.setPosition({ basePositon.x + i * playerShipWidthScaled(), basePositon.y });
+        nextSprite.setPosition({ nextSprite.getPosition().x * i + 45, nextSprite.getPosition().y });
         GameRoot::instance().renderWindow.draw(nextSprite);
-
+    }
+    for (int i = 0; i < Nukes::instance().count; i++)
+    {
+        sf::Sprite nextSprite = nukeSprite;
+        nextSprite.setPosition({ nextSprite.getPosition().x * i + 45, nextSprite.getPosition().y });
+        GameRoot::instance().renderWindow.draw(nextSprite);
     }
 
     // Draw the score text

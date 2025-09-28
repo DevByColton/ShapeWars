@@ -134,26 +134,9 @@ bool Enemies::Enemy::canAct()
     }
 
     // Update the spawning animation
-    if (timeUntilAct < halfMaxTimeUntilAct)
-    {
-        // Grow bigger and fade out
-        auto a = static_cast<std::uint8_t>(255 * (1.f - timeUntilAct / halfMaxTimeUntilAct));
-        sprite.setColor({255, 255, 255, a});
-        sprite.setScale({
-            (timeUntilAct + halfMaxTimeUntilAct) * 1.5f,
-            (timeUntilAct + halfMaxTimeUntilAct) * 1.5f
-        });
-    }
-    else
-    {
-        // Now fade back in and bring the scale back down to about 1
-        const auto b = static_cast<std::uint8_t>(255 * (timeUntilAct - halfMaxTimeUntilAct));
-        sprite.setColor({255, 255, 255, b});
-        sprite.setScale({
-            1.5f - (timeUntilAct - halfMaxTimeUntilAct),
-            1.5f - (timeUntilAct - halfMaxTimeUntilAct)
-        });
-    }
+    const auto alpha = static_cast<std::uint8_t>(255 * (1.f - timeUntilAct));
+    sprite.setColor({255, 255, 255, alpha});
+    sprite.setScale({1.f - timeUntilAct, 1.f - timeUntilAct});
 
     return false;
 }
@@ -297,7 +280,7 @@ void Enemies::Enemy::activateDodger()
     sprite.setPosition(SpawnHelper::instance().createSpawnPosition());
     radius = 20;
     timeUntilAct = maxTimeUntilAct;
-    speed = 1.f;
+    speed = 0.8f;
     pointValue = 7;
     xVelocity = 0.0;
     yVelocity = 0.0;
@@ -315,9 +298,10 @@ void Enemies::Enemy::activateDodger()
         float clampedY = std::clamp(nextPosition.y, halfHeight(), GameRoot::instance().windowSizeF.y - halfHeight());
         sprite.setPosition({clampedX, clampedY});
 
-        // Rotation the dodger in the direction of its velocity
-        if (velocity.lengthSquared() > 0)
-            sprite.setRotation(sf::radians(std::sin(6.f * GameRoot::instance().elapsedGameTime)));
+        // Update the scale so the dodgers pulse slightly
+        float scaleX = 1.f + 0.1f * std::cos(7.f * GameRoot::instance().elapsedGameTime);
+        float scaleY = 1.f + 0.1f * std::sin(12.f * GameRoot::instance().elapsedGameTime);
+        sprite.setScale({scaleX, scaleY});
 
         velocity *= 0.9f;
         xVelocity = velocity.x;
@@ -401,9 +385,12 @@ void Enemies::checkSpawnDodger()
 void Enemies::update()
 {
     // Check spawn of new enemies
-    checkSpawnSeeker();
-    checkSpawnWanderer();
-    checkSpawnDodger();
+    if (canSpawn)
+    {
+        checkSpawnSeeker();
+        checkSpawnWanderer();
+        checkSpawnDodger();
+    }
 
     // Update all the enemies and check the kill status
     for (int i = 0; i < MAX_ENEMY_COUNT; i++)
@@ -441,6 +428,23 @@ void Enemies::draw() const
 void Enemies::Enemy::draw() const
 {
     if (isActive)
+    {
+        // Draw an extra sprite for a spawning animation
+        if (timeUntilAct > 0.f)
+        {
+            const auto alpha = static_cast<std::uint8_t>(255 - 255 * (1.f - timeUntilAct));
+            sf::Sprite animatedSprite {sprite.getTexture()};
+            animatedSprite.setPosition(sprite.getPosition());
+            animatedSprite.setOrigin(sprite.getOrigin());
+            animatedSprite.setColor({255, 255, 255, alpha});
+            animatedSprite.setScale({
+                (1.f - timeUntilAct) * 2.f,
+                (1.f - timeUntilAct) * 2.f
+            });
+            GaussianBlur::instance().drawToBase(animatedSprite);
+        }
+
         GaussianBlur::instance().drawToBase(sprite);
+    }
 }
 

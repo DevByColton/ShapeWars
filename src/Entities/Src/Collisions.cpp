@@ -1,12 +1,11 @@
 ﻿#include <cmath>
 #include "../Include/Collisions.h"
-#include "../../GameRoot.h"
-#include "../../Logger/Logger.h"
 #include "../../PlayerStatus/PlayerStatus.h"
 #include "../../System/Include/Extensions.h"
 #include "../Include/BlackHoles.h"
 #include "../Include/Bullets.h"
 #include "../Include/Enemies.h"
+#include "../Include/Nukes.h"
 #include "../Include/PlayerShip.h"
 
 
@@ -25,9 +24,16 @@ void Collisions::handleEnemyPlayerBullets()
     for (int i = 0; i < enemies.size(); i++)
     {
         // Check enemies
-        if (auto &enemy = enemies.at(i); enemy.isActive && enemy.isActing)
+        if (auto &enemy = enemies.at(i); (enemy.isActive && enemy.isActing) || (enemy.isActive && Nukes::instance().isDetonating))
         {
-            // Check other enemies
+            // Check nuke if active
+            if (Nukes::instance().isDetonating && isColliding(enemy.radius + Nukes::instance().radius, enemy.getPosition(), Nukes::instance().getPosition()))
+            {
+                enemy.markForKill();
+                continue;
+            }
+
+            // Check other enemies to push each other apart
             for (int j = i + 1; j < enemies.size(); j++)
                 if (auto &enemy2 = enemies.at(j); enemy2.isActive)
                     if (isColliding(enemy.radius + enemy2.radius, enemy.getPosition(), enemy2.getPosition())) {
@@ -49,7 +55,7 @@ void Collisions::handleEnemyPlayerBullets()
                         if (p.dot(v) < 0.f)
                         {
                             const sf::Vector2f direction = enemy.getPosition() - bullet.getPosition();
-                            enemy.applyForce(direction * 0.019f);
+                            enemy.applyForce(direction * 0.015f);
                         }
                     }
 
@@ -57,6 +63,7 @@ void Collisions::handleEnemyPlayerBullets()
                     if (isColliding(bullet.radius + enemy.radius, bullet.getPosition(), enemy.getPosition())) {
                         enemy.markForKill();
                         bullet.markForBlowUp();
+                        break;
                     }
                 }
 
@@ -79,6 +86,13 @@ void Collisions::handleBlackHoles()
     for (int bh = 0; bh < blackHoles.size(); bh++)
         if (auto &blackHole = blackHoles.at(bh); blackHole.isActive)
         {
+            // Check nuke if active
+            if (Nukes::instance().isDetonating && isColliding(blackHole.radius + Nukes::instance().radius, blackHole.getPosition(), Nukes::instance().getPosition()))
+            {
+                blackHole.markHit(true);
+                continue;
+            }
+
             // Check bullets
             for (int b = 0; b < bullets.size(); b++)
             {
@@ -97,7 +111,7 @@ void Collisions::handleBlackHoles()
 
                         if (isColliding(bullet.radius + blackHole.radius, bullet.getPosition(), blackHole.getPosition()))
                         {
-                            blackHole.markHit();
+                            blackHole.markHit(false);
                             bullet.markForBlowUp();
                         }
                     }
@@ -116,7 +130,7 @@ void Collisions::handleBlackHoles()
                 // Check collision with player ship
                 if (isColliding(PlayerShip::instance().radius + blackHole.radius, PlayerShip::instance().getPosition(), blackHole.getPosition()))
                 {
-                    blackHole.markHit();
+                    blackHole.markHit(false);
                     PlayerStatus::instance().markForKill();
                 }
             }

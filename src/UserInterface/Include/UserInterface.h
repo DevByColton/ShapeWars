@@ -10,8 +10,9 @@ private:
     ~UserInterface() = default;
 
     sf::Sprite playerShipSprite {Art::instance().player};
+    sf::Sprite nukeSprite {Art::instance().nuke};
     sf::Text pausedText {Art::instance().font, {"== [ paused ] =="}, 72};
-    sf::Text livesText {Art::instance().font, {"== [ lives ] =="}, 30};
+    sf::Text livesAndNukesText {Art::instance().font, {"== [ lives | nukes ] =="}, 30};
     sf::Text scoreText {Art::instance().font, {}, 60};
     sf::Text multiplierHeaderText {Art::instance().font, {"mult x "}, 20};
     sf::Text multiplierText {Art::instance().font, {}, 20};
@@ -20,7 +21,6 @@ private:
     sf::Text highScoreText {Art::instance().font, {}, 30};
     sf::Text gameOverText {Art::instance().font, {}, 60};
 
-    float playerShipWidthScaled() const;
     std::string formattedTime();
 
 public:

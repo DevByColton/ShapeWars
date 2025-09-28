@@ -14,12 +14,17 @@ private:
     sf::Clock gameClock {};
     sf::Clock deltaClock {};
 
-    std::chrono::milliseconds getCurrentTime();
     void toggleVsync();
     void togglePause();
+    void processKeyPressed(const sf::Event::KeyPressed* keyPressed);
+    void processKeyReleased(const sf::Event::KeyReleased* keyReleased);
+    void processJoystickButtonPressed(const sf::Event::JoystickButtonPressed* joystickButtonPressed);
+    void processJoystickButtonReleased(const sf::Event::JoystickButtonReleased* joystickButtonReleased);
+    void processJoystickAxisMoved(const sf::Event::JoystickMoved* joystickMoved);
     void processInput();
-    void update();
+    void update() const;
     void render();
+    std::chrono::milliseconds getCurrentTime();
 
 public:
     static GameRoot &instance() {
@@ -27,13 +32,16 @@ public:
         return *instance;
     }
 
-    sf::RenderWindow renderWindow {};
-    sf::Vector2f windowSizeF {0.0, 0.0};
-    sf::Rect<float> windowRectangle {};
-    bool isPaused = false;
-
     float elapsedGameTime = 0.f;
     float deltaTime = 0.f;
+    bool isPaused = false;
+    sf::RenderWindow renderWindow {};
+    sf::Rect<float> windowRectangle {};
+    sf::Vector2f windowSizeF {0.f, 0.f};
+    sf::Vector2f topLeftCorner {0.f, 0.f};
+    sf::Vector2f topRightCorner {0.f, 0.f};
+    sf::Vector2f bottomRightCorner {0.f, 0.f};
+    sf::Vector2f bottomLeftCorner {0.f, 0.f};
 
     void run();
 };

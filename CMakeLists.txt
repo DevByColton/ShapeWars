@@ -57,6 +57,8 @@ add_executable(ShapeWars src/main.cpp
         src/Grid/Grid.cpp
         src/Grid/Grid.h
         src/System/Src/Extensions.cpp
+        src/Entities/Src/Nukes.cpp
+        src/Entities/Include/Nukes.h
 )
 
 target_compile_features(ShapeWars PRIVATE cxx_std_20)

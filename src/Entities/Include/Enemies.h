@@ -39,7 +39,6 @@ private:
         };
 
         const float maxTimeUntilAct = 1.0;
-        const float halfMaxTimeUntilAct = maxTimeUntilAct / 2.f;
         std::function<void()> behavior;
         sf::Vector2f spriteSizeF {0.0, 0.0};
         sf::Sprite sprite {Art::instance().enemyPlaceholder};
@@ -93,8 +92,8 @@ public:
         return *instance;
     }
 
+    bool canSpawn = true;
     std::array<Enemy, MAX_ENEMY_COUNT> enemies {};
-
     std::default_random_engine randEngine {std::random_device{}()};
     std::uniform_real_distribution<float> directionDistribution {0.f, PI * 2 };
 

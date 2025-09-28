@@ -14,6 +14,7 @@ struct Art {
     }
 
     sf::Texture player;
+    sf::Texture nuke;
     sf::Texture seeker;
     sf::Texture wanderer;
     sf::Texture dodger;
