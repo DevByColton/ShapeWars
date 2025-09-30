@@ -54,13 +54,15 @@ void Enemies::Enemy::setNext(Enemy *next)
 }
 
 
-Enemies::Enemy::Enemy()
+void Enemies::Enemy::setLeading(Enemy* leading)
 {
-    // Set the sprite origin to the middle of the sprite. All enemies are the same size
-    float x = Art::instance().enemyPlaceholder.getSize().x / 2;
-    float y = Art::instance().enemyPlaceholder.getSize().y / 2;
-    sprite.setOrigin({x, y});
-    sprite.setColor(sf::Color::White);
+    this->leading = leading;
+}
+
+
+void Enemies::Enemy::setTrailing(Enemy* trailing)
+{
+    this->trailing = trailing;
 }
 
 
@@ -70,30 +72,53 @@ sf::Vector2f Enemies::Enemy::getPosition() const
 }
 
 
-sf::Vector2f Enemies::Enemy::getVelocity() const
+sf::Vector2f Enemies::Enemy::getCurrentVelocity() const
 {
     return {xVelocity, yVelocity};
 }
 
 
+sf::Vector2f Enemies::Enemy::getTurnVelocity() const
+{
+    return {turnXVelocity, turnYVelocity};
+}
+
+
+bool Enemies::Enemy::isSnakeType() const
+{
+    return enemyType == SnakeHead || enemyType == SnakeBody || enemyType == SnakeTail;
+}
+
+
+bool Enemies::Enemy::isSnakeBody() const
+{
+    return enemyType == SnakeBody || enemyType == SnakeTail;
+}
+
+
 void Enemies::Enemy::reset()
 {
-    const float hue1 = ColorPicker::instance().generateHue();
-    const float hue2 = ColorPicker::instance().generateShiftedHue(hue1);
-    const sf::Color color1 = ColorPicker::instance().hsvToRgb(hue1, 0.5f, 1.f);
-    const sf::Color color2 = ColorPicker::instance().hsvToRgb(hue2, 0.5f, 1.f);
-
-    for (int i = 0; i < 120; i++)
+    // Don't spawn particles if the enemy was not fully spawned
+    // This case happens if the player dies during a spawn animation
+    if (isActing)
     {
-        const float speed = Particles::instance().randomStartingSpeed(15.0, 1.f, 10.f);
-        Particles::instance().create(
-            3.f,
-            DontIgnoreGravity,
-            Explosion,
-            getPosition(),
-            RandomVector::instance().next(speed, speed),
-            ColorPicker::instance().lerp(color1, color2)
-        );
+        const float hue1 = ColorPicker::instance().generateHue();
+        const float hue2 = ColorPicker::instance().generateShiftedHue(hue1);
+        const sf::Color color1 = ColorPicker::instance().hsvToRgb(hue1, 0.7f, 1.f);
+        const sf::Color color2 = ColorPicker::instance().hsvToRgb(hue2, 0.7f, 1.f);
+
+        for (int i = 0; i < 120; i++)
+        {
+            const float speed = Particles::instance().randomStartingSpeed(15.0, 1.f, 10.f);
+            Particles::instance().create(
+                3.f,
+                DontIgnoreGravity,
+                Explosion,
+                getPosition(),
+                RandomVector::instance().next(speed, speed),
+                ColorPicker::instance().lerp(color1, color2)
+            );
+        }
     }
 
     sprite.setColor(sf::Color::White);
@@ -105,6 +130,8 @@ void Enemies::Enemy::reset()
     isActive = false;
     isActing = false;
     shouldKill = false;
+    trailing = nullptr;
+    leading = nullptr;
 }
 
 
@@ -144,17 +171,27 @@ bool Enemies::Enemy::canAct()
 
 void Enemies::Enemy::markForKill()
 {
-    // Only mark should kill if it was not already marked this frame
+    // Only mark should kill if it was not already marked this frame, and mark links
     if (!shouldKill)
+    {
         shouldKill = true;
+
+        if (trailing != nullptr)
+            trailing->markForKill();
+
+        if (leading != nullptr)
+            leading->markForKill();
+    }
 }
 
 
 void Enemies::Enemy::killAddPoints()
 {
+    if (pointValue != 0)
+        FloatingKillTexts::instance().add(pointValue * PlayerStatus::instance().multiplier, getPosition());
+
     PlayerStatus::instance().addPoints(pointValue);
     PlayerStatus::instance().increaseMultiplier();
-    FloatingKillTexts::instance().add(pointValue * PlayerStatus::instance().multiplier, getPosition());
     Sound::instance().playExplosionSound();
     reset();
 }
@@ -174,10 +211,14 @@ void Enemies::killAll()
 
 void Enemies::Enemy::pushApartBy(const Enemy &other)
 {
-    const sf::Vector2f distance = getPosition() - other.getPosition();
-    const sf::Vector2f amount = 20.f * distance / (distance.lengthSquared() + 1);
-    xVelocity += amount.x;
-    yVelocity += amount.y;
+    // if (!isSnakeBody() && !(enemyType == SnakeHead && other.isSnakeBody()))
+    if (!isSnakeType())
+    {
+        const sf::Vector2f distance = getPosition() - other.getPosition();
+        const sf::Vector2f amount = 20.f * distance / (distance.lengthSquared() + 1);
+        xVelocity += amount.x;
+        yVelocity += amount.y;
+    }
 }
 
 
@@ -192,6 +233,7 @@ void Enemies::Enemy::activateSeeker()
 {
     sprite.setTexture(Art::instance().seeker);
     sprite.setPosition(SpawnHelper::instance().createSpawnPosition());
+    sprite.setOrigin({sprite.getTexture().getSize().x / 2.f, sprite.getTexture().getSize().y / 2.f});
     radius = 20;
     timeUntilAct = maxTimeUntilAct;
     speed = 1.f;
@@ -202,7 +244,7 @@ void Enemies::Enemy::activateSeeker()
 
     behavior = [this] () mutable
     {
-        sf::Vector2f velocity = getVelocity();
+        sf::Vector2f velocity = getCurrentVelocity();
         const float direction = Extensions::toAngle(PlayerShip::instance().getPosition() - getPosition());
         velocity += Extensions::fromPolar(direction, speed);
 
@@ -230,6 +272,7 @@ void Enemies::Enemy::activateWanderer()
 {
     sprite.setTexture(Art::instance().wanderer);
     sprite.setPosition(SpawnHelper::instance().createSpawnPosition());
+    sprite.setOrigin({sprite.getTexture().getSize().x / 2.f, sprite.getTexture().getSize().y / 2.f});
     radius = 20;
     timeUntilAct = maxTimeUntilAct;
     speed = 1.f;
@@ -241,7 +284,7 @@ void Enemies::Enemy::activateWanderer()
 
     behavior = [this] () mutable
     {
-        sf::Vector2f velocity = getVelocity();
+        sf::Vector2f velocity = getCurrentVelocity();
         const float direction = Extensions::toAngle(velocity);
         velocity += Extensions::fromPolar(direction, speed);
 
@@ -278,7 +321,8 @@ void Enemies::Enemy::activateDodger()
 {
     sprite.setTexture(Art::instance().dodger);
     sprite.setPosition(SpawnHelper::instance().createSpawnPosition());
-    radius = 20;
+    sprite.setOrigin({sprite.getTexture().getSize().x / 2.f, sprite.getTexture().getSize().y / 2.f});
+    radius = sprite.getTexture().getSize().x / 2.f;
     timeUntilAct = maxTimeUntilAct;
     speed = 0.8f;
     pointValue = 7;
@@ -288,7 +332,7 @@ void Enemies::Enemy::activateDodger()
 
     behavior = [this] () mutable
     {
-        sf::Vector2f velocity = getVelocity();
+        sf::Vector2f velocity = getCurrentVelocity();
         const float direction = Extensions::toAngle(PlayerShip::instance().getPosition() - getPosition());
         velocity += Extensions::fromPolar(direction, speed);
 
@@ -313,7 +357,118 @@ void Enemies::Enemy::activateDodger()
 }
 
 
-void Enemies::checkSpawnSeeker()
+void Enemies::Enemy::activateSnakeHead()
+{
+    sprite.setTexture(Art::instance().snakeHead);
+    sprite.setPosition(SpawnHelper::instance().createSpawnPosition());
+    sprite.setOrigin({sprite.getTexture().getSize().x / 2.f, sprite.getTexture().getSize().y / 2.f});
+    radius = sprite.getTexture().getSize().y / 2.f;
+    timeUntilAct = maxTimeUntilAct * 0.5f;
+    maxTimeUntilNewDirection = 0.75f;
+    timeUntilNewDirection = maxTimeUntilNewDirection;
+    speed = 1.f;
+    pointValue = 10;
+    const sf::Vector2f startingDirection = Extensions::fromPolar(instance().directionDistribution(instance().randEngine), speed);
+    xVelocity = startingDirection.x;
+    yVelocity = startingDirection.y;
+    enemyType = SnakeHead;
+
+    behavior = [this] () mutable
+    {
+        sf::Vector2f velocity = getCurrentVelocity();
+
+        timeUntilNewDirection -= GameRoot::instance().deltaTime;
+        if (timeUntilNewDirection < 0.f)
+        {
+            timeUntilNewDirection = maxTimeUntilNewDirection;
+            const sf::Vector2f turnVelocity = Extensions::fromPolar(instance().directionDistribution(instance().randEngine), speed);
+            turnXVelocity = turnVelocity.x;
+            turnYVelocity = turnVelocity.y;
+        }
+
+        if (getTurnVelocity().lengthSquared() < 0.0001f)
+        {
+            turnXVelocity = 0.f;
+            turnYVelocity = 0.f;
+        }
+        else
+        {
+            turnXVelocity *= 0.98f;
+            turnYVelocity *= 0.98f;
+        }
+
+        const float direction = Extensions::toAngle(velocity - getTurnVelocity());
+        velocity += Extensions::fromPolar(direction, speed);
+
+        // Rotation the snake head in the direction of its velocity
+        if (velocity.lengthSquared() > 0)
+            sprite.setRotation(sf::radians(Extensions::toAngle(velocity)));
+
+        // Move the wanderer, and check if it is at the screen bounds
+        const sf::Vector2f nextPosition = getPosition() + velocity;
+
+        if (nextPosition.x < 0)
+            velocity.x = std::abs(velocity.x);
+        else if (nextPosition.x > GameRoot::instance().windowSizeF.x)
+            velocity.x = -std::abs(velocity.x);
+
+        if (nextPosition.y < 0)
+            velocity.y = std::abs(velocity.y);
+        else if (nextPosition.y > GameRoot::instance().windowSizeF.y)
+            velocity.y = -std::abs(velocity.y);
+
+        sprite.setPosition(nextPosition);
+
+        // Basic friction
+        velocity *= 0.8f;
+        xVelocity = velocity.x;
+        yVelocity = velocity.y;
+    };
+
+    isActive = true;
+    Sound::instance().playSpawnSound();
+}
+
+
+void Enemies::Enemy::activateSnakeBodyPart(const EnemyType enemyType)
+{
+    sprite.setTexture(enemyType == SnakeBody ? Art::instance().snakeBody : Art::instance().snakeTail);
+    sprite.setPosition(leading->getPosition());
+    sprite.setOrigin({sprite.getTexture().getSize().x / 2.f, sprite.getTexture().getSize().y / 2.f});
+    radius = sprite.getTexture().getSize().x / 2.f;
+    timeUntilAct = leading->timeUntilAct;
+    timeUntilNewDirection = leading->timeUntilNewDirection;
+    speed = leading->speed;
+    pointValue = 0;
+    xVelocity = 0.f;
+    yVelocity = 0.f;
+    this->enemyType = enemyType;
+
+    behavior = [this] () mutable
+    {
+        sf::Vector2f velocity = getCurrentVelocity();
+        const float direction = Extensions::toAngle(leading->getPosition() - getPosition());
+        velocity += Extensions::fromPolar(direction, speed);
+
+        // If there is enough distance between the links then allow movement, plus some padding
+        if (Extensions::distanceSquared(leading->getPosition(), getPosition()) > radius * radius)
+            sprite.move(velocity);
+
+        // Rotate
+        if (velocity.lengthSquared() > 0)
+            sprite.setRotation(sf::radians(Extensions::toAngle(velocity)));
+
+        // Basic friction
+        velocity *= 0.8f;
+        xVelocity = velocity.x;
+        yVelocity = velocity.y;
+    };
+
+    isActive = true;
+}
+
+
+void Enemies::checkSeekerSpawn()
 {
     // Decrease the spawn chance every frame, until its about 1 in 15
     if (seekerSpawnChance > 15.f)
@@ -336,7 +491,7 @@ void Enemies::checkSpawnSeeker()
 }
 
 
-void Enemies::checkSpawnWanderer()
+void Enemies::checkWandererSpawn()
 {
     // Decrease the spawn chance every frame, until its about 1 in 20
     if (wandererSpawnChance > 20.f)
@@ -359,7 +514,7 @@ void Enemies::checkSpawnWanderer()
 }
 
 
-void Enemies::checkSpawnDodger()
+void Enemies::checkDodgerSpawn()
 {
     // Decrease the spawn chance every frame, until its about 1 in 30
     if (dodgerSpawnChance > 30.f)
@@ -382,14 +537,75 @@ void Enemies::checkSpawnDodger()
 }
 
 
+void Enemies::checkSnakeSpawn()
+{
+    // Decrease the spawn chance every frame, until its about 1 in 50
+    if (snakeSpawnChance > 50.f)
+        snakeSpawnChance -= GameRoot::instance().deltaTime;
+
+    // Roll the dice
+    std::uniform_real_distribution spawnChanceDistribution {0.f, snakeSpawnChance};
+    if (static_cast<int>(spawnChanceDistribution(randEngine)) == 0)
+    {
+        assert(firstAvailable != nullptr);
+
+        // Get the count of how long the snake would be, check to make sure there are enough available enemy slots
+        const int bodyPartCount = snakeBodyPartCountDistribution(randEngine);
+        const Enemy *availableEnemyCheck = firstAvailable;
+        for (int i = 0; i < bodyPartCount + 2; i++)
+        {
+            if (availableEnemyCheck->getNext() != nullptr)
+                availableEnemyCheck = availableEnemyCheck->getNext();
+            else
+                return;
+        }
+
+        // Create the snake head and first body part for linking
+        Enemy *snakeHead = firstAvailable;
+        firstAvailable = snakeHead->getNext();
+        snakeHead->activateSnakeHead();
+
+        Enemy *snakeBodyFirst = firstAvailable;
+        firstAvailable = snakeBodyFirst->getNext();
+        snakeHead->setTrailing(snakeBodyFirst);
+        snakeBodyFirst->setLeading(snakeHead);
+        snakeBodyFirst->activateSnakeBodyPart(SnakeBody);
+
+        // Create the rest of the body of the snake and terminate with the tail
+        Enemy *leadingSnakeBodyPart = snakeBodyFirst;
+        for (int i = 0; i < bodyPartCount; i++)
+        {
+            if (i == bodyPartCount - 1)
+            {
+                Enemy *snakeTail = firstAvailable;
+                firstAvailable = snakeTail->getNext();
+                leadingSnakeBodyPart->setTrailing(snakeTail);
+                snakeTail->setLeading(leadingSnakeBodyPart);
+                snakeTail->activateSnakeBodyPart(SnakeTail);
+                break;
+            }
+
+            Enemy *snakeBody = firstAvailable;
+            firstAvailable = snakeBody->getNext();
+            leadingSnakeBodyPart->setTrailing(snakeBody);
+            snakeBody->setLeading(leadingSnakeBodyPart);
+            snakeBody->activateSnakeBodyPart(SnakeBody);
+            leadingSnakeBodyPart = snakeBody;
+        }
+    }
+}
+
+
+
 void Enemies::update()
 {
     // Check spawn of new enemies
     if (canSpawn)
     {
-        checkSpawnSeeker();
-        checkSpawnWanderer();
-        checkSpawnDodger();
+        checkSeekerSpawn();
+        checkWandererSpawn();
+        checkDodgerSpawn();
+        checkSnakeSpawn();
     }
 
     // Update all the enemies and check the kill status

@@ -14,6 +14,7 @@
 #include "Logger/Logger.h"
 #include "Particles/Particles.h"
 #include "PlayerStatus/PlayerStatus.h"
+#include "SFML/Graphics/Image.hpp"
 #include "SFML/System/Sleep.hpp"
 #include "UserInterface/Include/FloatingKillTexts.h"
 #include "UserInterface/Include/UserInterface.h"
@@ -28,7 +29,7 @@ GameRoot::GameRoot()
     sf::Vector2 maxWindowSize {width, height};
     const unsigned int bitsPerPixel = fullscreenModes[0].bitsPerPixel;
 
-    // Create the render window with fullscreen, 60 fps, and properties
+    // Create the render window with fullscreen and properties
     renderWindow = sf::RenderWindow(
         sf::VideoMode(maxWindowSize, bitsPerPixel),
         "Shape Wars",
@@ -38,6 +39,7 @@ GameRoot::GameRoot()
     renderWindow.setMaximumSize(maxWindowSize);
     renderWindow.setVerticalSyncEnabled(true);
     renderWindow.setMouseCursorVisible(false);
+    renderWindow.setIcon(sf::Image("Content\\Images\\BlackHole.png"));
 
     // Set the screen size in float for easy maths
     windowSizeF = {static_cast<float>(width), static_cast<float>(height)};
@@ -158,40 +160,26 @@ void GameRoot::processKeyPressed(const sf::Event::KeyPressed* keyPressed)
 
 void GameRoot::processKeyReleased(const sf::Event::KeyReleased* keyReleased)
 {
-    switch (keyReleased->scancode)
-    {
-    case sf::Keyboard::Scancode::Escape:
+    if (keyReleased->scancode == sf::Keyboard::Scancode::Escape)
         renderWindow.close();
-        break;
 
-    case sf::Keyboard::Scancode::K:
+    if (keyReleased->scancode == sf::Keyboard::Scancode::K)
         PlayerStatus::instance().markForKill();
-        break;
 
-    case sf::Keyboard::Scancode::Space:
+    if (keyReleased->scancode == sf::Keyboard::Scancode::Space)
         Nukes::instance().markDetonate(PlayerShip::instance().getPosition());
-        break;
 
-    case sf::Keyboard::Scancode::P:
+    if (keyReleased->scancode == sf::Keyboard::Scancode::P)
         togglePause();
-        break;
 
-    case sf::Keyboard::Scancode::O:
+    if (keyReleased->scancode == sf::Keyboard::Scancode::O)
         Sound::instance().togglePlaySounds();
-        break;
 
-    case sf::Keyboard::Scancode::B:
+    if (keyReleased->scancode == sf::Keyboard::Scancode::B)
         GaussianBlur::instance().toggleGaussianBlur();
-        break;
 
-    case sf::Keyboard::Scancode::V:
+    if (keyReleased->scancode == sf::Keyboard::Scancode::V)
         toggleVsync();
-        break;
-
-    default:
-        // Just to get clion to stop complaining about missing cases
-        break;
-    }
 }
 
 

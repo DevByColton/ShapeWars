@@ -18,6 +18,9 @@ struct Art {
     sf::Texture seeker;
     sf::Texture wanderer;
     sf::Texture dodger;
+    sf::Texture snakeHead;
+    sf::Texture snakeBody;
+    sf::Texture snakeTail;
     sf::Texture bullet;
     sf::Texture pointer;
     sf::Texture enemyPlaceholder;
