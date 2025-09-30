@@ -12,6 +12,9 @@ Art::Art()
         nuke = sf::Texture("Content\\Images\\Nuke.png");
         nuke.setSmooth(true);
 
+        enemyPlaceholder = sf::Texture("Content\\Images\\EnemyPlaceholder.png");
+        enemyPlaceholder.setSmooth(true);
+
         seeker = sf::Texture("Content\\Images\\Seeker.png");
         seeker.setSmooth(true);
 
@@ -21,19 +24,25 @@ Art::Art()
         dodger = sf::Texture("Content\\Images\\Dodger.png");
         dodger.setSmooth(true);
 
+        snakeHead = sf::Texture("Content\\Images\\SnakeHead.png");
+        snakeHead.setSmooth(true);
+
+        snakeBody = sf::Texture("Content\\Images\\SnakeBody.png");
+        snakeBody.setSmooth(true);
+
+        snakeTail = sf::Texture("Content\\Images\\SnakeTail.png");
+        snakeTail.setSmooth(true);
+
         bullet = sf::Texture("Content\\Images\\Bullet.png");
         bullet.setSmooth(true);
 
         pointer = sf::Texture("Content\\Images\\Cursor.png");
         pointer.setSmooth(true);
 
-        enemyPlaceholder = sf::Texture("Content\\Images\\EnemyPlaceholder.png");
-        enemyPlaceholder.setSmooth(true);
-
         blackHole = sf::Texture("Content\\Images\\BlackHole.png");
         blackHole.setSmooth(true);
 
-        particle = sf::Texture("Content\\Images\\Laser.png");
+        particle = sf::Texture("Content\\Images\\Particle.png");
         particle.setSmooth(true);
 
         particleGlow = sf::Texture("Content\\Images\\Glow.png");

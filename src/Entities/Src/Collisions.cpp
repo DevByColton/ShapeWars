@@ -28,14 +28,11 @@ void Collisions::handleEnemyPlayerBullets()
         {
             // Check nuke if active
             if (Nukes::instance().isDetonating && isColliding(enemy.radius + Nukes::instance().radius, enemy.getPosition(), Nukes::instance().getPosition()))
-            {
                 enemy.markForKill();
-                continue;
-            }
 
             // Check other enemies to push each other apart
             for (int j = i + 1; j < enemies.size(); j++)
-                if (auto &enemy2 = enemies.at(j); enemy2.isActive)
+                if (auto &enemy2 = enemies.at(j); enemy2.isActive && enemy2.isActing)
                     if (isColliding(enemy.radius + enemy2.radius, enemy.getPosition(), enemy2.getPosition())) {
                         enemy.pushApartBy(enemy2);
                         enemy2.pushApartBy(enemy);
@@ -49,7 +46,7 @@ void Collisions::handleEnemyPlayerBullets()
                     if (enemy.enemyType == Dodger && Extensions::distanceSquared(enemy.getPosition(), bullet.getPosition()) < SMALL_PROXIMITY_RADIUS_SQR)
                     {
                         const sf::Vector2f p = bullet.getPosition() - enemy.getPosition();
-                        const sf::Vector2f v = bullet.getVelocity() - enemy.getVelocity();
+                        const sf::Vector2f v = bullet.getVelocity() - enemy.getCurrentVelocity();
 
                         // Only dodge the bullet if the bullet is traveling towards the dodger
                         if (p.dot(v) < 0.f)
@@ -60,10 +57,13 @@ void Collisions::handleEnemyPlayerBullets()
                     }
 
                     // Check if it is colliding
-                    if (isColliding(bullet.radius + enemy.radius, bullet.getPosition(), enemy.getPosition())) {
-                        enemy.markForKill();
+                    if (isColliding(bullet.radius + enemy.radius, bullet.getPosition(), enemy.getPosition()))
+                    {
                         bullet.markForBlowUp();
-                        break;
+
+                        // Enemy bodies and tails are indestructible from bullets
+                        if (!enemy.isSnakeBody())
+                            enemy.markForKill();
                     }
                 }
 

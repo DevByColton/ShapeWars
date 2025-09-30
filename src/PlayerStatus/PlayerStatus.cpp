@@ -92,8 +92,8 @@ void PlayerStatus::removeLife()
     // Add particles for a grand player explosion!
     float hue1 = ColorPicker::instance().generateHue();
     float hue2 = ColorPicker::instance().generateShiftedHue(hue1);
-    sf::Color color1 = ColorPicker::instance().hsvToRgb(hue1, 0.75f, 1.f);
-    sf::Color color2 = ColorPicker::instance().hsvToRgb(hue2, 0.75f, 1.f);
+    sf::Color color1 = ColorPicker::instance().hsvToRgb(hue1, 0.7f, 1.f);
+    sf::Color color2 = ColorPicker::instance().hsvToRgb(hue2, 0.7f, 1.f);
     std::uniform_real_distribution<float> particleStartOffset {0.f, PI / killParticleCount};
     std::uniform_real_distribution<float> magnitude {2.f, 24.f};
     const float startOffset = particleStartOffset(randEngine);
@@ -116,8 +116,8 @@ void PlayerStatus::removeLife()
         {
             hue1 = ColorPicker::instance().generateHue();
             hue2 = ColorPicker::instance().generateShiftedHue(hue1);
-            color1 = ColorPicker::instance().hsvToRgb(hue1, 0.75f, 1.f);
-            color2 = ColorPicker::instance().hsvToRgb(hue2, 0.75f, 1.f);
+            color1 = ColorPicker::instance().hsvToRgb(hue1, 0.7f, 1.f);
+            color2 = ColorPicker::instance().hsvToRgb(hue2, 0.7f, 1.f);
         }
     }
 
