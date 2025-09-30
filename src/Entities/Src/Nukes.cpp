@@ -3,6 +3,8 @@
 #include "../../Grid/Grid.h"
 #include "../../PlayerStatus/PlayerStatus.h"
 #include "../../System/Include/Extensions.h"
+#include "../Include/BlackHoles.h"
+#include "../Include/Enemies.h"
 
 
 Nukes::Nukes()
@@ -33,6 +35,8 @@ void Nukes::markDetonate(const sf::Vector2f &fromPosition)
 {
     if (!PlayerStatus::instance().isDead() && !isDetonating && count > 0)
     {
+        Enemies::instance().canSpawn = false;
+        BlackHoles::instance().canSpawn = false;
         isDetonating = true;
         count -= 1;
         nukeCircle.setPosition(fromPosition);
@@ -47,7 +51,7 @@ sf::Vector2f Nukes::getPosition() const
 }
 
 
-bool Nukes::update()
+void Nukes::update()
 {
     if (isDetonating)
     {
@@ -62,13 +66,12 @@ bool Nukes::update()
         const bool bottomRightContained = Extensions::distanceSquared(nukeCircle.getPosition(), GameRoot::instance().bottomRightCorner) <= radii;
         const bool bottomLeftContained = Extensions::distanceSquared(nukeCircle.getPosition(), GameRoot::instance().bottomLeftCorner) <= radii;
         if (topLeftContained && topRightContained && bottomRightContained && bottomLeftContained)
-        {
             reset();
-            return true;
-        }
     }
 
-    return false;
+    // If a bomb is not detonating, make sure enemies and black holes can spawn
+    Enemies::instance().canSpawn = true;
+    BlackHoles::instance().canSpawn = true;
 }
 
 

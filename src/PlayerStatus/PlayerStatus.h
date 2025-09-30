@@ -32,7 +32,7 @@ public:
 
     int highScore = -1;
     int score = 0;
-    int lives = 4;
+    int lives = 3;
     int multiplier = 1;
     bool needTotalReset = false;
     bool needBaseReset = false;

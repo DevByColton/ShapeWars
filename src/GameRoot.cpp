@@ -88,11 +88,6 @@ std::chrono::milliseconds GameRoot::getCurrentTime()
 
 void GameRoot::run()
 {
-    // TODO: Play the game play song when the actual round starts???
-    //       Create some ambient noise to play in the main menu until the game starts
-    //       This will move to update soon
-    Sound::instance().playGamePlaySong();
-
     // Main game loop, running at a fixed timestep of 60 fps
     while (renderWindow.isOpen())
     {
@@ -202,11 +197,7 @@ void GameRoot::processJoystickButtonReleased(const sf::Event::JoystickButtonRele
 void GameRoot::processJoystickAxisMoved(const sf::Event::JoystickMoved* joystickMoved)
 {
     if (Input::instance().isAxisRightTrigger(joystickMoved) && Input::instance().wasRightTriggerReleased(joystickMoved))
-    {
         Nukes::instance().markDetonate(PlayerShip::instance().getPosition());
-        Enemies::instance().canSpawn = false;
-        BlackHoles::instance().canSpawn = false;
-    }
 }
 
 
@@ -220,12 +211,7 @@ void GameRoot::update() const
         // When the player is alive
         if (!PlayerStatus::instance().isDead())
         {
-            if (Nukes::instance().update())
-            {
-                Enemies::instance().canSpawn = true;
-                BlackHoles::instance().canSpawn = true;
-            }
-
+            Nukes::instance().update();
             Enemies::instance().update();
             PlayerShip::instance().update();
             Bullets::instance().update();
@@ -234,16 +220,17 @@ void GameRoot::update() const
             Collisions::instance().handleBlackHoles();
         }
 
-        // At a minimum reset the enemies, black holes, and bullets
+        // When the player dies during a round
         if (PlayerStatus::instance().needBaseReset)
         {
             Bullets::instance().resetAll();
             Enemies::instance().killAll();
             BlackHoles::instance().killAll();
+            Nukes::instance().reset();
             PlayerStatus::instance().needBaseReset = false;
         }
 
-        // At the restart of a new round, reset the player status, game clock, and center the player
+        // At the restart of a new round
         if (PlayerStatus::instance().needTotalReset)
         {
             PlayerStatus::instance().reset();
