@@ -4,7 +4,7 @@
 #include "../../GameRoot.h"
 #include "../../Content/Include/Art.h"
 #include "../../Content/Include/GaussianBlur.h"
-#include "../../Input/Input.h"
+#include "../../Input/Include/Input.h"
 #include "../../Particles/Particles.h"
 #include "../../PlayerStatus/PlayerStatus.h"
 #include "../../System/Include/Extensions.h"

@@ -1,6 +1,7 @@
 ﻿#include <string>
 #include <chrono>
 #include "GameRoot.h"
+#include <iostream>
 #include "Content/Include/GaussianBlur.h"
 #include "Content/Include/Sound.h"
 #include "Entities/Include/BlackHoles.h"
@@ -10,7 +11,7 @@
 #include "Entities/Include/Nukes.h"
 #include "Entities/Include/PlayerShip.h"
 #include "Grid/Grid.h"
-#include "Input/Input.h"
+#include "Input/Include/Input.h"
 #include "Logger/Logger.h"
 #include "Particles/Particles.h"
 #include "PlayerStatus/PlayerStatus.h"
@@ -48,6 +49,9 @@ GameRoot::GameRoot()
     topRightCorner = {windowRectangle.size.x, windowRectangle.position.y};
     bottomRightCorner = {windowRectangle.size.x, windowRectangle.size.y};
     bottomLeftCorner = {windowRectangle.position.x, windowRectangle.size.y};
+
+    // Set the minimum dead zone for controllers
+    renderWindow.setJoystickThreshold(15.f);
 
      Logger::printOut(
         "Created fullscreen window with size " + std::to_string(width) +
@@ -116,6 +120,9 @@ void GameRoot::processInput()
         if (event->is<sf::Event::Closed>())
             renderWindow.close();
 
+        if (const auto* _ = event->getIf<sf::Event::MouseMoved>())
+            Input::instance().mouseMoved();
+
         // Keyboard pressed events (these are hold events)
         if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>())
             processKeyPressed(keyPressed);
@@ -136,11 +143,9 @@ void GameRoot::processInput()
         if (const auto* joystickMoved = event->getIf<sf::Event::JoystickMoved>())
             processJoystickAxisMoved(joystickMoved);
 
-        if (const auto* joystickConnected = event->getIf<sf::Event::JoystickConnected>())
-            Logger::printOut("joystick connected: " + std::to_string(joystickConnected->joystickId));
-
-        if (const auto* joystickDisconnected = event->getIf<sf::Event::JoystickDisconnected>())
-            Logger::printOut("joystick disconnected: " + std::to_string(joystickDisconnected->joystickId));
+        // Joystick axis connected event
+        if (const auto* _ = event->getIf<sf::Event::JoystickConnected>())
+            Input::instance().checkConnectedDevice();
     }
 
     Input::instance().update();
@@ -149,30 +154,53 @@ void GameRoot::processInput()
 
 void GameRoot::processKeyPressed(const sf::Event::KeyPressed* keyPressed)
 {
-    // No hold event implements currently
+    if (keyPressed->scancode == sf::Keyboard::Scancode::Up ||
+        keyPressed->scancode == sf::Keyboard::Scancode::Down ||
+        keyPressed->scancode == sf::Keyboard::Scancode::Left ||
+        keyPressed->scancode == sf::Keyboard::Scancode::Right)
+        Input::instance().setAimMode(AimMode::Keyboard);
 }
 
 
 void GameRoot::processKeyReleased(const sf::Event::KeyReleased* keyReleased)
 {
     if (keyReleased->scancode == sf::Keyboard::Scancode::Escape)
+    {
         renderWindow.close();
+        return;
+    }
 
     if (keyReleased->scancode == sf::Keyboard::Scancode::K)
+    {
         PlayerStatus::instance().markForKill();
+        return;
+    }
 
     if (keyReleased->scancode == sf::Keyboard::Scancode::Space)
+    {
         Nukes::instance().markDetonate(PlayerShip::instance().getPosition());
+        return;
+    }
 
     if (keyReleased->scancode == sf::Keyboard::Scancode::P)
+    {
         togglePause();
+        return;
+    }
 
     if (keyReleased->scancode == sf::Keyboard::Scancode::O)
+    {
         Sound::instance().togglePlaySounds();
+        return;
+    }
 
     if (keyReleased->scancode == sf::Keyboard::Scancode::B)
+    {
         GaussianBlur::instance().toggleGaussianBlur();
+        return;
+    }
 
+    // Last one, so no need to return
     if (keyReleased->scancode == sf::Keyboard::Scancode::V)
         toggleVsync();
 }
@@ -186,16 +214,56 @@ void GameRoot::processJoystickButtonPressed(const sf::Event::JoystickButtonPress
 
 void GameRoot::processJoystickButtonReleased(const sf::Event::JoystickButtonReleased* joystickButtonReleased)
 {
-    if (joystickButtonReleased->button == 6)
-        renderWindow.close();
+    // Todo: remove
+    //Logger::printOut("button released " + std::to_string(joystickButtonReleased->button));
 
-    if (joystickButtonReleased->button == 7)
+    if (Input::instance().isBackButton(joystickButtonReleased))
+    {
+        renderWindow.close();
+        return;
+    }
+
+    // Last one, so no need to return
+    if (Input::instance().isStartButton(joystickButtonReleased))
         togglePause();
+}
+
+// Todo: remove
+std::string axisName(const sf::Joystick::Axis axis)
+{
+    if (axis == sf::Joystick::Axis::X)
+        return {"X"};
+    if (axis == sf::Joystick::Axis::Y)
+        return {"Y"};
+    if (axis == sf::Joystick::Axis::Z)
+        return {"Z"};
+    if (axis == sf::Joystick::Axis::R)
+        return {"R"};
+    if (axis == sf::Joystick::Axis::U)
+        return {"U"};
+    if (axis == sf::Joystick::Axis::V)
+        return {"V"};
+    if (axis == sf::Joystick::Axis::PovX)
+        return {"PovX"};
+    if (axis == sf::Joystick::Axis::PovY)
+        return {"PovY"};
+
+    return "NONE";
 }
 
 
 void GameRoot::processJoystickAxisMoved(const sf::Event::JoystickMoved* joystickMoved)
 {
+    // Todo: remove
+    //Logger::printOut("axis " + axisName(joystickMoved->axis) + " value is: " + std::to_string(joystickMoved->position));
+
+    if (Input::instance().isAxisRightThumbstick(joystickMoved))
+    {
+        Input::instance().setAimMode(AimMode::Joystick);
+        return;
+    }
+
+    // Last one, so no need to return
     if (Input::instance().isAxisRightTrigger(joystickMoved) && Input::instance().wasRightTriggerReleased(joystickMoved))
         Nukes::instance().markDetonate(PlayerShip::instance().getPosition());
 }

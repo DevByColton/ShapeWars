@@ -23,8 +23,8 @@ add_executable(ShapeWars src/main.cpp
         src/Content/Include/Art.h
         src/Entities/Src/PlayerShip.cpp
         src/Entities/Include/PlayerShip.h
-        src/Input/Input.cpp
-        src/Input/Input.h
+        src/Input/Src/Input.cpp
+        src/Input/Include/Input.h
         src/System/Include/Extensions.h
         src/Entities/Src/Bullets.cpp
         src/Entities/Include/Bullets.h
@@ -59,6 +59,14 @@ add_executable(ShapeWars src/main.cpp
         src/System/Src/Extensions.cpp
         src/Entities/Src/Nukes.cpp
         src/Entities/Include/Nukes.h
+        src/Input/Src/Xbox.cpp
+        src/Input/Include/Xbox.h
+        src/Input/Src/Dualsense.cpp
+        src/Input/Include/Dualsense.h
+        src/Input/Src/Nintendo.cpp
+        src/Input/Include/Nintendo.h
+        src/Input/Src/MouseAndKeyboard.cpp
+        src/Input/Include/MouseAndKeyboard.h
 )
 
 target_compile_features(ShapeWars PRIVATE cxx_std_20)
