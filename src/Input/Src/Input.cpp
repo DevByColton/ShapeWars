@@ -13,27 +13,21 @@ Input::Input()
 
 void Input::checkConnectedDevice()
 {
-    // See if a joystick is connected and supported, if so set the aim mode to controller
+    // See if a joystick is connected and supported, if so set the input mode to joystick
     for (int i = 0; i < sf::Joystick::Count; i++)
         if (sf::Joystick::isConnected(i))
         {
             const auto identification = sf::Joystick::getIdentification(i);
             if (Xbox::instance().isSupported(identification) ||
                 Dualsense::instance().isSupported(identification))
-                setAimMode(AimMode::Joystick);
+                inputMode = InputMode::Joystick;
         }
-}
-
-
-void Input::setAimMode(const AimMode aimMode)
-{
-    this->aimMode = aimMode;
 }
 
 
 bool Input::isMouseVisible() const
 {
-    return aimMode == AimMode::Mouse;
+    return inputMode == InputMode::MouseAndKeyboard;
 }
 
 
@@ -69,12 +63,6 @@ bool Input::isStartButton(const sf::Event::JoystickButtonReleased* joystickButto
 {
     return Xbox::instance().isStartButton(joystickButtonReleased) ||
            Dualsense::instance().isStartButton(joystickButtonReleased);
-}
-
-
-void Input::mouseMoved()
-{
-    setAimMode(AimMode::Mouse);
 }
 
 
@@ -129,27 +117,25 @@ sf::Vector2f Input::getAimDirection(const sf::Vector2f& fromPosition) const
 {
     sf::Vector2f direction = {0.f, 0.f};
 
-    switch (aimMode)
+    // Sum the aiming direction by input mode
+    switch (inputMode)
     {
-        case AimMode::Keyboard:
-            direction = MouseAndKeyboard::instance().keysAimDirection();
-            break;
-        case AimMode::Mouse:
-            direction = MouseAndKeyboard::instance().mouseAimDirection(fromPosition);
-            break;
-        case AimMode::Joystick:
-            // Sum directions of each connected joystick this will get the directions
-            for (int i = 0; i < sf::Joystick::Count; i++)
-                if (sf::Joystick::isConnected(i))
-                {
-                    const auto identification = sf::Joystick::getIdentification(i);
-                    direction += Xbox::instance().rightThumbStickPosition(i, identification);
-                    direction += Dualsense::instance().rightThumbStickPosition(i, identification);
-                }
-            break;
+    case InputMode::MouseAndKeyboard:
+        direction += MouseAndKeyboard::instance().keysAimDirection();
+        direction += MouseAndKeyboard::instance().mouseAimDirection(fromPosition);
+        break;
+    case InputMode::Joystick:
+        for (int i = 0; i < sf::Joystick::Count; i++)
+            if (sf::Joystick::isConnected(i))
+            {
+                const auto identification = sf::Joystick::getIdentification(i);
+                direction += Xbox::instance().rightThumbStickPosition(i, identification);
+                direction += Dualsense::instance().rightThumbStickPosition(i, identification);
+            }
+        break;
     }
 
-    // Normalize
+    // Normalize so it does not matter which input the direction comes from
     if (direction.lengthSquared() > 1.f)
         direction = direction.normalized();
 
@@ -158,28 +144,27 @@ sf::Vector2f Input::getAimDirection(const sf::Vector2f& fromPosition) const
 
 void Input::update()
 {
+    // Update the mouse sprite position to the actual mouse
     MouseAndKeyboard::instance().update();
 
-    // If the aim mode is joystick, just make sure a controller is still connected
-    if (aimMode == AimMode::Joystick)
-    {
-        bool isAtLeastOneSupportedJoystickConnected = false;
+    // Check for valid joystick inputs, if none set the input mode to mouse and keyboard
+    hasValidXboxInput = false;
+    hasValidDualsenseInput = false;
 
-        for (int i = 0; i < sf::Joystick::Count; i++)
-            if (sf::Joystick::isConnected(i))
-            {
-                const auto identification = sf::Joystick::getIdentification(i);
-                if (Xbox::instance().isSupported(identification) ||
-                    Dualsense::instance().isSupported(identification))
-                {
-                    isAtLeastOneSupportedJoystickConnected = true;
-                    break;
-                }
-            }
+    for (int i = 0; i < sf::Joystick::Count; i++)
+        if (sf::Joystick::isConnected(i))
+        {
+            const auto identification = sf::Joystick::getIdentification(i);
 
-        if (!isAtLeastOneSupportedJoystickConnected)
-            aimMode = AimMode::Mouse;
-    }
+            if (Xbox::instance().isSupported(identification))
+                hasValidXboxInput = true;
+
+            if (Dualsense::instance().isSupported(identification))
+                hasValidDualsenseInput = true;
+        }
+
+    if (!hasValidXboxInput && !hasValidDualsenseInput)
+        inputMode = InputMode::MouseAndKeyboard;
 }
 
 

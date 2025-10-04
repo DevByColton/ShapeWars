@@ -55,7 +55,7 @@ public:
         return *instance;
     }
 
-    sf::Color bulletExplosionColor {255, 225, 128, 255};
+    sf::Color bulletExplosionColor {255, 197, 51, 255};
     std::array<Bullet, MAX_BULLET_COUNT> bullets {};
     std::default_random_engine randEngine {std::random_device{}()};
     std::uniform_real_distribution<float> spreadDistribution {-0.04f, 0.04f};

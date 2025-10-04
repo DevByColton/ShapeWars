@@ -1,7 +1,7 @@
 ﻿#include "../Include/Nukes.h"
 #include "../../Content/Include/GaussianBlur.h"
 #include "../../Grid/Grid.h"
-#include "../../PlayerStatus/PlayerStatus.h"
+#include "../../PlayerStatus/Include/PlayerStatus.h"
 #include "../../System/Include/Extensions.h"
 #include "../Include/BlackHoles.h"
 #include "../Include/Enemies.h"

@@ -7,7 +7,6 @@
 class GameRoot {
 private:
     GameRoot();
-    ~GameRoot() = default;
 
     bool vsyncEnabled = true;
     const std::chrono::milliseconds MS_PER_FRAME {16};
@@ -32,6 +31,7 @@ public:
         return *instance;
     }
 
+    float frameUIOpacity = 0.35f;
     float elapsedGameTime = 0.f;
     float deltaTime = 0.f;
     bool isPaused = false;

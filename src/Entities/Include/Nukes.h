@@ -10,7 +10,7 @@ private:
     const float initialVelocity = 25.f;
     const int max = 5;
     float velocity = initialVelocity;
-    sf::Color nukeColor {255, 240, 140, 255};
+    sf::Color nukeColor {255, 211, 38, 255};
     sf::CircleShape nukeCircle {radius, 100};
 
 public:

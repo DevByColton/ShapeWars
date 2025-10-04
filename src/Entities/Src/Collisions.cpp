@@ -1,6 +1,6 @@
 ﻿#include <cmath>
 #include "../Include/Collisions.h"
-#include "../../PlayerStatus/PlayerStatus.h"
+#include "../../PlayerStatus/Include/PlayerStatus.h"
 #include "../../System/Include/Extensions.h"
 #include "../Include/BlackHoles.h"
 #include "../Include/Bullets.h"

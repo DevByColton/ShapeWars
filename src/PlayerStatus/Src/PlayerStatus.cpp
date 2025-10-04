@@ -1,12 +1,11 @@
 ﻿#include <fstream>
-#include "PlayerStatus.h"
-#include "../GameRoot.h"
-#include "../Entities/Include/PlayerShip.h"
-#include "../Grid/Grid.h"
-#include "../Logger/Logger.h"
-#include "../Particles/Particles.h"
-#include "../System/Include/ColorPicker.h"
-#include "../System/Include/Extensions.h"
+#include "../Include/PlayerStatus.h"
+#include "../../GameRoot.h"
+#include "../../Entities/Include/PlayerShip.h"
+#include "../../Grid/Grid.h"
+#include "../../Particles/Particles.h"
+#include "../../System/Include/ColorPicker.h"
+#include "../../System/Include/Extensions.h"
 
 
 PlayerStatus::PlayerStatus()

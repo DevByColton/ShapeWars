@@ -6,7 +6,7 @@
 #include "../../Content/Include/GaussianBlur.h"
 #include "../../Input/Include/Input.h"
 #include "../../Particles/Particles.h"
-#include "../../PlayerStatus/PlayerStatus.h"
+#include "../../PlayerStatus/Include/PlayerStatus.h"
 #include "../../System/Include/Extensions.h"
 #include "../../System/Include/RandomVector.h"
 #include "../Include/Bullets.h"
@@ -68,7 +68,7 @@ void PlayerShip::createShipExhaust() const
         const sf::Vector2f baseVelocity = velocity * -0.5f;
         sf::Vector2f perpendicularVelocity = {baseVelocity.y, -baseVelocity.x};
         perpendicularVelocity = perpendicularVelocity * (0.6f * std::sin(GameRoot::instance().elapsedGameTime * 8.f));
-        const sf::Vector2f exhaustPosition = getPosition() + Extensions::transform({-25.f, 0.f}, quaternion);
+        const sf::Vector2f exhaustPosition = getPosition() + Extensions::transform({-30.f, 0.f}, quaternion);
 
         // Center particle stream
         const sf::Vector2f velMid = baseVelocity + RandomVector::instance().next(0.f, 1.f);

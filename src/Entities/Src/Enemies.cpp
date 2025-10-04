@@ -4,7 +4,7 @@
 #include "../../Content/Include/GaussianBlur.h"
 #include "../../Content/Include/Sound.h"
 #include "../../Particles/Particles.h"
-#include "../../PlayerStatus/PlayerStatus.h"
+#include "../../PlayerStatus/Include/PlayerStatus.h"
 #include "../../System/Include/ColorPicker.h"
 #include "../../System/Include/Extensions.h"
 #include "../../System/Include/RandomVector.h"

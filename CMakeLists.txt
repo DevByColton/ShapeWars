@@ -34,8 +34,8 @@ add_executable(ShapeWars src/main.cpp
         src/Entities/Include/Enemies.h
         src/Entities/Src/Collisions.cpp
         src/Entities/Include/Collisions.h
-        src/PlayerStatus/PlayerStatus.cpp
-        src/PlayerStatus/PlayerStatus.h
+        src/PlayerStatus/Src/PlayerStatus.cpp
+        src/PlayerStatus/Include/PlayerStatus.h
         src/UserInterface/Src/UserInterface.cpp
         src/UserInterface/Include/UserInterface.h
         src/Content/Src/Sound.cpp
@@ -67,6 +67,12 @@ add_executable(ShapeWars src/main.cpp
         src/Input/Include/Nintendo.h
         src/Input/Src/MouseAndKeyboard.cpp
         src/Input/Include/MouseAndKeyboard.h
+        src/PlayerStatus/Src/Buffs.cpp
+        src/PlayerStatus/Include/Buffs.h
+        src/UserInterface/Src/LivesAndNukes.cpp
+        src/UserInterface/Include/LivesAndNukes.h
+        src/UserInterface/Src/Buttons.cpp
+        src/UserInterface/Include/Buttons.h
 )
 
 target_compile_features(ShapeWars PRIVATE cxx_std_20)

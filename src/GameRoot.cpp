@@ -14,10 +14,13 @@
 #include "Input/Include/Input.h"
 #include "Logger/Logger.h"
 #include "Particles/Particles.h"
-#include "PlayerStatus/PlayerStatus.h"
+#include "PlayerStatus/Include/Buffs.h"
+#include "PlayerStatus/Include/PlayerStatus.h"
 #include "SFML/Graphics/Image.hpp"
 #include "SFML/System/Sleep.hpp"
+#include "UserInterface/Include/Buttons.h"
 #include "UserInterface/Include/FloatingKillTexts.h"
+#include "UserInterface/Include/LivesAndNukes.h"
 #include "UserInterface/Include/UserInterface.h"
 
 
@@ -30,12 +33,16 @@ GameRoot::GameRoot()
     sf::Vector2 maxWindowSize {width, height};
     const unsigned int bitsPerPixel = fullscreenModes[0].bitsPerPixel;
 
+    sf::ContextSettings settings;
+    settings.antiAliasingLevel = 8;
+
     // Create the render window with fullscreen and properties
     renderWindow = sf::RenderWindow(
         sf::VideoMode(maxWindowSize, bitsPerPixel),
         "Shape Wars",
         sf::Style::Default,
-        sf::State::Fullscreen
+        sf::State::Fullscreen,
+        settings
     );
     renderWindow.setMaximumSize(maxWindowSize);
     renderWindow.setVerticalSyncEnabled(true);
@@ -121,7 +128,7 @@ void GameRoot::processInput()
             renderWindow.close();
 
         if (const auto* _ = event->getIf<sf::Event::MouseMoved>())
-            Input::instance().mouseMoved();
+            Input::instance().inputMode = InputMode::MouseAndKeyboard;
 
         // Keyboard pressed events (these are hold events)
         if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>())
@@ -154,16 +161,14 @@ void GameRoot::processInput()
 
 void GameRoot::processKeyPressed(const sf::Event::KeyPressed* keyPressed)
 {
-    if (keyPressed->scancode == sf::Keyboard::Scancode::Up ||
-        keyPressed->scancode == sf::Keyboard::Scancode::Down ||
-        keyPressed->scancode == sf::Keyboard::Scancode::Left ||
-        keyPressed->scancode == sf::Keyboard::Scancode::Right)
-        Input::instance().setAimMode(AimMode::Keyboard);
+    Input::instance().inputMode = InputMode::MouseAndKeyboard;
 }
 
 
 void GameRoot::processKeyReleased(const sf::Event::KeyReleased* keyReleased)
 {
+    Input::instance().inputMode = InputMode::MouseAndKeyboard;
+
     if (keyReleased->scancode == sf::Keyboard::Scancode::Escape)
     {
         renderWindow.close();
@@ -208,14 +213,15 @@ void GameRoot::processKeyReleased(const sf::Event::KeyReleased* keyReleased)
 
 void GameRoot::processJoystickButtonPressed(const sf::Event::JoystickButtonPressed* joystickButtonPressed)
 {
+    Input::instance().inputMode = InputMode::Joystick;
+
     // No hold events implemented currently
 }
 
 
 void GameRoot::processJoystickButtonReleased(const sf::Event::JoystickButtonReleased* joystickButtonReleased)
 {
-    // Todo: remove
-    //Logger::printOut("button released " + std::to_string(joystickButtonReleased->button));
+    Input::instance().inputMode = InputMode::Joystick;
 
     if (Input::instance().isBackButton(joystickButtonReleased))
     {
@@ -228,40 +234,10 @@ void GameRoot::processJoystickButtonReleased(const sf::Event::JoystickButtonRele
         togglePause();
 }
 
-// Todo: remove
-std::string axisName(const sf::Joystick::Axis axis)
-{
-    if (axis == sf::Joystick::Axis::X)
-        return {"X"};
-    if (axis == sf::Joystick::Axis::Y)
-        return {"Y"};
-    if (axis == sf::Joystick::Axis::Z)
-        return {"Z"};
-    if (axis == sf::Joystick::Axis::R)
-        return {"R"};
-    if (axis == sf::Joystick::Axis::U)
-        return {"U"};
-    if (axis == sf::Joystick::Axis::V)
-        return {"V"};
-    if (axis == sf::Joystick::Axis::PovX)
-        return {"PovX"};
-    if (axis == sf::Joystick::Axis::PovY)
-        return {"PovY"};
-
-    return "NONE";
-}
-
 
 void GameRoot::processJoystickAxisMoved(const sf::Event::JoystickMoved* joystickMoved)
 {
-    // Todo: remove
-    //Logger::printOut("axis " + axisName(joystickMoved->axis) + " value is: " + std::to_string(joystickMoved->position));
-
-    if (Input::instance().isAxisRightThumbstick(joystickMoved))
-    {
-        Input::instance().setAimMode(AimMode::Joystick);
-        return;
-    }
+    Input::instance().inputMode = InputMode::Joystick;
 
     // Last one, so no need to return
     if (Input::instance().isAxisRightTrigger(joystickMoved) && Input::instance().wasRightTriggerReleased(joystickMoved))
@@ -280,7 +256,7 @@ void GameRoot::update() const
         if (!PlayerStatus::instance().isDead())
         {
             Nukes::instance().update();
-            Enemies::instance().update();
+            //Enemies::instance().update();
             PlayerShip::instance().update();
             Bullets::instance().update();
             BlackHoles::instance().update();
@@ -328,12 +304,15 @@ void GameRoot::render()
     BlackHoles::instance().draw();
     Bullets::instance().draw();
     PlayerShip::instance().draw();
+    Buffs::instance().draw();
     GaussianBlur::instance().drawToScreen();
 
     // Draws without bloom
-    FloatingKillTexts::instance().draw();
     Input::instance().draw();
+    LivesAndNukes::instance().draw();
+    FloatingKillTexts::instance().draw();
     UserInterface::instance().draw();
+    Buttons::instance().draw();
 
     renderWindow.display();
 }
