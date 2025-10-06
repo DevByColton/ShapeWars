@@ -114,7 +114,7 @@ void Bullets::Bullet::activate(const sf::Vector2f velocity, const sf::Vector2f p
 }
 
 
-void Bullets::addBulletGroup(const sf::Vector2f fromPosition, const sf::Vector2f aimDirection)
+void Bullets::addBulletGroup(const sf::Vector2f& position, const float direction)
 {
     assert(firstAvailable != nullptr);
 
@@ -129,15 +129,14 @@ void Bullets::addBulletGroup(const sf::Vector2f fromPosition, const sf::Vector2f
         // Create a random spread so the bullets mimic a machine gun like effect
         // Use a quaternion to rotate the initial position of the bullets in the direction they're travelling
         const float randomSpread = spreadDistribution(randEngine) + spreadDistribution(randEngine);
-        const float aimAngle = Extensions::toAngle(aimDirection);
-        const Quaternion aimQuat = Quaternion::createFromYawPitchRoll(0, 0, aimAngle);
-        const sf::Vector2f velocity = Extensions::fromPolar(aimAngle + randomSpread, 20.0);
+        const Quaternion aimQuat = Quaternion::createFromYawPitchRoll(0, 0, direction);
+        const sf::Vector2f velocity = Extensions::fromPolar(direction + randomSpread, 20.0);
 
         // Add a group of 2 bullets with a small amount of offset so they are parallel
         sf::Vector2f offset = Extensions::transform({15, -8.0}, aimQuat);
-        bullet->activate(velocity, fromPosition + offset);
+        bullet->activate(velocity, position + offset);
         offset = Extensions::transform({15.0, 8.0}, aimQuat);
-        bullet2->activate(velocity, fromPosition + offset);
+        bullet2->activate(velocity, position + offset);
 
         Sound::instance().playShotSound();
     }

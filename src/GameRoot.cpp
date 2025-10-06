@@ -10,13 +10,16 @@
 #include "Entities/Include/Nukes.h"
 #include "Entities/Include/PlayerShip.h"
 #include "Grid/Grid.h"
-#include "Input/Input.h"
-#include "Logger/Logger.h"
+#include "Input/Include/Input.h"
+#include "System/Include/Logger.h"
 #include "Particles/Particles.h"
-#include "PlayerStatus/PlayerStatus.h"
+#include "PlayerStatus/Include/Buffs.h"
+#include "PlayerStatus/Include/PlayerStatus.h"
 #include "SFML/Graphics/Image.hpp"
 #include "SFML/System/Sleep.hpp"
+#include "UserInterface/Include/Buttons.h"
 #include "UserInterface/Include/FloatingKillTexts.h"
+#include "UserInterface/Include/LivesAndNukes.h"
 #include "UserInterface/Include/UserInterface.h"
 
 
@@ -29,12 +32,16 @@ GameRoot::GameRoot()
     sf::Vector2 maxWindowSize {width, height};
     const unsigned int bitsPerPixel = fullscreenModes[0].bitsPerPixel;
 
+    sf::ContextSettings settings;
+    settings.antiAliasingLevel = 8;
+
     // Create the render window with fullscreen and properties
     renderWindow = sf::RenderWindow(
         sf::VideoMode(maxWindowSize, bitsPerPixel),
         "Shape Wars",
         sf::Style::Default,
-        sf::State::Fullscreen
+        sf::State::Fullscreen,
+        settings
     );
     renderWindow.setMaximumSize(maxWindowSize);
     renderWindow.setVerticalSyncEnabled(true);
@@ -48,6 +55,9 @@ GameRoot::GameRoot()
     topRightCorner = {windowRectangle.size.x, windowRectangle.position.y};
     bottomRightCorner = {windowRectangle.size.x, windowRectangle.size.y};
     bottomLeftCorner = {windowRectangle.position.x, windowRectangle.size.y};
+
+    // Set the minimum dead zone for controllers
+    renderWindow.setJoystickThreshold(15.f);
 
      Logger::printOut(
         "Created fullscreen window with size " + std::to_string(width) +
@@ -88,11 +98,6 @@ std::chrono::milliseconds GameRoot::getCurrentTime()
 
 void GameRoot::run()
 {
-    // TODO: Play the game play song when the actual round starts???
-    //       Create some ambient noise to play in the main menu until the game starts
-    //       This will move to update soon
-    Sound::instance().playGamePlaySong();
-
     // Main game loop, running at a fixed timestep of 60 fps
     while (renderWindow.isOpen())
     {
@@ -121,6 +126,9 @@ void GameRoot::processInput()
         if (event->is<sf::Event::Closed>())
             renderWindow.close();
 
+        if (const auto* _ = event->getIf<sf::Event::MouseMoved>())
+            Input::instance().inputMode = InputMode::MouseAndKeyboard;
+
         // Keyboard pressed events (these are hold events)
         if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>())
             processKeyPressed(keyPressed);
@@ -141,11 +149,9 @@ void GameRoot::processInput()
         if (const auto* joystickMoved = event->getIf<sf::Event::JoystickMoved>())
             processJoystickAxisMoved(joystickMoved);
 
-        if (const auto* joystickConnected = event->getIf<sf::Event::JoystickConnected>())
-            Logger::printOut("joystick connected: " + std::to_string(joystickConnected->joystickId));
-
-        if (const auto* joystickDisconnected = event->getIf<sf::Event::JoystickDisconnected>())
-            Logger::printOut("joystick disconnected: " + std::to_string(joystickDisconnected->joystickId));
+        // Joystick axis connected event
+        if (const auto* _ = event->getIf<sf::Event::JoystickConnected>())
+            Input::instance().checkConnectedDevice();
     }
 
     Input::instance().update();
@@ -154,30 +160,75 @@ void GameRoot::processInput()
 
 void GameRoot::processKeyPressed(const sf::Event::KeyPressed* keyPressed)
 {
-    // No hold event implements currently
+    Input::instance().inputMode = InputMode::MouseAndKeyboard;
 }
 
 
 void GameRoot::processKeyReleased(const sf::Event::KeyReleased* keyReleased)
 {
+    Input::instance().inputMode = InputMode::MouseAndKeyboard;
+
     if (keyReleased->scancode == sf::Keyboard::Scancode::Escape)
+    {
         renderWindow.close();
+        return;
+    }
 
     if (keyReleased->scancode == sf::Keyboard::Scancode::K)
+    {
         PlayerStatus::instance().markForKill();
+        return;
+    }
 
     if (keyReleased->scancode == sf::Keyboard::Scancode::Space)
+    {
         Nukes::instance().markDetonate(PlayerShip::instance().getPosition());
+        return;
+    }
 
     if (keyReleased->scancode == sf::Keyboard::Scancode::P)
+    {
         togglePause();
+        return;
+    }
 
     if (keyReleased->scancode == sf::Keyboard::Scancode::O)
+    {
         Sound::instance().togglePlaySounds();
+        return;
+    }
 
     if (keyReleased->scancode == sf::Keyboard::Scancode::B)
+    {
         GaussianBlur::instance().toggleGaussianBlur();
+        return;
+    }
 
+    if (keyReleased->scancode == sf::Keyboard::Scancode::Num1)
+    {
+        Buffs::instance().useBuff(1);
+        return;
+    }
+
+    if (keyReleased->scancode == sf::Keyboard::Scancode::Num2)
+    {
+        Buffs::instance().useBuff(2);
+        return;
+    }
+
+    if (keyReleased->scancode == sf::Keyboard::Scancode::Num3)
+    {
+        Buffs::instance().useBuff(3);
+        return;
+    }
+
+    if (keyReleased->scancode == sf::Keyboard::Scancode::Num4)
+    {
+        Buffs::instance().useBuff(4);
+        return;
+    }
+
+    // Last one, so no need to return
     if (keyReleased->scancode == sf::Keyboard::Scancode::V)
         toggleVsync();
 }
@@ -185,28 +236,62 @@ void GameRoot::processKeyReleased(const sf::Event::KeyReleased* keyReleased)
 
 void GameRoot::processJoystickButtonPressed(const sf::Event::JoystickButtonPressed* joystickButtonPressed)
 {
+    Input::instance().inputMode = InputMode::Joystick;
+
     // No hold events implemented currently
 }
 
 
 void GameRoot::processJoystickButtonReleased(const sf::Event::JoystickButtonReleased* joystickButtonReleased)
 {
-    if (joystickButtonReleased->button == 6)
-        renderWindow.close();
+    Input::instance().inputMode = InputMode::Joystick;
 
-    if (joystickButtonReleased->button == 7)
+    if (!PlayerStatus::instance().isDead())
+    {
+        if (Input::instance().isPrimaryButton(joystickButtonReleased))
+        {
+            Buffs::instance().useBuff(1);
+            return;
+        }
+
+        if (Input::instance().isSecondaryButton(joystickButtonReleased))
+        {
+            Buffs::instance().useBuff(2);
+            return;
+        }
+
+        if (Input::instance().isTertiaryButton(joystickButtonReleased))
+        {
+            Buffs::instance().useBuff(3);
+            return;
+        }
+
+        if (Input::instance().isQuaternaryButton(joystickButtonReleased))
+        {
+            Buffs::instance().useBuff(4);
+            return;
+        }
+    }
+
+    // Last one, so no need to return
+    if (Input::instance().isStartButton(joystickButtonReleased))
+    {
         togglePause();
+        return;
+    }
+
+    if (Input::instance().isBackButton(joystickButtonReleased))
+        renderWindow.close();
 }
 
 
 void GameRoot::processJoystickAxisMoved(const sf::Event::JoystickMoved* joystickMoved)
 {
+    Input::instance().inputMode = InputMode::Joystick;
+
+    // Last one, so no need to return
     if (Input::instance().isAxisRightTrigger(joystickMoved) && Input::instance().wasRightTriggerReleased(joystickMoved))
-    {
         Nukes::instance().markDetonate(PlayerShip::instance().getPosition());
-        Enemies::instance().canSpawn = false;
-        BlackHoles::instance().canSpawn = false;
-    }
 }
 
 
@@ -220,32 +305,32 @@ void GameRoot::update() const
         // When the player is alive
         if (!PlayerStatus::instance().isDead())
         {
-            if (Nukes::instance().update())
-            {
-                Enemies::instance().canSpawn = true;
-                BlackHoles::instance().canSpawn = true;
-            }
-
+            Nukes::instance().update();
             Enemies::instance().update();
+            Buffs::instance().update();
             PlayerShip::instance().update();
             Bullets::instance().update();
             BlackHoles::instance().update();
             Collisions::instance().handleEnemyPlayerBullets();
             Collisions::instance().handleBlackHoles();
+            Collisions::instance().handlePlayerAndBuffs();
         }
 
-        // At a minimum reset the enemies, black holes, and bullets
+        // When the player dies during a round
         if (PlayerStatus::instance().needBaseReset)
         {
+            Buffs::instance().resetBuffDrops();
             Bullets::instance().resetAll();
             Enemies::instance().killAll();
             BlackHoles::instance().killAll();
+            Nukes::instance().reset();
             PlayerStatus::instance().needBaseReset = false;
         }
 
-        // At the restart of a new round, reset the player status, game clock, and center the player
+        // At the restart of a new round
         if (PlayerStatus::instance().needTotalReset)
         {
+            Buffs::instance().resetBuffs();
             PlayerStatus::instance().reset();
             PlayerShip::instance().centerPlayer();
             Nukes::instance().resetNukeCount();
@@ -273,12 +358,16 @@ void GameRoot::render()
     BlackHoles::instance().draw();
     Bullets::instance().draw();
     PlayerShip::instance().draw();
+    Buffs::instance().draw();
     GaussianBlur::instance().drawToScreen();
 
     // Draws without bloom
+    LivesAndNukes::instance().draw();
     FloatingKillTexts::instance().draw();
-    Input::instance().draw();
     UserInterface::instance().draw();
+    Buffs::instance().drawText();
+    Buttons::instance().draw();
+    Input::instance().draw();
 
     renderWindow.display();
 }

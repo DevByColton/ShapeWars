@@ -10,10 +10,8 @@ private:
     const float initialVelocity = 25.f;
     const int max = 5;
     float velocity = initialVelocity;
-    sf::Color nukeColor {255, 240, 140, 255};
+    sf::Color nukeColor {255, 211, 38, 255};
     sf::CircleShape nukeCircle {radius, 100};
-
-    void reset();
 
 public:
     Nukes();
@@ -28,9 +26,10 @@ public:
     bool isDetonating = false;
     float radius = initialRadius;
 
+    void reset();
     void resetNukeCount();
     void markDetonate(const sf::Vector2f &fromPosition);
-    bool update();
+    void update();
     void draw() const;
     sf::Vector2f getPosition() const;
 };

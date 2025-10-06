@@ -17,14 +17,14 @@ FetchContent_MakeAvailable(SFML)
 add_executable(ShapeWars src/main.cpp
         src/GameRoot.cpp
         src/GameRoot.h
-        src/Logger/Logger.cpp
-        src/Logger/Logger.h
+        src/System/Src/Logger.cpp
+        src/System/Include/Logger.h
         src/Content/Src/Art.cpp
         src/Content/Include/Art.h
         src/Entities/Src/PlayerShip.cpp
         src/Entities/Include/PlayerShip.h
-        src/Input/Input.cpp
-        src/Input/Input.h
+        src/Input/Src/Input.cpp
+        src/Input/Include/Input.h
         src/System/Include/Extensions.h
         src/Entities/Src/Bullets.cpp
         src/Entities/Include/Bullets.h
@@ -34,8 +34,8 @@ add_executable(ShapeWars src/main.cpp
         src/Entities/Include/Enemies.h
         src/Entities/Src/Collisions.cpp
         src/Entities/Include/Collisions.h
-        src/PlayerStatus/PlayerStatus.cpp
-        src/PlayerStatus/PlayerStatus.h
+        src/PlayerStatus/Src/PlayerStatus.cpp
+        src/PlayerStatus/Include/PlayerStatus.h
         src/UserInterface/Src/UserInterface.cpp
         src/UserInterface/Include/UserInterface.h
         src/Content/Src/Sound.cpp
@@ -59,6 +59,20 @@ add_executable(ShapeWars src/main.cpp
         src/System/Src/Extensions.cpp
         src/Entities/Src/Nukes.cpp
         src/Entities/Include/Nukes.h
+        src/Input/Src/Xbox.cpp
+        src/Input/Include/Xbox.h
+        src/Input/Src/Dualsense.cpp
+        src/Input/Include/Dualsense.h
+        src/Input/Src/Nintendo.cpp
+        src/Input/Include/Nintendo.h
+        src/Input/Src/MouseAndKeyboard.cpp
+        src/Input/Include/MouseAndKeyboard.h
+        src/PlayerStatus/Src/Buffs.cpp
+        src/PlayerStatus/Include/Buffs.h
+        src/UserInterface/Src/LivesAndNukes.cpp
+        src/UserInterface/Include/LivesAndNukes.h
+        src/UserInterface/Src/Buttons.cpp
+        src/UserInterface/Include/Buttons.h
 )
 
 target_compile_features(ShapeWars PRIVATE cxx_std_20)

@@ -6,24 +6,25 @@
 
 class PlayerShip {
 private:
-    sf::Sprite sprite {Art::instance().player};
-    const int spawnBulletCooldownFrames = 6;
-    int spawnBulletCooldownRemaining = 0;
-
-    const sf::Color white {179, 179, 179, 255};
-    const sf::Color deepRed {178, 27, 7, 255};
-    const sf::Color orangeYellow {255, 187, 30, 255};
+    const float SPAWN_BULLET_COOLDOWN = 0.1f;
+    float timeUntilBulletSpawn = SPAWN_BULLET_COOLDOWN;
+    const float BASE_SPEED = 8;
+    float speed = BASE_SPEED;
     sf::Vector2f velocity {0.0, 0.0};
     sf::Vector2f spriteSizeF {0.0, 0.0};
-    float speed = 8;
+    sf::Sprite ship {Art::instance().player};
+    sf::Sprite invincibleShip {Art::instance().invincibleBuff};
+    const sf::Color WHITE_SHADE {179, 179, 179, 255};
+    const sf::Color DEEP_RED {178, 27, 7, 255};
+    const sf::Color ORANGE_YELLOW {255, 187, 30, 255};
 
     float halfWidth() const;
     float halfHeight() const;
     void createShipExhaust() const;
+    void createBulletGroups();
 
 public:
     PlayerShip();
-    ~PlayerShip() = default;
 
     static PlayerShip &instance() {
         static auto *instance = new PlayerShip;
@@ -31,10 +32,18 @@ public:
     }
 
     float radius = 20;
+    bool isInvincible = false;
+    bool isUsingBoosters = false;
+    bool isUsingShotgunBullets = false;
+    bool isUsingBulletsAllDirections = false;
 
-    void centerPlayer();
     sf::Vector2f getPosition() const;
     void applyForce(sf::Vector2f);
+    void setInvincibility(bool isInvincible);
+    void setUsingBoosters(bool isUsingBoosters);
+    void setUsingShotgunBullets(bool isUsingShotgunBullets);
+    void setUsingBulletsAllDirections(bool isUsingBulletsAllDirections);
+    void centerPlayer();
     void update();
     void draw() const;
 };

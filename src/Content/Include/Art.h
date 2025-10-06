@@ -14,6 +14,7 @@ struct Art {
     }
 
     sf::Texture player;
+    sf::Texture playerBoosters;
     sf::Texture nuke;
     sf::Texture seeker;
     sf::Texture wanderer;
@@ -27,6 +28,30 @@ struct Art {
     sf::Texture blackHole;
     sf::Texture particle;
     sf::Texture particleGlow;
+    sf::Texture buffFrame;
+    sf::Texture buffIconPlaceHolder;
+    sf::Texture bulletsAllDirectionsBuff;
+    sf::Texture invincibleBuff;
+    sf::Texture shotGunBuff;
+    sf::Texture boostersBuff;
+    sf::Texture livesAndNukesFrame;
+    sf::Texture scoreFrame;
+    sf::Texture keyboardFrame;
+    sf::Texture num1;
+    sf::Texture num2;
+    sf::Texture num3;
+    sf::Texture num4;
+    sf::Texture spaceBar;
+    sf::Texture dualsenseXButton;
+    sf::Texture dualsenseSquareButton;
+    sf::Texture dualsenseCircleButton;
+    sf::Texture dualsenseTriangleButton;
+    sf::Texture dualsenseRightTrigger;
+    sf::Texture xboxAButton;
+    sf::Texture xboxBButton;
+    sf::Texture xboxXButton;
+    sf::Texture xboxYButton;
+    sf::Texture xboxRightTrigger;
     sf::Font font;
 };
 

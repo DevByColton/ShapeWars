@@ -76,7 +76,7 @@ private:
         void activateSnakeBodyPart(EnemyType enemyType);
         void pushApartBy(const Enemy &);
         void applyForce(sf::Vector2f);
-        void reset();
+        void reset(bool canDropBuffChance);
         bool canAct();
         void markForKill();
         void killAddPoints();

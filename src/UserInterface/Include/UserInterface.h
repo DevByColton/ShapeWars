@@ -7,12 +7,9 @@
 class UserInterface {
 private:
     UserInterface();
-    ~UserInterface() = default;
 
-    sf::Sprite playerShipSprite {Art::instance().player};
-    sf::Sprite nukeSprite {Art::instance().nuke};
+    sf::Sprite scoreFrame {Art::instance().scoreFrame};
     sf::Text pausedText {Art::instance().font, {"== [ paused ] =="}, 72};
-    sf::Text livesAndNukesText {Art::instance().font, {"== [ lives | nukes ] =="}, 30};
     sf::Text scoreText {Art::instance().font, {}, 60};
     sf::Text multiplierHeaderText {Art::instance().font, {"mult x "}, 20};
     sf::Text multiplierText {Art::instance().font, {}, 20};

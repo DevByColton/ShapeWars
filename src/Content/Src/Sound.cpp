@@ -1,5 +1,5 @@
 ﻿#include "../Include/Sound.h"
-#include "../../Logger/Logger.h"
+#include "../../System/Include/Logger.h"
 #include "SFML/Audio/SoundBuffer.hpp"
 #include "SFML/System/Exception.hpp"
 

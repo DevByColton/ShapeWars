@@ -22,6 +22,7 @@ struct Collisions {
     bool isColliding(float, sf::Vector2f, sf::Vector2f);
     void handleEnemyPlayerBullets();
     void handleBlackHoles();
+    void handlePlayerAndBuffs();
 };
 
 
