@@ -1,7 +1,7 @@
 ﻿#include <string>
 #include "../Include/UserInterface.h"
 #include "../../GameRoot.h"
-#include "../../PlayerStatus/Include/PlayerStatus.h"
+#include "../../Entities/Include/Player/PlayerStatus.h"
 #include "../../System/Include/Extensions.h"
 
 

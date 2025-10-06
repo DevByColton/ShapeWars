@@ -4,14 +4,14 @@
 #include "../../Content/Include/GaussianBlur.h"
 #include "../../Content/Include/Sound.h"
 #include "../../Particles/Particles.h"
-#include "../../PlayerStatus/Include/Buffs.h"
-#include "../../PlayerStatus/Include/PlayerStatus.h"
+#include "../Include/Player/Buffs.h"
+#include "../Include/Player/PlayerStatus.h"
 #include "../../System/Include/ColorPicker.h"
 #include "../../System/Include/Extensions.h"
 #include "../../System/Include/RandomVector.h"
 #include "../../System/Include/SpawnHelper.h"
 #include "../../UserInterface/Include/FloatingKillTexts.h"
-#include "../Include/PlayerShip.h"
+#include "../Include/Player/PlayerShip.h"
 #include "SFML/Graphics/Text.hpp"
 
 Enemies::Enemies()

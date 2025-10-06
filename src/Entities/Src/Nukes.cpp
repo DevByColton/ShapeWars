@@ -1,7 +1,7 @@
 ﻿#include "../Include/Nukes.h"
 #include "../../Content/Include/GaussianBlur.h"
 #include "../../Grid/Grid.h"
-#include "../../PlayerStatus/Include/PlayerStatus.h"
+#include "../Include/Player/PlayerStatus.h"
 #include "../../System/Include/Extensions.h"
 #include "../Include/BlackHoles.h"
 #include "../Include/Enemies.h"
@@ -17,8 +17,8 @@ Nukes::Nukes()
 
 void Nukes::reset()
 {
-    radius = initialRadius;
-    velocity = initialVelocity;
+    radius = INITIAL_RADIUS;
+    velocity = INITIAL_VELOCITY;
     nukeCircle.setRadius(radius);
     nukeCircle.setPosition({0.f, 0.f});
     isDetonating = false;
@@ -27,7 +27,7 @@ void Nukes::reset()
 
 void Nukes::resetNukeCount()
 {
-    count = 3;
+    count = MAX_NUKE_COUNT;
 }
 
 

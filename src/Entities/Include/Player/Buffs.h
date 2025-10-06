@@ -1,7 +1,7 @@
 ﻿#ifndef BUFFS_H
 #define BUFFS_H
 #include <random>
-#include "../../Content/Include/Art.h"
+#include "../../../Content/Include/Art.h"
 #include "SFML/Graphics/Sprite.hpp"
 #include "SFML/Graphics/Text.hpp"
 

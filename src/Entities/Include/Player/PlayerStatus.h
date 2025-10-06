@@ -6,16 +6,14 @@
 
 class PlayerStatus {
 private:
-    const int killParticleCount = 1400;
-    const int maxMultiplier = 20;
-    const int baseScoreForExtraLife = 10'000;
-    const int maxLives = 5;
-    const float maxMultiplierTime = 2.f;
-    sf::Clock roundClock {};
+    const int KILL_PARTICLE_COUNT = 1400;
+    const int MAX_MULTIPLIER = 20;
+    const int MAX_LIVES = 5;
+    const float MAX_MULTIPLIER_TIME = 2.f;
     float respawnTime = 0.f;
-    float multiplierTime = maxMultiplierTime;
-    int scoreForExtraLife = baseScoreForExtraLife;
+    float multiplierTime = MAX_MULTIPLIER_TIME;
     bool shouldKill = false;
+    sf::Clock roundClock {};
 
     void kill();
     void loadHighscore();
@@ -32,7 +30,7 @@ public:
 
     int highScore = -1;
     int score = 0;
-    int lives = 3;
+    int lives = MAX_LIVES;
     int multiplier = 1;
     bool needTotalReset = false;
     bool needBaseReset = false;

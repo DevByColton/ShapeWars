@@ -4,7 +4,7 @@
 #include "../../Content/Include/GaussianBlur.h"
 #include "../../Grid/Grid.h"
 #include "../../Particles/Particles.h"
-#include "../../PlayerStatus/Include/PlayerStatus.h"
+#include "../Include/Player/PlayerStatus.h"
 #include "../../System/Include/ColorPicker.h"
 #include "../../System/Include/Extensions.h"
 #include "../../System/Include/SpawnHelper.h"

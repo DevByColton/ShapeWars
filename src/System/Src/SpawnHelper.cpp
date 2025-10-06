@@ -1,5 +1,5 @@
 ﻿#include "../Include/SpawnHelper.h"
-#include "../../Entities/Include/PlayerShip.h"
+#include "../../Entities/Include/Player/PlayerShip.h"
 #include "../Include/Extensions.h"
 
 /*

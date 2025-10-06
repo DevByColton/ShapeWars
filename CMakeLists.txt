@@ -21,8 +21,8 @@ add_executable(ShapeWars src/main.cpp
         src/System/Include/Logger.h
         src/Content/Src/Art.cpp
         src/Content/Include/Art.h
-        src/Entities/Src/PlayerShip.cpp
-        src/Entities/Include/PlayerShip.h
+        src/Entities/Src/Player/PlayerShip.cpp
+        src/Entities/Include/Player/PlayerShip.h
         src/Input/Src/Input.cpp
         src/Input/Include/Input.h
         src/System/Include/Extensions.h
@@ -34,8 +34,8 @@ add_executable(ShapeWars src/main.cpp
         src/Entities/Include/Enemies.h
         src/Entities/Src/Collisions.cpp
         src/Entities/Include/Collisions.h
-        src/PlayerStatus/Src/PlayerStatus.cpp
-        src/PlayerStatus/Include/PlayerStatus.h
+        src/Entities/Src/Player/PlayerStatus.cpp
+        src/Entities/Include/Player/PlayerStatus.h
         src/UserInterface/Src/UserInterface.cpp
         src/UserInterface/Include/UserInterface.h
         src/Content/Src/Sound.cpp
@@ -67,8 +67,8 @@ add_executable(ShapeWars src/main.cpp
         src/Input/Include/Nintendo.h
         src/Input/Src/MouseAndKeyboard.cpp
         src/Input/Include/MouseAndKeyboard.h
-        src/PlayerStatus/Src/Buffs.cpp
-        src/PlayerStatus/Include/Buffs.h
+        src/Entities/Src/Player/Buffs.cpp
+        src/Entities/Include/Player/Buffs.h
         src/UserInterface/Src/LivesAndNukes.cpp
         src/UserInterface/Include/LivesAndNukes.h
         src/UserInterface/Src/Buttons.cpp

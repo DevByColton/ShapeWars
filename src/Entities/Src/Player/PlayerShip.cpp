@@ -1,15 +1,15 @@
 ﻿#include <algorithm>
 #include <cmath>
-#include "../Include/PlayerShip.h"
-#include "../../GameRoot.h"
-#include "../../Content/Include/Art.h"
-#include "../../Content/Include/GaussianBlur.h"
-#include "../../Input/Include/Input.h"
-#include "../../Particles/Particles.h"
-#include "../../PlayerStatus/Include/PlayerStatus.h"
-#include "../../System/Include/Extensions.h"
-#include "../../System/Include/RandomVector.h"
-#include "../Include/Bullets.h"
+#include "../../Include/Player/PlayerShip.h"
+#include "../../../GameRoot.h"
+#include "../../../Content/Include/Art.h"
+#include "../../../Content/Include/GaussianBlur.h"
+#include "../../../Input/Include/Input.h"
+#include "../../../Particles/Particles.h"
+#include "../../Include/Player/PlayerStatus.h"
+#include "../../../System/Include/Extensions.h"
+#include "../../../System/Include/RandomVector.h"
+#include "../../Include/Bullets.h"
 
 PlayerShip::PlayerShip()
 {
