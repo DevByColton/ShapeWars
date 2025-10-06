@@ -1,7 +1,6 @@
 ﻿#include <string>
 #include <chrono>
 #include "GameRoot.h"
-#include <iostream>
 #include "Content/Include/GaussianBlur.h"
 #include "Content/Include/Sound.h"
 #include "Entities/Include/BlackHoles.h"
@@ -12,7 +11,7 @@
 #include "Entities/Include/PlayerShip.h"
 #include "Grid/Grid.h"
 #include "Input/Include/Input.h"
-#include "Logger/Logger.h"
+#include "System/Include/Logger.h"
 #include "Particles/Particles.h"
 #include "PlayerStatus/Include/Buffs.h"
 #include "PlayerStatus/Include/PlayerStatus.h"

@@ -17,8 +17,8 @@ FetchContent_MakeAvailable(SFML)
 add_executable(ShapeWars src/main.cpp
         src/GameRoot.cpp
         src/GameRoot.h
-        src/Logger/Logger.cpp
-        src/Logger/Logger.h
+        src/System/Src/Logger.cpp
+        src/System/Include/Logger.h
         src/Content/Src/Art.cpp
         src/Content/Include/Art.h
         src/Entities/Src/PlayerShip.cpp

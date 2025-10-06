@@ -1,5 +1,5 @@
 ﻿#include "../Include/Art.h"
-#include "../../Logger/Logger.h"
+#include "../../System/Include/Logger.h"
 #include "SFML/System/Exception.hpp"
 
 Art::Art()

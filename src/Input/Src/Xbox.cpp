@@ -1,7 +1,6 @@
 ﻿#include <algorithm>
 #include <string>
 #include "../Include/Xbox.h"
-#include "../../Logger/Logger.h"
 #include "../Include/Input.h"
 
 

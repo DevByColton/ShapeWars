@@ -1,5 +1,5 @@
 ﻿#include <iostream>
-#include "Logger.h"
+#include "../Include/Logger.h"
 
 void Logger::printError(const std::string &message) {
     std::cerr << std::endl << message << std::endl;

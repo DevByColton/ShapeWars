@@ -407,7 +407,7 @@ void Buffs::Buff::update()
 
         // Update the timer text
         timerText.setString(std::to_string(static_cast<int>(duration)));
-        timerText.setOrigin({timerText.getLocalBounds().size.x / 2.f, timerText.getLocalBounds().size.y / 2.f});
+        timerText.setOrigin(timerText.getLocalBounds().getCenter());
     }
 }
 
