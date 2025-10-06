@@ -1,1 +1,7 @@
-Creating a Geometry Wars clone following [Monogame's tutorial](https://github.com/MonoGame/MonoGame.Samples/blob/3.8.2/NeonShooter/README.md), but using SFML and C++.
+Shapes Wars is a <a href="https://store.steampowered.com/app/8400/Geometry_Wars_Retro_Evolved/" target="_blank" rel="noopener noreferrer">Geometry Wars</a> clone with my own twist.
+My main purpose for creating this game was to program and design a complete game using C++. I used <a href="https://www.sfml-dev.org/" target="_blank" rel="noopener noreferrer">SFML</a>
+for the window, graphics, and audio systems. I referenced <a href="https://github.com/MonoGame/MonoGame.Samples/blob/3.8.2/NeonShooter/README.md" target="_blank" rel="noopener noreferrer">this tutorial for creating a Geometry Wars clone in C#/Monogame</a>
+for the maths involved in the background warping grid, particles, color generation based off hue, and rotation using quaternions. Systems of my own creation include snake and dodger enemies, nukes, and buff drops from enemies. I also designed the UI
+for handling buffs, lives, bombs, high score, and multiplier while taking up a little room as possible on the screen. I wrote all of these system using some principles from <a href="https://gameprogrammingpatterns.com/" target="_blank" rel="noopener noreferrer">Game Programming Patterns</a>.
+In creating this game I was able to learn a lot about C++, and I was able to flex all aspects of the game creation process by designing the code, the UI, creating my own assets, and
+designing the gameplay to make it feel challenging, but still beatable, balanced, and fun.
