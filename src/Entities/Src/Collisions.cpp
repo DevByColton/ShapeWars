@@ -1,5 +1,6 @@
 ﻿#include <cmath>
 #include "../Include/Collisions.h"
+#include "../../PlayerStatus/Include/Buffs.h"
 #include "../../PlayerStatus/Include/PlayerStatus.h"
 #include "../../System/Include/Extensions.h"
 #include "../Include/BlackHoles.h"
@@ -71,7 +72,8 @@ void Collisions::handleEnemyPlayerBullets()
             if (isColliding(enemy.radius + PlayerShip::instance().radius, enemy.getPosition(), PlayerShip::instance().getPosition()))
             {
                 enemy.markForKill();
-                PlayerStatus::instance().markForKill();
+                if (!PlayerShip::instance().isInvincible)
+                    PlayerStatus::instance().markForKill();
             }
         }
     }
@@ -131,9 +133,38 @@ void Collisions::handleBlackHoles()
                 if (isColliding(PlayerShip::instance().radius + blackHole.radius, PlayerShip::instance().getPosition(), blackHole.getPosition()))
                 {
                     blackHole.markHit(false);
-                    PlayerStatus::instance().markForKill();
+                    if (!PlayerShip::instance().isInvincible)
+                        PlayerStatus::instance().markForKill();
                 }
             }
         }
+}
+
+
+void Collisions::handlePlayerAndBuffs()
+{
+    if (Buffs::instance().canPickUpBuff())
+    {
+        // Buff drop 1
+        if (Buffs::instance().buffDrop1.availableForPickUp())
+            if (isColliding(PlayerShip::instance().radius + Buffs::instance().buffDrop1.radius,
+                    PlayerShip::instance().getPosition(),
+                    Buffs::instance().buffDrop1.getPosition()))
+                Buffs::instance().buffDrop1.isPickedUp = true;
+
+        // Buff drop 2
+        if (Buffs::instance().buffDrop2.availableForPickUp())
+            if (isColliding(PlayerShip::instance().radius + Buffs::instance().buffDrop2.radius,
+                    PlayerShip::instance().getPosition(),
+                    Buffs::instance().buffDrop2.getPosition()))
+                Buffs::instance().buffDrop2.isPickedUp = true;
+
+        // Buff drop 3
+        if (Buffs::instance().buffDrop3.availableForPickUp())
+            if (isColliding(PlayerShip::instance().radius + Buffs::instance().buffDrop3.radius,
+                    PlayerShip::instance().getPosition(),
+                    Buffs::instance().buffDrop3.getPosition()))
+                Buffs::instance().buffDrop3.isPickedUp = true;
+    }
 }
 

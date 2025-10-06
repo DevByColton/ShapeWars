@@ -9,6 +9,9 @@ Art::Art()
         player = sf::Texture("Content\\Images\\Player.png");
         player.setSmooth(true);
 
+        playerBoosters = sf::Texture("Content\\Images\\PlayerBoosters.png");
+        playerBoosters.setSmooth(true);
+
         nuke = sf::Texture("Content\\Images\\Nuke.png");
         nuke.setSmooth(true);
 

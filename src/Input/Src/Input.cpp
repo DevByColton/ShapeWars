@@ -66,6 +66,34 @@ bool Input::isStartButton(const sf::Event::JoystickButtonReleased* joystickButto
 }
 
 
+bool Input::isPrimaryButton(const sf::Event::JoystickButtonReleased* joystickButtonReleased)
+{
+    return Xbox::instance().isAButton(joystickButtonReleased) ||
+           Dualsense::instance().isXButton(joystickButtonReleased);
+}
+
+
+bool Input::isSecondaryButton(const sf::Event::JoystickButtonReleased* joystickButtonReleased)
+{
+    return Xbox::instance().isBButton(joystickButtonReleased) ||
+           Dualsense::instance().isCircleButton(joystickButtonReleased);
+}
+
+
+bool Input::isTertiaryButton(const sf::Event::JoystickButtonReleased* joystickButtonReleased)
+{
+    return Xbox::instance().isXButton(joystickButtonReleased) ||
+           Dualsense::instance().isSquareButton(joystickButtonReleased);
+}
+
+
+bool Input::isQuaternaryButton(const sf::Event::JoystickButtonReleased* joystickButtonReleased)
+{
+    return Xbox::instance().isYButton(joystickButtonReleased) ||
+           Dualsense::instance().isTriangleButton(joystickButtonReleased);
+}
+
+
 sf::Vector2f Input::thumbStickPosition(const int index, const sf::Joystick::Axis thumbStickX, const sf::Joystick::Axis thumbStickY) const
 {
     sf::Vector2f position {0.f, 0.f};

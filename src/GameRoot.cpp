@@ -205,6 +205,30 @@ void GameRoot::processKeyReleased(const sf::Event::KeyReleased* keyReleased)
         return;
     }
 
+    if (keyReleased->scancode == sf::Keyboard::Scancode::Num1)
+    {
+        Buffs::instance().useBuff(1);
+        return;
+    }
+
+    if (keyReleased->scancode == sf::Keyboard::Scancode::Num2)
+    {
+        Buffs::instance().useBuff(2);
+        return;
+    }
+
+    if (keyReleased->scancode == sf::Keyboard::Scancode::Num3)
+    {
+        Buffs::instance().useBuff(3);
+        return;
+    }
+
+    if (keyReleased->scancode == sf::Keyboard::Scancode::Num4)
+    {
+        Buffs::instance().useBuff(4);
+        return;
+    }
+
     // Last one, so no need to return
     if (keyReleased->scancode == sf::Keyboard::Scancode::V)
         toggleVsync();
@@ -223,15 +247,42 @@ void GameRoot::processJoystickButtonReleased(const sf::Event::JoystickButtonRele
 {
     Input::instance().inputMode = InputMode::Joystick;
 
-    if (Input::instance().isBackButton(joystickButtonReleased))
+    if (!PlayerStatus::instance().isDead())
     {
-        renderWindow.close();
-        return;
+        if (Input::instance().isPrimaryButton(joystickButtonReleased))
+        {
+            Buffs::instance().useBuff(1);
+            return;
+        }
+
+        if (Input::instance().isSecondaryButton(joystickButtonReleased))
+        {
+            Buffs::instance().useBuff(2);
+            return;
+        }
+
+        if (Input::instance().isTertiaryButton(joystickButtonReleased))
+        {
+            Buffs::instance().useBuff(3);
+            return;
+        }
+
+        if (Input::instance().isQuaternaryButton(joystickButtonReleased))
+        {
+            Buffs::instance().useBuff(4);
+            return;
+        }
     }
 
     // Last one, so no need to return
     if (Input::instance().isStartButton(joystickButtonReleased))
+    {
         togglePause();
+        return;
+    }
+
+    if (Input::instance().isBackButton(joystickButtonReleased))
+        renderWindow.close();
 }
 
 
@@ -256,17 +307,20 @@ void GameRoot::update() const
         if (!PlayerStatus::instance().isDead())
         {
             Nukes::instance().update();
-            //Enemies::instance().update();
+            Enemies::instance().update();
+            Buffs::instance().update();
             PlayerShip::instance().update();
             Bullets::instance().update();
             BlackHoles::instance().update();
             Collisions::instance().handleEnemyPlayerBullets();
             Collisions::instance().handleBlackHoles();
+            Collisions::instance().handlePlayerAndBuffs();
         }
 
         // When the player dies during a round
         if (PlayerStatus::instance().needBaseReset)
         {
+            Buffs::instance().resetBuffDrops();
             Bullets::instance().resetAll();
             Enemies::instance().killAll();
             BlackHoles::instance().killAll();
@@ -277,6 +331,7 @@ void GameRoot::update() const
         // At the restart of a new round
         if (PlayerStatus::instance().needTotalReset)
         {
+            Buffs::instance().resetBuffs();
             PlayerStatus::instance().reset();
             PlayerShip::instance().centerPlayer();
             Nukes::instance().resetNukeCount();
@@ -308,11 +363,12 @@ void GameRoot::render()
     GaussianBlur::instance().drawToScreen();
 
     // Draws without bloom
-    Input::instance().draw();
     LivesAndNukes::instance().draw();
     FloatingKillTexts::instance().draw();
     UserInterface::instance().draw();
+    Buffs::instance().drawText();
     Buttons::instance().draw();
+    Input::instance().draw();
 
     renderWindow.display();
 }

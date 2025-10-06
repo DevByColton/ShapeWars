@@ -62,7 +62,7 @@ sf::Vector2f Dualsense::rightThumbStickPosition(const int index, const sf::Joyst
 }
 
 
-bool Dualsense::isBackButton(const sf::Event::JoystickButtonReleased* joystickButtonReleased)
+bool Dualsense::isBackButton(const sf::Event::JoystickButtonReleased* joystickButtonReleased) const
 {
     if (!isSupported(sf::Joystick::getIdentification(joystickButtonReleased->joystickId)))
         return false;
@@ -71,10 +71,45 @@ bool Dualsense::isBackButton(const sf::Event::JoystickButtonReleased* joystickBu
 }
 
 
-bool Dualsense::isStartButton(const sf::Event::JoystickButtonReleased* joystickButtonReleased)
+bool Dualsense::isStartButton(const sf::Event::JoystickButtonReleased* joystickButtonReleased) const
 {
     if (!isSupported(sf::Joystick::getIdentification(joystickButtonReleased->joystickId)))
         return false;
 
     return joystickButtonReleased->button == 9;
+}
+
+
+bool Dualsense::isXButton(const sf::Event::JoystickButtonReleased* joystickButtonReleased) const
+{
+    if (!isSupported(sf::Joystick::getIdentification(joystickButtonReleased->joystickId)))
+        return false;
+
+    return joystickButtonReleased->button == 1;
+}
+
+bool Dualsense::isSquareButton(const sf::Event::JoystickButtonReleased* joystickButtonReleased) const
+{
+    if (!isSupported(sf::Joystick::getIdentification(joystickButtonReleased->joystickId)))
+        return false;
+
+    return joystickButtonReleased->button == 0;
+}
+
+
+bool Dualsense::isCircleButton(const sf::Event::JoystickButtonReleased* joystickButtonReleased) const
+{
+    if (!isSupported(sf::Joystick::getIdentification(joystickButtonReleased->joystickId)))
+        return false;
+
+    return joystickButtonReleased->button == 2;
+}
+
+
+bool Dualsense::isTriangleButton(const sf::Event::JoystickButtonReleased* joystickButtonReleased) const
+{
+    if (!isSupported(sf::Joystick::getIdentification(joystickButtonReleased->joystickId)))
+        return false;
+
+    return joystickButtonReleased->button == 3;
 }

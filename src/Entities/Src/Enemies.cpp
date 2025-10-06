@@ -4,6 +4,7 @@
 #include "../../Content/Include/GaussianBlur.h"
 #include "../../Content/Include/Sound.h"
 #include "../../Particles/Particles.h"
+#include "../../PlayerStatus/Include/Buffs.h"
 #include "../../PlayerStatus/Include/PlayerStatus.h"
 #include "../../System/Include/ColorPicker.h"
 #include "../../System/Include/Extensions.h"
@@ -96,7 +97,7 @@ bool Enemies::Enemy::isSnakeBody() const
 }
 
 
-void Enemies::Enemy::reset()
+void Enemies::Enemy::reset(const bool canDropBuffChance)
 {
     // Don't spawn particles if the enemy was not fully spawned
     // This case happens if the player dies during a spawn animation
@@ -120,6 +121,9 @@ void Enemies::Enemy::reset()
             );
         }
     }
+
+    if (canDropBuffChance)
+        Buffs::instance().checkBuffDrop(sprite.getPosition());
 
     sprite.setColor(sf::Color::White);
     sprite.setTexture(Art::instance().enemyPlaceholder);
@@ -193,7 +197,7 @@ void Enemies::Enemy::killAddPoints()
     PlayerStatus::instance().addPoints(pointValue);
     PlayerStatus::instance().increaseMultiplier();
     Sound::instance().playExplosionSound();
-    reset();
+    reset(true);
 }
 
 
@@ -202,7 +206,7 @@ void Enemies::killAll()
     // Kill all the enemies
     for (int i = 0; i < enemies.size(); i++)
         if (enemies.at(i).isActive)
-            enemies.at(i).reset();
+            enemies.at(i).reset(false);
 
     resetSpawnChances();
     resetEnemyPool();

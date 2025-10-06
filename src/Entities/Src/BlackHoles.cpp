@@ -194,7 +194,7 @@ void BlackHoles::update()
 void BlackHoles::BlackHole::update()
 {
     // Update the scale so the black holes pulse
-    float scale = 1.f + 0.1f * std::sin(6.f * GameRoot::instance().elapsedGameTime);
+    float scale = .75f + 0.1f * std::sin(10.f * GameRoot::instance().elapsedGameTime);
     sprite.setScale({scale, scale});
 
     // Pull the grid in around the black hole, with some variation using sin

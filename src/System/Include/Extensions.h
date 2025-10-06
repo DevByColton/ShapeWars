@@ -8,8 +8,9 @@
 #include "SFML/System/Vector3.hpp"
 
 
-static constexpr float PI = 3.14159265359;
-static constexpr float TWO_PI = PI * 2;
+static constexpr float PI = 3.14159265359f;
+static constexpr float TWO_PI = PI * 2.f;
+static constexpr float FORTY_FIVE_DEGREES = PI / 4.f;
 
 struct Extensions
 {

@@ -42,7 +42,7 @@ private:
         void draw() const;
     };
 
-    static constexpr int MAX_BULLET_COUNT = 601;
+    static constexpr int MAX_BULLET_COUNT = 1001;
     Bullet *firstAvailable {nullptr};
 
     void resetBulletPool();
@@ -61,7 +61,7 @@ public:
     std::uniform_real_distribution<float> spreadDistribution {-0.04f, 0.04f};
 
     void resetAll();
-    void addBulletGroup(sf::Vector2f, sf::Vector2f);
+    void addBulletGroup(const sf::Vector2f& position, float direction);
     void update();
     void draw() const;
 };

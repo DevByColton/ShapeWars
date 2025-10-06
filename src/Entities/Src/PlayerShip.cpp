@@ -14,42 +14,42 @@
 PlayerShip::PlayerShip()
 {
     // Set the players position in the middle of the screen
-    sprite.setPosition(GameRoot::instance().windowSizeF / 2.f);
+    ship.setPosition(GameRoot::instance().windowSizeF / 2.f);
+    ship.setOrigin({
+        ship.getTexture().getSize().x / 2.f,
+        ship.getTexture().getSize().y / 2.f
+    });
 
-    // Set the sprite origin to the middle of the sprite
-    float spriteMiddleX = static_cast<float>(Art::instance().player.getSize().x / 2.0);
-    float spriteMiddleY = static_cast<float>(Art::instance().player.getSize().y / 2.0);
-    sprite.setOrigin({spriteMiddleX, spriteMiddleY});
-
-    // Set the size of the sprite in float
-    float width = static_cast<float>(sprite.getTexture().getSize().x);
-    float height = static_cast<float>(sprite.getTexture().getSize().y);
-    spriteSizeF = {width, height};
+    invincibleShip.setOrigin({
+        invincibleShip.getTexture().getSize().x / 2.f,
+        invincibleShip.getTexture().getSize().y / 2.f
+    });
+    invincibleShip.setPosition(ship.getPosition());
 }
 
 
 void PlayerShip::centerPlayer()
 {
-    sprite.setPosition(GameRoot::instance().windowSizeF / 2.f);
-    sprite.setRotation(sf::Angle::Zero);
+    ship.setPosition(GameRoot::instance().windowSizeF / 2.f);
+    ship.setRotation(sf::Angle::Zero);
 }
 
 
 sf::Vector2f PlayerShip::getPosition() const
 {
-    return sprite.getPosition();
+    return ship.getPosition();
 }
 
 
 float PlayerShip::halfWidth() const
 {
-    return spriteSizeF.x / 2;
+    return ship.getTexture().getSize().x / 2.f;
 }
 
 
 float PlayerShip::halfHeight() const
 {
-    return spriteSizeF.y / 2;
+    return ship.getTexture().getSize().y / 2.f;
 }
 
 
@@ -71,15 +71,14 @@ void PlayerShip::createShipExhaust() const
         const sf::Vector2f exhaustPosition = getPosition() + Extensions::transform({-30.f, 0.f}, quaternion);
 
         // Center particle stream
-        const sf::Vector2f velMid = baseVelocity + RandomVector::instance().next(0.f, 1.f);
         Particles::instance().create(
             0.5f,
             DontIgnoreGravity,
             Spark,
             exhaustPosition,
-            velMid,
-            white,
-            orangeYellow
+            baseVelocity + RandomVector::instance().next(0.f, 1.f),
+            WHITE_SHADE,
+            ORANGE_YELLOW
         );
 
         // Side particle streams with glow
@@ -89,8 +88,8 @@ void PlayerShip::createShipExhaust() const
             Spark,
             exhaustPosition,
             baseVelocity + perpendicularVelocity,
-            white,
-            deepRed
+            WHITE_SHADE,
+            DEEP_RED
         );
         Particles::instance().create(
             0.5f,
@@ -98,10 +97,148 @@ void PlayerShip::createShipExhaust() const
             Spark,
             exhaustPosition,
             baseVelocity - perpendicularVelocity,
-            white,
-            deepRed
+            WHITE_SHADE,
+            DEEP_RED
         );
+
+        // Moooore sparks at the booster positions
+        if (isUsingBoosters)
+        {
+            Particles::instance().create(
+                0.5f,
+                DontIgnoreGravity,
+                Spark,
+                getPosition() + Extensions::transform({-30.f, 12.f}, quaternion),
+                baseVelocity + RandomVector::instance().next(0.f, 1.f),
+                WHITE_SHADE,
+                ORANGE_YELLOW
+            );
+
+            Particles::instance().create(
+                0.5f,
+                DontIgnoreGravity,
+                Spark,
+                getPosition() + Extensions::transform({-30.f, -12.f}, quaternion),
+                baseVelocity + RandomVector::instance().next(0.f, 1.f),
+                WHITE_SHADE,
+                ORANGE_YELLOW
+            );
+        }
     }
+}
+
+
+void PlayerShip::createBulletGroups()
+{
+    // Check aiming direction and fire bullets after cooldown
+    timeUntilBulletSpawn -= GameRoot::instance().deltaTime;
+    const bool hasBulletSpawnTimeLapsed = timeUntilBulletSpawn < 0.f;
+    const sf::Vector2f aimDirection = Input::instance().getAimDirection(getPosition());
+    const bool isAimingInDirection = aimDirection.lengthSquared() > 0;
+    float aimAngle = 0.f;
+
+    if (isAimingInDirection)
+        aimAngle = Extensions::toAngle(aimDirection);
+
+    // Reset cooldown time
+    if (hasBulletSpawnTimeLapsed)
+        timeUntilBulletSpawn = SPAWN_BULLET_COOLDOWN;
+
+    if (isAimingInDirection && hasBulletSpawnTimeLapsed)
+    {
+        // Fire bullet groups at 45 degree increments in a circle around the ship
+        if (isUsingBulletsAllDirections)
+        {
+            Bullets::instance().addBulletGroup(getPosition(), aimAngle);
+            Bullets::instance().addBulletGroup(getPosition(), aimAngle += FORTY_FIVE_DEGREES);
+            Bullets::instance().addBulletGroup(getPosition(), aimAngle += FORTY_FIVE_DEGREES);
+            Bullets::instance().addBulletGroup(getPosition(), aimAngle += FORTY_FIVE_DEGREES);
+            Bullets::instance().addBulletGroup(getPosition(), aimAngle += FORTY_FIVE_DEGREES);
+            Bullets::instance().addBulletGroup(getPosition(), aimAngle += FORTY_FIVE_DEGREES);
+            Bullets::instance().addBulletGroup(getPosition(), aimAngle += FORTY_FIVE_DEGREES);
+            Bullets::instance().addBulletGroup(getPosition(), aimAngle += FORTY_FIVE_DEGREES);
+            return;
+        }
+
+        // Shotgun bullet groups, 3 groups with slightly different aim directions
+        if (isUsingShotgunBullets)
+        {
+            // Top angled
+            Bullets::instance().addBulletGroup(getPosition(), aimAngle - PI / 12.f);
+
+            // Straight towards aim direction
+            Bullets::instance().addBulletGroup(getPosition(), aimAngle);
+
+            // Bottom angled
+            Bullets::instance().addBulletGroup(getPosition(), aimAngle + PI / 12.f);
+
+            return;
+        }
+
+        // Standard single bullet group
+        Bullets::instance().addBulletGroup(getPosition(), aimAngle);
+    }
+}
+
+
+void PlayerShip::setInvincibility(const bool isInvincible)
+{
+    this->isInvincible = isInvincible;
+
+    if (this->isInvincible)
+    {
+        // Set the scale a bit smaller so when drawing the invincible sprite, it will cover it completely
+        ship.setScale({0.9f, 0.9f});
+        ship.setOrigin({
+            Art::instance().invincibleBuff.getSize().x / 2.f,
+            Art::instance().invincibleBuff.getSize().y / 2.f
+        });
+    }
+    else
+    {
+        ship.setScale({1.f, 1.f});
+        ship.setOrigin({
+            Art::instance().player.getSize().x / 2.f,
+            Art::instance().player.getSize().y / 2.f
+        });
+    }
+}
+
+
+void PlayerShip::setUsingBoosters(const bool isUsingBoosters)
+{
+    this->isUsingBoosters = isUsingBoosters;
+
+    if (this->isUsingBoosters)
+    {
+        speed = BASE_SPEED * 1.5f;
+        ship.setTexture(Art::instance().playerBoosters);
+        ship.setOrigin({
+            Art::instance().playerBoosters.getSize().x / 2.f,
+            Art::instance().playerBoosters.getSize().y / 2.f
+        });
+    }
+    else
+    {
+        speed = BASE_SPEED;
+        ship.setTexture(Art::instance().player);
+        ship.setOrigin({
+            Art::instance().player.getSize().x / 2.f,
+            Art::instance().player.getSize().y / 2.f
+        });
+    }
+}
+
+
+void PlayerShip::setUsingShotgunBullets(const bool isUsingShotgunBullets)
+{
+    this->isUsingShotgunBullets = isUsingShotgunBullets;
+}
+
+
+void PlayerShip::setUsingBulletsAllDirections(const bool isUsingBulletsAllDirections)
+{
+    this->isUsingBulletsAllDirections = isUsingBulletsAllDirections;
 }
 
 
@@ -109,38 +246,36 @@ void PlayerShip::update()
 {
     // Move the player and clamp to window bounds
     velocity += speed * Input::instance().getMovementDirection();
-    const sf::Vector2f nextPosition = sprite.getPosition() + velocity;
+    const sf::Vector2f nextPosition = ship.getPosition() + velocity;
     float clampedX = std::clamp(nextPosition.x, halfWidth(), GameRoot::instance().windowSizeF.x - halfWidth());
     float clampedY = std::clamp(nextPosition.y, halfHeight(), GameRoot::instance().windowSizeF.y - halfHeight());
-    sprite.setPosition({clampedX, clampedY});
+    ship.setPosition({clampedX, clampedY});
+    invincibleShip.setPosition(ship.getPosition());
 
     // Rotation the player ship in the direction of its velocity
     if (velocity.lengthSquared() > 0)
-        sprite.setRotation(sf::radians(Extensions::toAngle(velocity)));
-
-    // Check aiming direction and fire bullets
-    const sf::Vector2f aimDirection = Input::instance().getAimDirection(getPosition());
-    if (aimDirection.lengthSquared() > 0 && spawnBulletCooldownRemaining <= 0) {
-        // Reset fire bullets cooldown
-        spawnBulletCooldownRemaining = spawnBulletCooldownFrames;
-        Bullets::instance().addBulletGroup(getPosition(), aimDirection);
+    {
+        ship.setRotation(sf::radians(Extensions::toAngle(velocity)));
+        invincibleShip.setRotation(ship.getRotation());
     }
 
     // Create the ship trail before resetting velocity
     createShipExhaust();
+    createBulletGroups();
 
     // Make sure velocity always gets reset
     velocity = {0.0, 0.0};
-
-    // Decrement the bullet cooldown
-    if (spawnBulletCooldownRemaining > 0)
-        spawnBulletCooldownRemaining -= 1;
 }
 
 
 void PlayerShip::draw() const
 {
     if (!PlayerStatus::instance().isDead())
-        GaussianBlur::instance().drawToBase(sprite);
+    {
+        GaussianBlur::instance().drawToBase(ship);
+
+        if (isInvincible)
+            GaussianBlur::instance().drawToBase(invincibleShip);
+    }
 }
 

@@ -52,8 +52,12 @@ public:
     [[nodiscard]] bool wasRightTriggerReleased(const sf::Event::JoystickMoved* joystickMoved);
     [[nodiscard]] sf::Vector2f leftThumbStickPosition(int index, const sf::Joystick::Identification& identification) const;
     [[nodiscard]] sf::Vector2f rightThumbStickPosition(int index, const sf::Joystick::Identification& identification) const;
-    [[nodiscard]] bool isBackButton(const sf::Event::JoystickButtonReleased* joystickButtonReleased);
-    [[nodiscard]] bool isStartButton(const sf::Event::JoystickButtonReleased* joystickButtonReleased);
+    [[nodiscard]] bool isBackButton(const sf::Event::JoystickButtonReleased* joystickButtonReleased) const;
+    [[nodiscard]] bool isStartButton(const sf::Event::JoystickButtonReleased* joystickButtonReleased) const;
+    [[nodiscard]] bool isAButton(const sf::Event::JoystickButtonReleased* joystickButtonReleased) const;
+    [[nodiscard]] bool isBButton(const sf::Event::JoystickButtonReleased* joystickButtonReleased) const;
+    [[nodiscard]] bool isXButton(const sf::Event::JoystickButtonReleased* joystickButtonReleased) const;
+    [[nodiscard]] bool isYButton(const sf::Event::JoystickButtonReleased* joystickButtonReleased) const;
 };
 
 

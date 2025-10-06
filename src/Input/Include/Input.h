@@ -36,6 +36,10 @@ struct Input
     [[nodiscard]] sf::Vector2f thumbStickPosition(int index, sf::Joystick::Axis, sf::Joystick::Axis) const;
     [[nodiscard]] bool isBackButton(const sf::Event::JoystickButtonReleased* joystickButtonReleased);
     [[nodiscard]] bool isStartButton(const sf::Event::JoystickButtonReleased* joystickButtonReleased);
+    [[nodiscard]] bool isPrimaryButton(const sf::Event::JoystickButtonReleased* joystickButtonReleased);
+    [[nodiscard]] bool isSecondaryButton(const sf::Event::JoystickButtonReleased* joystickButtonReleased);
+    [[nodiscard]] bool isTertiaryButton(const sf::Event::JoystickButtonReleased* joystickButtonReleased);
+    [[nodiscard]] bool isQuaternaryButton(const sf::Event::JoystickButtonReleased* joystickButtonReleased);
     void checkConnectedDevice();
     void update();
     void draw() const;

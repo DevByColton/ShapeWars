@@ -59,7 +59,7 @@ sf::Vector2f Xbox::rightThumbStickPosition(const int index, const sf::Joystick::
     return Input::instance().thumbStickPosition(index, sf::Joystick::Axis::U, sf::Joystick::Axis::V);
 }
 
-bool Xbox::isBackButton(const sf::Event::JoystickButtonReleased* joystickButtonReleased)
+bool Xbox::isBackButton(const sf::Event::JoystickButtonReleased* joystickButtonReleased) const
 {
     if (!isSupported(sf::Joystick::getIdentification(joystickButtonReleased->joystickId)))
         return false;
@@ -68,7 +68,7 @@ bool Xbox::isBackButton(const sf::Event::JoystickButtonReleased* joystickButtonR
 }
 
 
-bool Xbox::isStartButton(const sf::Event::JoystickButtonReleased* joystickButtonReleased)
+bool Xbox::isStartButton(const sf::Event::JoystickButtonReleased* joystickButtonReleased) const
 {
     if (!isSupported(sf::Joystick::getIdentification(joystickButtonReleased->joystickId)))
         return false;
@@ -76,3 +76,38 @@ bool Xbox::isStartButton(const sf::Event::JoystickButtonReleased* joystickButton
     return joystickButtonReleased->button == 7;
 }
 
+
+bool Xbox::isAButton(const sf::Event::JoystickButtonReleased* joystickButtonReleased) const
+{
+    if (!isSupported(sf::Joystick::getIdentification(joystickButtonReleased->joystickId)))
+        return false;
+
+    return joystickButtonReleased->button == 0;
+}
+
+
+bool Xbox::isBButton(const sf::Event::JoystickButtonReleased* joystickButtonReleased) const
+{
+    if (!isSupported(sf::Joystick::getIdentification(joystickButtonReleased->joystickId)))
+        return false;
+
+    return joystickButtonReleased->button == 1;
+}
+
+
+bool Xbox::isXButton(const sf::Event::JoystickButtonReleased* joystickButtonReleased) const
+{
+    if (!isSupported(sf::Joystick::getIdentification(joystickButtonReleased->joystickId)))
+        return false;
+
+    return joystickButtonReleased->button == 2;
+}
+
+
+bool Xbox::isYButton(const sf::Event::JoystickButtonReleased* joystickButtonReleased) const
+{
+    if (!isSupported(sf::Joystick::getIdentification(joystickButtonReleased->joystickId)))
+        return false;
+
+    return joystickButtonReleased->button == 3;
+}
