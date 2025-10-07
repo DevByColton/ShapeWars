@@ -1,3 +1,5 @@
+<a href="https://youtu.be/1bVX6a6VZ1I" target="_blank" rel="noopener noreferrer">Current build gameplay video on YouTube</a>
+
 <p>// MY GOAL FOR SHAPE WARS</p>
 
 Shapes Wars is a <a href="https://store.steampowered.com/app/8400/Geometry_Wars_Retro_Evolved/" target="_blank" rel="noopener noreferrer">Geometry Wars</a> clone with my own twist.
