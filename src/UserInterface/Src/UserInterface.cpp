@@ -86,6 +86,14 @@ void UserInterface::draw()
     });
     GameRoot::instance().renderWindow.draw(multiplierText);
 
+    // Draw the timer text
+    timerText.setString(formattedTime());
+    const sf::FloatRect timerTextRect = timerText.getLocalBounds();
+    float timerOriginTextX = timerTextRect.size.x / 2.f;
+    float timerOriginTextY = timerTextRect.size.y / 2.f;
+    timerText.setOrigin({timerOriginTextX, timerOriginTextY});
+    GameRoot::instance().renderWindow.draw(timerText);
+
     // Draw paused screen
     if (GameRoot::instance().isPaused)
     {
@@ -98,14 +106,6 @@ void UserInterface::draw()
         multiplierText.setOrigin({highscoreTextRect.size.x, highscoreTextRect.size.y});
         highScoreText.setPosition({ GameRoot::instance().windowSizeF.x - highscoreTextRect.size.x - 22.f, 30.f });
         GameRoot::instance().renderWindow.draw(highScoreText);
-
-        // Draw the timer text
-        timerText.setString(formattedTime());
-        const sf::FloatRect timerTextRect = timerText.getLocalBounds();
-        float timerOriginTextX = timerTextRect.size.x / 2.f;
-        float timerOriginTextY = timerTextRect.size.y / 2.f;
-        timerText.setOrigin({timerOriginTextX, timerOriginTextY});
-        GameRoot::instance().renderWindow.draw(timerText);
     }
 
     // Draw game over text

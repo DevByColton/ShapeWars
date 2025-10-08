@@ -30,6 +30,15 @@ void BlackHoles::resetBlackHolePool()
 }
 
 
+void BlackHoles::resetSpawnRate()
+{
+    timeUntilCanSpawn = TOTAL_TIME_UNTIL_CAN_SPAWN;
+    timeUntilSpawn = SPAWN_INTERVAL;
+    timeUntilSpawnIncrease = SPAWN_RATE_INCREASE_INTERVAL;
+    spawnRate = STARTING_SPAWN_RATE;
+}
+
+
 BlackHoles::BlackHole* BlackHoles::BlackHole::getNext() const
 {
     return next;
@@ -45,7 +54,7 @@ void BlackHoles::BlackHole::activate()
 {
     sprite.setPosition(SpawnHelper::instance().createSpawnPosition());
     hitPoints = 10;
-    pointValue = 50;
+    pointValue = 75;
     isActive = true;
 }
 
@@ -79,7 +88,7 @@ void BlackHoles::BlackHole::reset()
     sprite.setPosition({0.0, 0.0});
     isActive = false;
     wasHit = false;
-    particleSprayTime = maxParticleSprayTime;
+    particleSprayTime = MAX_PARTICLE_SPRAY_TIME;
 }
 
 
@@ -162,18 +171,40 @@ void BlackHoles::killAll()
 }
 
 
-void BlackHoles::resetAll()
-{
-    for (int i = 0; i < MAX_BLACK_HOLE_COUNT; i++)
-        blackHoles.at(i).reset();
-}
-
-
 void BlackHoles::update()
 {
-    // Check spawn chance
-    if (canSpawn && spawnDistribution(randEngine) == 0)
-        spawnBlackHole();
+    if (canSpawn)
+    {
+        // Update timer until black holes can have a chance of spawning
+        if (timeUntilCanSpawn > 0.f)
+        {
+            timeUntilCanSpawn -= GameRoot::instance().deltaTime;
+        }
+        else
+        {
+            // Update time until a black hole can spawn chance
+            timeUntilSpawn -= GameRoot::instance().deltaTime;
+            if (timeUntilSpawn < 0.f)
+            {
+                timeUntilSpawn = SPAWN_INTERVAL;
+
+                // Check the spawn of a black hole
+                if (spawnDistribution(blackHoleRandEngine) <= spawnRate)
+                    spawnBlackHole();
+            }
+
+            // Update black hole spawn rate interval
+            if (spawnRate < MAX_SPAWN_RATE)
+            {
+                timeUntilSpawnIncrease -= GameRoot::instance().deltaTime;
+                if (timeUntilSpawnIncrease < 0.f)
+                {
+                    timeUntilSpawnIncrease = SPAWN_RATE_INCREASE_INTERVAL;
+                    spawnRate += 5;
+                }
+            }
+        }
+    }
 
     // Update all the black holes and check hit status
     // If the black hole dies, then set it to the front of the list
@@ -204,7 +235,7 @@ void BlackHoles::BlackHole::update()
     particleSprayTime -= GameRoot::instance().deltaTime;
     if (particleSprayTime <= 0.f)
     {
-        particleSprayTime = maxParticleSprayTime;
+        particleSprayTime = MAX_PARTICLE_SPRAY_TIME;
         const sf::Vector2f sprayVelocity = Extensions::fromPolar(particleSprayAngle, magnitude(instance().randEngine));
         const float sprayAngleValue = sprayAngle(instance().randEngine);
         sf::Vector2f position = getPosition() + 3.f * sf::Vector2f(sprayVelocity.y, -sprayVelocity.x);

@@ -332,8 +332,10 @@ void GameRoot::update() const
         {
             Buffs::instance().resetBuffs();
             PlayerStatus::instance().reset();
-            PlayerShip::instance().centerPlayer();
+            PlayerShip::instance().reset();
             Nukes::instance().resetNukeCount();
+            Enemies::instance().resetSpawnRates();
+            BlackHoles::instance().resetSpawnRate();
             PlayerStatus::instance().needTotalReset = false;
         }
 

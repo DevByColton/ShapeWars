@@ -43,7 +43,7 @@ public:
     void setUsingBoosters(bool isUsingBoosters);
     void setUsingShotgunBullets(bool isUsingShotgunBullets);
     void setUsingBulletsAllDirections(bool isUsingBulletsAllDirections);
-    void centerPlayer();
+    void reset();
     void update();
     void draw() const;
 };

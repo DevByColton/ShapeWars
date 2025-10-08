@@ -51,9 +51,9 @@ private:
         void update();
     };
 
-    const int dropRate = 8;
-    const float potentialBuffDropInterval = 1.f;
-    float timeUntilPotentialBuffDrop = potentialBuffDropInterval;
+    static constexpr int DROP_RATE = 7;
+    static constexpr float POTENTIAL_BUFF_DROP_INTERVAL = 1.f;
+    float timeUntilPotentialBuffDrop = POTENTIAL_BUFF_DROP_INTERVAL;
     bool allowBuffDropChance = false;
     std::default_random_engine randEngine {std::random_device{}()};
     std::uniform_int_distribution<int> buffDropDistribution {1, 100};

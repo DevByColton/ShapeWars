@@ -6,10 +6,10 @@
 
 class PlayerStatus {
 private:
-    const int KILL_PARTICLE_COUNT = 1400;
-    const int MAX_MULTIPLIER = 20;
-    const int MAX_LIVES = 5;
-    const float MAX_MULTIPLIER_TIME = 2.f;
+    static constexpr int KILL_PARTICLE_COUNT = 1400;
+    static constexpr int MAX_MULTIPLIER = 20;
+    static constexpr int MAX_LIVES = 5;
+    static constexpr float MAX_MULTIPLIER_TIME = 0.8f;
     float respawnTime = 0.f;
     float multiplierTime = MAX_MULTIPLIER_TIME;
     bool shouldKill = false;

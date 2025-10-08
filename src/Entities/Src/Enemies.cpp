@@ -17,7 +17,32 @@
 Enemies::Enemies()
 {
     resetEnemyPool();
-    resetSpawnChances();
+}
+
+
+void Enemies::resetSpawnRates()
+{
+    // Wanderers
+    timeUntilWandererSpawn = WANDERER_SPAWN_INTERVAL;
+    wandererSpawnRate = STARTING_WANDERER_SPAWN_RATE;
+    timeUntilWandererSpawnIncrease = WANDERER_SPAWN_RATE_INCREASE_INTERVAL;
+
+    // Seekers
+    timeUntilSeekerSpawn = SEEKER_SPAWN_INTERVAL;
+    seekerSpawnRate = STARTING_SEEKER_SPAWN_RATE;
+    timeUntilSeekerSpawnIncrease = SEEKER_SPAWN_RATE_INCREASE_INTERVAL;
+
+    // Dodgers
+    timeUntilDodgersCanSpawn = TOTAL_TIME_UNTIL_DODGERS_CAN_SPAWN;
+    timeUntilDodgerSpawn = DODGER_SPAWN_INTERVAL;
+    timeUntilDodgerSpawnIncrease = DODGER_SPAWN_RATE_INCREASE_INTERVAL;
+    dodgerSpawnRate = STARTING_DODGER_SPAWN_RATE;
+
+    // Snakes
+    timeUntilSnakesCanSpawn = TOTAL_TIME_UNTIL_SNAKES_CAN_SPAWN;
+    timeUntilSnakeSpawn = SNAKE_SPAWN_INTERVAL;
+    timeUntilSnakeSpawnIncrease = SNAKE_SPAWN_RATE_INCREASE_INTERVAL;
+    snakeSpawnRate = STARTING_SNAKE_SPAWN_RATE;
 }
 
 
@@ -32,14 +57,6 @@ void Enemies::resetEnemyPool()
 
     // The last one in the list terminates
     enemies.at(MAX_ENEMY_COUNT - 1).setNext(nullptr);
-}
-
-
-void Enemies::resetSpawnChances()
-{
-    seekerSpawnChance = 60.f;
-    wandererSpawnChance = 60.f;
-    dodgerSpawnChance = 100.f;
 }
 
 
@@ -208,7 +225,6 @@ void Enemies::killAll()
         if (enemies.at(i).isActive)
             enemies.at(i).reset(false);
 
-    resetSpawnChances();
     resetEnemyPool();
 }
 
@@ -233,45 +249,6 @@ void Enemies::Enemy::applyForce(const sf::Vector2f velocity)
 }
 
 
-void Enemies::Enemy::activateSeeker()
-{
-    sprite.setTexture(Art::instance().seeker);
-    sprite.setPosition(SpawnHelper::instance().createSpawnPosition());
-    sprite.setOrigin({sprite.getTexture().getSize().x / 2.f, sprite.getTexture().getSize().y / 2.f});
-    radius = 20;
-    timeUntilAct = maxTimeUntilAct;
-    speed = 1.f;
-    pointValue = 5;
-    xVelocity = 0.0;
-    yVelocity = 0.0;
-    enemyType = Seeker;
-
-    behavior = [this] () mutable
-    {
-        sf::Vector2f velocity = getCurrentVelocity();
-        const float direction = Extensions::toAngle(PlayerShip::instance().getPosition() - getPosition());
-        velocity += Extensions::fromPolar(direction, speed);
-
-        // Move the seeker and make sure it is clamped into the screen
-        const sf::Vector2f nextPosition = getPosition() + velocity;
-        float clampedX = std::clamp(nextPosition.x, halfWidth(), GameRoot::instance().windowSizeF.x - halfWidth());
-        float clampedY = std::clamp(nextPosition.y, halfHeight(), GameRoot::instance().windowSizeF.y - halfHeight());
-        sprite.setPosition({clampedX, clampedY});
-
-        // Rotation the seeker in the direction of its velocity
-        if (velocity.lengthSquared() > 0)
-            sprite.setRotation(sf::radians(Extensions::toAngle(velocity)));
-
-        velocity *= 0.9f;
-        xVelocity = velocity.x;
-        yVelocity = velocity.y;
-    };
-
-    isActive = true;
-    Sound::instance().playSpawnSound();
-}
-
-
 void Enemies::Enemy::activateWanderer()
 {
     sprite.setTexture(Art::instance().wanderer);
@@ -279,8 +256,11 @@ void Enemies::Enemy::activateWanderer()
     sprite.setOrigin({sprite.getTexture().getSize().x / 2.f, sprite.getTexture().getSize().y / 2.f});
     radius = 20;
     timeUntilAct = maxTimeUntilAct;
+    maxTimeUntilNewDirection = 3.f;
+    timeUntilNewDirection = maxTimeUntilNewDirection;
     speed = 1.f;
-    pointValue = 3;
+    pointValue = 15;
+
     const sf::Vector2f startingDirection = Extensions::fromPolar(instance().directionDistribution(instance().randEngine), speed);
     xVelocity = startingDirection.x;
     yVelocity = startingDirection.y;
@@ -289,7 +269,28 @@ void Enemies::Enemy::activateWanderer()
     behavior = [this] () mutable
     {
         sf::Vector2f velocity = getCurrentVelocity();
-        const float direction = Extensions::toAngle(velocity);
+
+        timeUntilNewDirection -= GameRoot::instance().deltaTime;
+        if (timeUntilNewDirection < 0.f)
+        {
+            timeUntilNewDirection = maxTimeUntilNewDirection;
+            const sf::Vector2f turnVelocity = Extensions::fromPolar(instance().directionDistribution(instance().randEngine), speed);
+            turnXVelocity = turnVelocity.x;
+            turnYVelocity = turnVelocity.y;
+        }
+
+        if (getTurnVelocity().lengthSquared() < 0.0001f)
+        {
+            turnXVelocity = 0.f;
+            turnYVelocity = 0.f;
+        }
+        else
+        {
+            turnXVelocity *= 0.98f;
+            turnYVelocity *= 0.98f;
+        }
+
+        const float direction = Extensions::toAngle(velocity - getTurnVelocity());
         velocity += Extensions::fromPolar(direction, speed);
 
         // Just rotate the sprite iteratively
@@ -321,6 +322,45 @@ void Enemies::Enemy::activateWanderer()
 }
 
 
+void Enemies::Enemy::activateSeeker()
+{
+    sprite.setTexture(Art::instance().seeker);
+    sprite.setPosition(SpawnHelper::instance().createSpawnPosition());
+    sprite.setOrigin({sprite.getTexture().getSize().x / 2.f, sprite.getTexture().getSize().y / 2.f});
+    radius = 20;
+    timeUntilAct = maxTimeUntilAct;
+    speed = 0.9f;
+    pointValue = 25;
+    xVelocity = 0.0;
+    yVelocity = 0.0;
+    enemyType = Seeker;
+
+    behavior = [this] () mutable
+    {
+        sf::Vector2f velocity = getCurrentVelocity();
+        const float direction = Extensions::toAngle(PlayerShip::instance().getPosition() - getPosition());
+        velocity += Extensions::fromPolar(direction, speed);
+
+        // Move the seeker and make sure it is clamped into the screen
+        const sf::Vector2f nextPosition = getPosition() + velocity;
+        float clampedX = std::clamp(nextPosition.x, halfWidth(), GameRoot::instance().windowSizeF.x - halfWidth());
+        float clampedY = std::clamp(nextPosition.y, halfHeight(), GameRoot::instance().windowSizeF.y - halfHeight());
+        sprite.setPosition({clampedX, clampedY});
+
+        // Rotation the seeker in the direction of its velocity
+        if (velocity.lengthSquared() > 0)
+            sprite.setRotation(sf::radians(Extensions::toAngle(velocity)));
+
+        velocity *= 0.9f;
+        xVelocity = velocity.x;
+        yVelocity = velocity.y;
+    };
+
+    isActive = true;
+    Sound::instance().playSpawnSound();
+}
+
+
 void Enemies::Enemy::activateDodger()
 {
     sprite.setTexture(Art::instance().dodger);
@@ -328,8 +368,8 @@ void Enemies::Enemy::activateDodger()
     sprite.setOrigin({sprite.getTexture().getSize().x / 2.f, sprite.getTexture().getSize().y / 2.f});
     radius = sprite.getTexture().getSize().x / 2.f;
     timeUntilAct = maxTimeUntilAct;
-    speed = 0.8f;
-    pointValue = 7;
+    speed = 0.75f;
+    pointValue = 40;
     xVelocity = 0.0;
     yVelocity = 0.0;
     enemyType = Dodger;
@@ -347,7 +387,7 @@ void Enemies::Enemy::activateDodger()
         sprite.setPosition({clampedX, clampedY});
 
         // Update the scale so the dodgers pulse slightly
-        float scaleX = 1.f + 0.1f * std::cos(7.f * GameRoot::instance().elapsedGameTime);
+        float scaleX = 1.f + 0.1f * std::cos(6.f * GameRoot::instance().elapsedGameTime);
         float scaleY = 1.f + 0.1f * std::sin(12.f * GameRoot::instance().elapsedGameTime);
         sprite.setScale({scaleX, scaleY});
 
@@ -371,7 +411,8 @@ void Enemies::Enemy::activateSnakeHead()
     maxTimeUntilNewDirection = 0.75f;
     timeUntilNewDirection = maxTimeUntilNewDirection;
     speed = 1.f;
-    pointValue = 10;
+    pointValue = 50;
+
     const sf::Vector2f startingDirection = Extensions::fromPolar(instance().directionDistribution(instance().randEngine), speed);
     xVelocity = startingDirection.x;
     yVelocity = startingDirection.y;
@@ -408,7 +449,7 @@ void Enemies::Enemy::activateSnakeHead()
         if (velocity.lengthSquared() > 0)
             sprite.setRotation(sf::radians(Extensions::toAngle(velocity)));
 
-        // Move the wanderer, and check if it is at the screen bounds
+        // Move the snake and make sure it is in the screen bounds
         const sf::Vector2f nextPosition = getPosition() + velocity;
 
         if (nextPosition.x < 0)
@@ -472,47 +513,73 @@ void Enemies::Enemy::activateSnakeBodyPart(const EnemyType enemyType)
 }
 
 
-void Enemies::checkSeekerSpawn()
+void Enemies::checkWandererSpawn()
 {
-    // Decrease the spawn chance every frame, until its about 1 in 15
-    if (seekerSpawnChance > 15.f)
-        seekerSpawnChance -= GameRoot::instance().deltaTime;
-
-    // Roll the dice
-    std::uniform_real_distribution spawnChanceDistribution {0.f, seekerSpawnChance};
-    if (static_cast<int>(spawnChanceDistribution(randEngine)) == 0)
+    // Update time until a wander can spawn chance
+    timeUntilWandererSpawn -= GameRoot::instance().deltaTime;
+    if (timeUntilWandererSpawn < 0.f)
     {
-        assert(firstAvailable != nullptr);
+        timeUntilWandererSpawn = WANDERER_SPAWN_INTERVAL;
 
-        // Make sure it is not the last in the list
-        Enemy *seeker = firstAvailable;
-        if (seeker->getNext() != nullptr)
+        // Check the spawn of a wanderer
+        if (wandererSpawnDistribution(wandererRandEngine) <= wandererSpawnRate)
         {
-            firstAvailable = seeker->getNext();
-            seeker->activateSeeker();
+            assert(firstAvailable != nullptr);
+
+            // Make sure it is not the last in the list
+            Enemy *wanderer = firstAvailable;
+            if (wanderer->getNext() != nullptr)
+            {
+                firstAvailable = wanderer->getNext();
+                wanderer->activateWanderer();
+            }
+        }
+    }
+
+    // Update wanderer spawn rate interval
+    if (wandererSpawnRate < MAX_WANDERER_SPAWN_RATE)
+    {
+        timeUntilWandererSpawnIncrease -= GameRoot::instance().deltaTime;
+        if (timeUntilWandererSpawnIncrease < 0.f)
+        {
+            timeUntilWandererSpawnIncrease = WANDERER_SPAWN_RATE_INCREASE_INTERVAL;
+            wandererSpawnRate += 5;
         }
     }
 }
 
 
-void Enemies::checkWandererSpawn()
+void Enemies::checkSeekerSpawn()
 {
-    // Decrease the spawn chance every frame, until its about 1 in 20
-    if (wandererSpawnChance > 20.f)
-        wandererSpawnChance -= GameRoot::instance().deltaTime;
-
-    // Roll the dice
-    std::uniform_real_distribution spawnChanceDistribution {0.f, wandererSpawnChance};
-    if (static_cast<int>(spawnChanceDistribution(randEngine)) == 0)
+    // Update time until a seeker can spawn chance
+    timeUntilSeekerSpawn -= GameRoot::instance().deltaTime;
+    if (timeUntilSeekerSpawn < 0.f)
     {
-        assert(firstAvailable != nullptr);
+        timeUntilSeekerSpawn = SEEKER_SPAWN_INTERVAL;
 
-        // Make sure it is not the last in the list
-        Enemy *wanderer = firstAvailable;
-        if (wanderer->getNext() != nullptr)
+        // Check the spawn of a seeker
+        if (seekerSpawnDistribution(seekerRandEngine) <= seekerSpawnRate)
         {
-            firstAvailable = wanderer->getNext();
-            wanderer->activateWanderer();
+            assert(firstAvailable != nullptr);
+
+            // Make sure it is not the last in the list
+            Enemy *seeker = firstAvailable;
+            if (seeker->getNext() != nullptr)
+            {
+                firstAvailable = seeker->getNext();
+                seeker->activateSeeker();
+            }
+        }
+    }
+
+    // Update seeker spawn rate interval
+    if (seekerSpawnRate < MAX_SEEKER_SPAWN_RATE)
+    {
+        timeUntilSeekerSpawnIncrease -= GameRoot::instance().deltaTime;
+        if (timeUntilSeekerSpawnIncrease < 0.f)
+        {
+            timeUntilSeekerSpawnIncrease = SEEKER_SPAWN_RATE_INCREASE_INTERVAL;
+            seekerSpawnRate += 5;
         }
     }
 }
@@ -520,22 +587,42 @@ void Enemies::checkWandererSpawn()
 
 void Enemies::checkDodgerSpawn()
 {
-    // Decrease the spawn chance every frame, until its about 1 in 30
-    if (dodgerSpawnChance > 30.f)
-        dodgerSpawnChance -= GameRoot::instance().deltaTime;
-
-    // Roll the dice
-    std::uniform_real_distribution spawnChanceDistribution {0.f, dodgerSpawnChance};
-    if (static_cast<int>(spawnChanceDistribution(randEngine)) == 0)
+    // Update timer until dodgers can have a chance of spawning
+    if (timeUntilDodgersCanSpawn > 0.f)
     {
-        assert(firstAvailable != nullptr);
+        timeUntilDodgersCanSpawn -= GameRoot::instance().deltaTime;
+        return;
+    }
 
-        // Make sure it is not last in the list
-        Enemy *dodger = firstAvailable;
-        if (dodger->getNext() != nullptr)
+    // Update time until a dodger can spawn chance
+    timeUntilDodgerSpawn -= GameRoot::instance().deltaTime;
+    if (timeUntilDodgerSpawn < 0.f)
+    {
+        timeUntilDodgerSpawn = DODGER_SPAWN_INTERVAL;
+
+        // Check the spawn of a dodger
+        if (dodgerSpawnDistribution(dodgerRandEngine) <= dodgerSpawnRate)
         {
-            firstAvailable = dodger->getNext();
-            dodger->activateDodger();
+            assert(firstAvailable != nullptr);
+
+            // Make sure it is not last in the list
+            Enemy *dodger = firstAvailable;
+            if (dodger->getNext() != nullptr)
+            {
+                firstAvailable = dodger->getNext();
+                dodger->activateDodger();
+            }
+        }
+    }
+
+    // Update dodger spawn rate interval
+    if (dodgerSpawnRate < MAX_DODGER_SPAWN_RATE)
+    {
+        timeUntilDodgerSpawnIncrease -= GameRoot::instance().deltaTime;
+        if (timeUntilDodgerSpawnIncrease < 0.f)
+        {
+            timeUntilDodgerSpawnIncrease = DODGER_SPAWN_RATE_INCREASE_INTERVAL;
+            dodgerSpawnRate += 5;
         }
     }
 }
@@ -543,58 +630,79 @@ void Enemies::checkDodgerSpawn()
 
 void Enemies::checkSnakeSpawn()
 {
-    // Decrease the spawn chance every frame, until its about 1 in 50
-    if (snakeSpawnChance > 50.f)
-        snakeSpawnChance -= GameRoot::instance().deltaTime;
-
-    // Roll the dice
-    std::uniform_real_distribution spawnChanceDistribution {0.f, snakeSpawnChance};
-    if (static_cast<int>(spawnChanceDistribution(randEngine)) == 0)
+    // Update timer until snakes can have a chance of spawning
+    if (timeUntilSnakesCanSpawn > 0.f)
     {
-        assert(firstAvailable != nullptr);
+        timeUntilSnakesCanSpawn -= GameRoot::instance().deltaTime;
+        return;
+    }
 
-        // Get the count of how long the snake would be, check to make sure there are enough available enemy slots
-        const int bodyPartCount = snakeBodyPartCountDistribution(randEngine);
-        const Enemy *availableEnemyCheck = firstAvailable;
-        for (int i = 0; i < bodyPartCount + 2; i++)
+    // Update time until a snake can spawn chance
+    timeUntilSnakeSpawn -= GameRoot::instance().deltaTime;
+    if (timeUntilSnakeSpawn < 0.f)
+    {
+        timeUntilSnakeSpawn = SNAKE_SPAWN_INTERVAL;
+
+        // Check the spawn of a snake
+        if (snakeSpawnDistribution(snakeRandEngine) <= snakeSpawnRate)
         {
-            if (availableEnemyCheck->getNext() != nullptr)
-                availableEnemyCheck = availableEnemyCheck->getNext();
-            else
-                return;
-        }
+            assert(firstAvailable != nullptr);
 
-        // Create the snake head and first body part for linking
-        Enemy *snakeHead = firstAvailable;
-        firstAvailable = snakeHead->getNext();
-        snakeHead->activateSnakeHead();
-
-        Enemy *snakeBodyFirst = firstAvailable;
-        firstAvailable = snakeBodyFirst->getNext();
-        snakeHead->setTrailing(snakeBodyFirst);
-        snakeBodyFirst->setLeading(snakeHead);
-        snakeBodyFirst->activateSnakeBodyPart(SnakeBody);
-
-        // Create the rest of the body of the snake and terminate with the tail
-        Enemy *leadingSnakeBodyPart = snakeBodyFirst;
-        for (int i = 0; i < bodyPartCount; i++)
-        {
-            if (i == bodyPartCount - 1)
+            // Get the count of how long the snake would be, check to make sure there are enough available enemy slots
+            const int bodyPartCount = snakeBodyPartCountDistribution(randEngine);
+            const Enemy *availableEnemyCheck = firstAvailable;
+            for (int i = 0; i < bodyPartCount + 2; i++)
             {
-                Enemy *snakeTail = firstAvailable;
-                firstAvailable = snakeTail->getNext();
-                leadingSnakeBodyPart->setTrailing(snakeTail);
-                snakeTail->setLeading(leadingSnakeBodyPart);
-                snakeTail->activateSnakeBodyPart(SnakeTail);
-                break;
+                if (availableEnemyCheck->getNext() != nullptr)
+                    availableEnemyCheck = availableEnemyCheck->getNext();
+                else
+                    return;
             }
 
-            Enemy *snakeBody = firstAvailable;
-            firstAvailable = snakeBody->getNext();
-            leadingSnakeBodyPart->setTrailing(snakeBody);
-            snakeBody->setLeading(leadingSnakeBodyPart);
-            snakeBody->activateSnakeBodyPart(SnakeBody);
-            leadingSnakeBodyPart = snakeBody;
+            // Create the snake head and first body part for linking
+            Enemy *snakeHead = firstAvailable;
+            firstAvailable = snakeHead->getNext();
+            snakeHead->activateSnakeHead();
+
+            Enemy *snakeBodyFirst = firstAvailable;
+            firstAvailable = snakeBodyFirst->getNext();
+            snakeHead->setTrailing(snakeBodyFirst);
+            snakeBodyFirst->setLeading(snakeHead);
+            snakeBodyFirst->activateSnakeBodyPart(SnakeBody);
+
+            // Create the rest of the body of the snake and terminate with the tail
+            Enemy *leadingSnakeBodyPart = snakeBodyFirst;
+            for (int i = 0; i < bodyPartCount; i++)
+            {
+                if (i == bodyPartCount - 1)
+                {
+                    Enemy *snakeTail = firstAvailable;
+                    firstAvailable = snakeTail->getNext();
+                    leadingSnakeBodyPart->setTrailing(snakeTail);
+                    snakeTail->setLeading(leadingSnakeBodyPart);
+                    snakeTail->activateSnakeBodyPart(SnakeTail);
+                    break;
+                }
+
+                Enemy *snakeBody = firstAvailable;
+                firstAvailable = snakeBody->getNext();
+                leadingSnakeBodyPart->setTrailing(snakeBody);
+                snakeBody->setLeading(leadingSnakeBodyPart);
+                snakeBody->activateSnakeBodyPart(SnakeBody);
+                leadingSnakeBodyPart = snakeBody;
+            }
+        }
+    }
+
+
+    // Update dodger spawn rate interval
+    if (snakeSpawnRate < MAX_SNAKE_SPAWN_RATE)
+    {
+        timeUntilSnakeSpawnIncrease -= GameRoot::instance().deltaTime;
+        if (timeUntilSnakeSpawnIncrease < 0.f)
+        {
+            timeUntilSnakeSpawnIncrease = SNAKE_SPAWN_RATE_INCREASE_INTERVAL;
+            snakeSpawnRate += 5;
         }
     }
 }
@@ -606,8 +714,8 @@ void Enemies::update()
     // Check spawn of new enemies
     if (canSpawn)
     {
-        checkSeekerSpawn();
         checkWandererSpawn();
+        checkSeekerSpawn();
         checkDodgerSpawn();
         checkSnakeSpawn();
     }

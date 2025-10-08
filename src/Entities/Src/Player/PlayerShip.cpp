@@ -28,10 +28,21 @@ PlayerShip::PlayerShip()
 }
 
 
-void PlayerShip::centerPlayer()
+void PlayerShip::reset()
 {
+    // Resetting the player texture in case a buff was enabled on death
+    speed = BASE_SPEED;
+    ship.setTexture(Art::instance().player);
+    ship.setOrigin({
+        Art::instance().player.getSize().x / 2.f,
+        Art::instance().player.getSize().y / 2.f
+    });
     ship.setPosition(GameRoot::instance().windowSizeF / 2.f);
     ship.setRotation(sf::Angle::Zero);
+    isInvincible = false;
+    isUsingBoosters = false;
+    isUsingBulletsAllDirections = false;
+    isUsingShotgunBullets = false;
 }
 
 
