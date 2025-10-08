@@ -6,10 +6,10 @@
 class Nukes
 {
 private:
-    const float initialRadius = 100.f;
-    const float initialVelocity = 25.f;
-    const int max = 5;
-    float velocity = initialVelocity;
+    const int MAX_NUKE_COUNT = 5;
+    const float INITIAL_RADIUS = 100.f;
+    const float INITIAL_VELOCITY = 25.f;
+    float velocity = INITIAL_VELOCITY;
     sf::Color nukeColor {255, 211, 38, 255};
     sf::CircleShape nukeCircle {radius, 100};
 
@@ -22,9 +22,9 @@ public:
         return *instance;
     }
 
-    int count = 3;
     bool isDetonating = false;
-    float radius = initialRadius;
+    int count = MAX_NUKE_COUNT;
+    float radius = INITIAL_RADIUS;
 
     void reset();
     void resetNukeCount();

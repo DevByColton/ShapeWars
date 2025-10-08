@@ -1,16 +1,15 @@
 ﻿#include <cmath>
-#include "../Include/Buffs.h"
-#include "../../GameRoot.h"
-#include "../../Content/Include/GaussianBlur.h"
-#include "../../Entities/Include/PlayerShip.h"
-#include "../../System/Include/Extensions.h"
+#include "../../Include/Player/Buffs.h"
+#include "../../../GameRoot.h"
+#include "../../../Content/Include/GaussianBlur.h"
+#include "../../../System/Include/Extensions.h"
+#include "../../Include/Player/PlayerShip.h"
 #include "SFML/Graphics/Text.hpp"
 
 
 Buffs::Buffs()
 {
     // The positing of the buffs is static so set the frames and positions
-
     // Buff2 alignment
     buff2.frame.setOrigin({
         buff2.frame.getTexture().getSize().x / 2.f,
@@ -132,7 +131,7 @@ void Buffs::checkBuffDrop(const sf::Vector2f& position)
 
         // Check drop chance
         BuffDrop* next = nextAvailableBuffDrop();
-        if (buffDropDistribution(randEngine) <= dropRate && next != nullptr)
+        if (buffDropDistribution(randEngine) <= DROP_RATE && next != nullptr)
         {
             switch (buffTypeDistribution(randEngine))
             {
@@ -340,7 +339,7 @@ void Buffs::update()
     timeUntilPotentialBuffDrop -= GameRoot::instance().deltaTime;
     if (timeUntilPotentialBuffDrop <= 0.f)
     {
-        timeUntilPotentialBuffDrop = potentialBuffDropInterval;
+        timeUntilPotentialBuffDrop = POTENTIAL_BUFF_DROP_INTERVAL;
         allowBuffDropChance = true;
     }
 

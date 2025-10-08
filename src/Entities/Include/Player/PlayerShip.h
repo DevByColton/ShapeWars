@@ -1,6 +1,6 @@
 ﻿#ifndef PLAYERSHIP_H
 #define PLAYERSHIP_H
-#include "../../Content/Include/Art.h"
+#include "../../../Content/Include/Art.h"
 #include "SFML/Graphics/Sprite.hpp"
 
 
@@ -43,7 +43,7 @@ public:
     void setUsingBoosters(bool isUsingBoosters);
     void setUsingShotgunBullets(bool isUsingShotgunBullets);
     void setUsingBulletsAllDirections(bool isUsingBulletsAllDirections);
-    void centerPlayer();
+    void reset();
     void update();
     void draw() const;
 };

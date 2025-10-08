@@ -84,11 +84,56 @@ private:
         void draw() const;
     };
 
-    static constexpr int MAX_ENEMY_COUNT = 400;
-    float seekerSpawnChance = 60.f;
-    float wandererSpawnChance = 60.f;
-    float dodgerSpawnChance = 100.f;
-    float snakeSpawnChance = 200.f;
+    // Wanderer spawn variables
+    std::default_random_engine wandererRandEngine {std::random_device{}()};
+    std::uniform_int_distribution<int> wandererSpawnDistribution {1, 100};
+    static constexpr float WANDERER_SPAWN_INTERVAL = .25f;
+    float timeUntilWandererSpawn = WANDERER_SPAWN_INTERVAL;
+    static constexpr float WANDERER_SPAWN_RATE_INCREASE_INTERVAL = 10.f;
+    float timeUntilWandererSpawnIncrease = WANDERER_SPAWN_RATE_INCREASE_INTERVAL;
+    static constexpr int MAX_WANDERER_SPAWN_RATE = 50;
+    static constexpr int STARTING_WANDERER_SPAWN_RATE = 25;
+    int wandererSpawnRate = STARTING_WANDERER_SPAWN_RATE;
+
+    // Seeker spawn variables
+    std::default_random_engine seekerRandEngine {std::random_device{}()};
+    std::uniform_int_distribution<int> seekerSpawnDistribution {1, 100};
+    static constexpr float SEEKER_SPAWN_INTERVAL = .5f;
+    float timeUntilSeekerSpawn = SEEKER_SPAWN_INTERVAL;
+    static constexpr float SEEKER_SPAWN_RATE_INCREASE_INTERVAL = 20.f;
+    float timeUntilSeekerSpawnIncrease = SEEKER_SPAWN_RATE_INCREASE_INTERVAL;
+    static constexpr int MAX_SEEKER_SPAWN_RATE = 30;
+    static constexpr int STARTING_SEEKER_SPAWN_RATE = 10;
+    int seekerSpawnRate = STARTING_SEEKER_SPAWN_RATE;
+
+    // Dodger spawn variables, start spawning after 30 seconds
+    std::default_random_engine dodgerRandEngine {std::random_device{}()};
+    std::uniform_int_distribution<int> dodgerSpawnDistribution {1, 100};
+    static constexpr float TOTAL_TIME_UNTIL_DODGERS_CAN_SPAWN = 30.f;
+    float timeUntilDodgersCanSpawn = TOTAL_TIME_UNTIL_DODGERS_CAN_SPAWN;
+    static constexpr float DODGER_SPAWN_INTERVAL = .5f;
+    float timeUntilDodgerSpawn = DODGER_SPAWN_INTERVAL;
+    static constexpr float DODGER_SPAWN_RATE_INCREASE_INTERVAL = 20.f;
+    float timeUntilDodgerSpawnIncrease = DODGER_SPAWN_RATE_INCREASE_INTERVAL;
+    static constexpr int MAX_DODGER_SPAWN_RATE = 25;
+    static constexpr int STARTING_DODGER_SPAWN_RATE = 10;
+    int dodgerSpawnRate = STARTING_DODGER_SPAWN_RATE;
+
+    // Snake spawn variables, start spawning after 60 seconds
+    std::uniform_int_distribution<int> snakeBodyPartCountDistribution {6, 20};
+    std::default_random_engine snakeRandEngine {std::random_device{}()};
+    std::uniform_int_distribution<int> snakeSpawnDistribution {1, 100};
+    static constexpr float TOTAL_TIME_UNTIL_SNAKES_CAN_SPAWN = 60.f;
+    float timeUntilSnakesCanSpawn = TOTAL_TIME_UNTIL_SNAKES_CAN_SPAWN;
+    static constexpr float SNAKE_SPAWN_INTERVAL = .5f;
+    float timeUntilSnakeSpawn = SNAKE_SPAWN_INTERVAL;
+    static constexpr float SNAKE_SPAWN_RATE_INCREASE_INTERVAL = 30.f;
+    float timeUntilSnakeSpawnIncrease = SNAKE_SPAWN_RATE_INCREASE_INTERVAL;
+    static constexpr int MAX_SNAKE_SPAWN_RATE = 70;
+    static constexpr int STARTING_SNAKE_SPAWN_RATE = 20;
+    int snakeSpawnRate = STARTING_SNAKE_SPAWN_RATE;
+
+    static constexpr int MAX_ENEMY_COUNT = 600;
     Enemy *firstAvailable {nullptr};
 
     void checkSeekerSpawn();
@@ -96,7 +141,6 @@ private:
     void checkDodgerSpawn();
     void checkSnakeSpawn();
     void resetEnemyPool();
-    void resetSpawnChances();
 
 public:
     Enemies();
@@ -110,8 +154,8 @@ public:
     std::array<Enemy, MAX_ENEMY_COUNT> enemies {};
     std::default_random_engine randEngine {std::random_device{}()};
     std::uniform_real_distribution<float> directionDistribution {0.f, PI * 2.f};
-    std::uniform_int_distribution<int> snakeBodyPartCountDistribution {6, 20};
 
+    void resetSpawnRates();
     void killAll();
     void update();
     void draw() const;

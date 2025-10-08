@@ -1,11 +1,11 @@
 ﻿#include <fstream>
-#include "../Include/PlayerStatus.h"
-#include "../../GameRoot.h"
-#include "../../Entities/Include/PlayerShip.h"
-#include "../../Grid/Grid.h"
-#include "../../Particles/Particles.h"
-#include "../../System/Include/ColorPicker.h"
-#include "../../System/Include/Extensions.h"
+#include "../../Include/Player/PlayerStatus.h"
+#include "../../../GameRoot.h"
+#include "../../../Grid/Grid.h"
+#include "../../../Particles/Particles.h"
+#include "../../../System/Include/ColorPicker.h"
+#include "../../../System/Include/Extensions.h"
+#include "../../Include/Player/PlayerShip.h"
 
 
 PlayerStatus::PlayerStatus()
@@ -36,10 +36,9 @@ void PlayerStatus::reset()
     }
 
     score = 0;
-    scoreForExtraLife = baseScoreForExtraLife;
     multiplier = 1;
-    multiplierTime = maxMultiplierTime;
-    lives = maxLives - 2;
+    multiplierTime = MAX_MULTIPLIER_TIME;
+    lives = MAX_LIVES;
 }
 
 
@@ -49,13 +48,6 @@ void PlayerStatus::addPoints(const int basePoints)
         return;
 
     score += basePoints * multiplier;
-
-    while (score >= scoreForExtraLife) {
-        scoreForExtraLife += baseScoreForExtraLife;
-
-        if (lives < maxLives)
-            lives += 1;
-    }
 }
 
 
@@ -64,9 +56,9 @@ void PlayerStatus::increaseMultiplier()
     if (isDead())
         return;
 
-    multiplierTime = maxMultiplierTime;
+    multiplierTime = MAX_MULTIPLIER_TIME;
 
-    if (multiplier < maxMultiplier)
+    if (multiplier < MAX_MULTIPLIER)
         multiplier += 1;
 }
 
@@ -75,7 +67,7 @@ void PlayerStatus::removeLife()
 {
     lives -= 1;
     multiplier = 1;
-    multiplierTime = maxMultiplierTime;
+    multiplierTime = MAX_MULTIPLIER_TIME;
     needBaseReset = true;
 
     if (isGameOver())
@@ -93,13 +85,13 @@ void PlayerStatus::removeLife()
     float hue2 = ColorPicker::instance().generateShiftedHue(hue1);
     sf::Color color1 = ColorPicker::instance().hsvToRgb(hue1, 0.7f, 1.f);
     sf::Color color2 = ColorPicker::instance().hsvToRgb(hue2, 0.7f, 1.f);
-    std::uniform_real_distribution<float> particleStartOffset {0.f, PI / killParticleCount};
+    std::uniform_real_distribution<float> particleStartOffset {0.f, PI / KILL_PARTICLE_COUNT};
     std::uniform_real_distribution<float> magnitude {2.f, 24.f};
     const float startOffset = particleStartOffset(randEngine);
 
-    for (int i = 0; i < killParticleCount; i++)
+    for (int i = 0; i < KILL_PARTICLE_COUNT; i++)
     {
-        const sf::Vector2f sprayVelocity = Extensions::fromPolar(PI * 2 * i / killParticleCount + startOffset, magnitude(instance().randEngine));
+        const sf::Vector2f sprayVelocity = Extensions::fromPolar(PI * 2 * i / KILL_PARTICLE_COUNT + startOffset, magnitude(instance().randEngine));
         const sf::Vector2f position = PlayerShip::instance().getPosition() + 2.f * sprayVelocity;
         Particles::instance().create(
             3.f,
@@ -214,7 +206,7 @@ void PlayerStatus::update()
 
         if (multiplierTime <= 0)
         {
-            multiplierTime = maxMultiplierTime;
+            multiplierTime = MAX_MULTIPLIER_TIME;
             multiplier = 1;
         }
     }

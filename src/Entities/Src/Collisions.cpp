@@ -1,13 +1,13 @@
 ﻿#include <cmath>
 #include "../Include/Collisions.h"
-#include "../../PlayerStatus/Include/Buffs.h"
-#include "../../PlayerStatus/Include/PlayerStatus.h"
+#include "../Include/Player/Buffs.h"
+#include "../Include/Player/PlayerStatus.h"
 #include "../../System/Include/Extensions.h"
 #include "../Include/BlackHoles.h"
 #include "../Include/Bullets.h"
 #include "../Include/Enemies.h"
 #include "../Include/Nukes.h"
-#include "../Include/PlayerShip.h"
+#include "../Include/Player/PlayerShip.h"
 
 
 bool Collisions::isColliding(const float radii, const sf::Vector2f position1, const sf::Vector2f position2)

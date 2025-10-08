@@ -8,13 +8,13 @@
 #include "Entities/Include/Collisions.h"
 #include "Entities/Include/Enemies.h"
 #include "Entities/Include/Nukes.h"
-#include "Entities/Include/PlayerShip.h"
+#include "Entities/Include/Player/PlayerShip.h"
 #include "Grid/Grid.h"
 #include "Input/Include/Input.h"
 #include "System/Include/Logger.h"
 #include "Particles/Particles.h"
-#include "PlayerStatus/Include/Buffs.h"
-#include "PlayerStatus/Include/PlayerStatus.h"
+#include "Entities/Include/Player/Buffs.h"
+#include "Entities/Include/Player/PlayerStatus.h"
 #include "SFML/Graphics/Image.hpp"
 #include "SFML/System/Sleep.hpp"
 #include "UserInterface/Include/Buttons.h"
@@ -332,8 +332,10 @@ void GameRoot::update() const
         {
             Buffs::instance().resetBuffs();
             PlayerStatus::instance().reset();
-            PlayerShip::instance().centerPlayer();
+            PlayerShip::instance().reset();
             Nukes::instance().resetNukeCount();
+            Enemies::instance().resetSpawnRates();
+            BlackHoles::instance().resetSpawnRate();
             PlayerStatus::instance().needTotalReset = false;
         }
 

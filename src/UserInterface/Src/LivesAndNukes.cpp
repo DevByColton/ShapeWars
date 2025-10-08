@@ -1,7 +1,7 @@
 ﻿#include "../Include/LivesAndNukes.h"
 #include "../../GameRoot.h"
 #include "../../Entities/Include/Nukes.h"
-#include "../../PlayerStatus/Include/PlayerStatus.h"
+#include "../../Entities/Include/Player/PlayerStatus.h"
 #include "../../System/Include/Extensions.h"
 
 
