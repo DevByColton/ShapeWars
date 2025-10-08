@@ -36,9 +36,8 @@ designing the gameplay to make it feel challenging, but still beatable, balanced
   <p>// FINAL SYSTEMS TO IMPLEMENT BY END OF OCTOBER 2025</p>
   <hr>
   <ul>
-    <li><b>(Currently in progress)</b> Gameplay balance, including variable enemy spawn rates over time for each different type, and thier point values</li>
+    <li><b>(Currently in progress)</b> Final boss, with an endless mode after boss defeat, which just goes back to the core gameplay loop</li>
     <li>Gameplay sounds, placeholder sounds are currently implemented</li>
-    <li>Final boss, with an endless mode after boss defeat, which just goes back to the core gameplay loop</li>
     <li>Start screen, pause screen, and options screen</li>
     <li>Add the finished build to my itch.io page for free download to play</li>
   </ul>
