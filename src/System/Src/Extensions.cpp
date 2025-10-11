@@ -69,14 +69,14 @@ float Extensions::normalize(const float value, const float min, const float max)
 std::string Extensions::formatNumberWithCommas(const int number) {
 
     std::string numberString = std::to_string(number);
-    int first_digit_index = 0;
+    int firstDigitIndex = 0;
 
     // Handle negative numbers, start after the - sign
     if (number < 0)
-        first_digit_index = 1;
+        firstDigitIndex = 1;
 
     // Insert commas from right to left, every 3 characters
-    for (int i = numberString.length() - 3; i > first_digit_index; i -= 3)
+    for (int i = numberString.length() - 3; i > firstDigitIndex; i -= 3)
         numberString.insert(i, ",");
 
     return numberString;

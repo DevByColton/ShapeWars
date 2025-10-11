@@ -1,6 +1,7 @@
 ﻿#include <string>
 #include "../Include/UserInterface.h"
 #include "../../GameRoot.h"
+#include "../../Content/Include/GaussianBlur.h"
 #include "../../Entities/Include/Player/PlayerStatus.h"
 #include "../../System/Include/Extensions.h"
 
@@ -23,13 +24,13 @@ UserInterface::UserInterface()
         multiplierHeaderText.getLocalBounds().size.x / 2.f,
         multiplierHeaderText.getLocalBounds().size.y / 2.f
     });
-    multiplierHeaderText.setPosition({ scoreText.getPosition().x, scoreText.getPosition().y + 47.f });
+    multiplierHeaderText.setPosition({ scoreText.getPosition().x + 132.5f, scoreText.getPosition().y + 50.f });
     multiplierHeaderText.setStyle(sf::Text::Bold);
-    multiplierText.setPosition({ multiplierHeaderText.getPosition().x + 40.f, multiplierHeaderText.getPosition().y });
+    multiplierText.setPosition({ multiplierHeaderText.getPosition().x + 51.5f, multiplierHeaderText.getPosition().y + 1.f });
     multiplierText.setStyle(sf::Text::Bold);
 
     // Set the timer text just under the score and multiplier
-    timerText.setPosition({ scoreText.getPosition().x + 8.f, scoreText.getPosition().y + 100.f });
+    timerText.setPosition({ scoreText.getPosition().x - 167.5f, scoreText.getPosition().y + 50.f });
     timerText.setLetterSpacing(1.5f);
     timerText.setStyle(sf::Text::Bold);
 
@@ -67,32 +68,32 @@ std::string UserInterface::formattedTime()
 
 void UserInterface::draw()
 {
-    // Draw the score text
-    scoreFrame.setColor({255, 255, 255, static_cast<std::uint8_t>(255 * GameRoot::instance().frameUIOpacity)});
-    GameRoot::instance().renderWindow.draw(scoreFrame);
-    scoreText.setString(Extensions::formatNumberWithCommas(PlayerStatus::instance().score));
-    scoreText.setOrigin({
-        scoreText.getLocalBounds().size.x / 2.f,
-        scoreText.getLocalBounds().size.y / 2.f,
-    });
-    GameRoot::instance().renderWindow.draw(scoreText);
-
-    // Draw the multiplier header and text
-    GameRoot::instance().renderWindow.draw(multiplierHeaderText);
-    multiplierText.setString(std::to_string(PlayerStatus::instance().multiplier));
-    multiplierText.setOrigin({
-        multiplierText.getLocalBounds().size.x / 2.f,
-        multiplierText.getLocalBounds().size.y / 2.f
-    });
-    GameRoot::instance().renderWindow.draw(multiplierText);
-
-    // Draw the timer text
-    timerText.setString(formattedTime());
-    const sf::FloatRect timerTextRect = timerText.getLocalBounds();
-    float timerOriginTextX = timerTextRect.size.x / 2.f;
-    float timerOriginTextY = timerTextRect.size.y / 2.f;
-    timerText.setOrigin({timerOriginTextX, timerOriginTextY});
-    GameRoot::instance().renderWindow.draw(timerText);
+    // // Draw the score text todo: uncomment
+    // scoreFrame.setColor({255, 255, 255, static_cast<std::uint8_t>(255 * GameRoot::instance().frameUIOpacity)});
+    // GameRoot::instance().renderWindow.draw(scoreFrame);
+    // scoreText.setString(Extensions::formatNumberWithCommas(PlayerStatus::instance().score));
+    // scoreText.setOrigin({
+    //     scoreText.getLocalBounds().size.x / 2.f,
+    //     scoreText.getLocalBounds().size.y / 2.f,
+    // });
+    // GameRoot::instance().renderWindow.draw(scoreText);
+    //
+    // // Draw the multiplier header and text
+    // GameRoot::instance().renderWindow.draw(multiplierHeaderText);
+    // multiplierText.setString(std::to_string(PlayerStatus::instance().multiplier));
+    // multiplierText.setOrigin({
+    //     multiplierText.getLocalBounds().size.x / 2.f,
+    //     multiplierText.getLocalBounds().size.y / 2.f
+    // });
+    // GameRoot::instance().renderWindow.draw(multiplierText);
+    //
+    // // Draw the timer text
+    // timerText.setString(formattedTime());
+    // const sf::FloatRect timerTextRect = timerText.getLocalBounds();
+    // float timerOriginTextX = timerTextRect.size.x / 2.f;
+    // float timerOriginTextY = timerTextRect.size.y / 2.f;
+    // timerText.setOrigin({timerOriginTextX, timerOriginTextY});
+    // GameRoot::instance().renderWindow.draw(timerText);
 
     // Draw paused screen
     if (GameRoot::instance().isPaused)

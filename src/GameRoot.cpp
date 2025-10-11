@@ -8,6 +8,7 @@
 #include "Entities/Include/Collisions.h"
 #include "Entities/Include/Enemies.h"
 #include "Entities/Include/Nukes.h"
+#include "Entities/Include/ShapeKeeper.h"
 #include "Entities/Include/Player/PlayerShip.h"
 #include "Grid/Grid.h"
 #include "Input/Include/Input.h"
@@ -306,11 +307,11 @@ void GameRoot::update() const
         if (!PlayerStatus::instance().isDead())
         {
             Nukes::instance().update();
-            Enemies::instance().update();
+            //Enemies::instance().update();
             Buffs::instance().update();
             PlayerShip::instance().update();
             Bullets::instance().update();
-            BlackHoles::instance().update();
+            //BlackHoles::instance().update();
             Collisions::instance().handleEnemyPlayerBullets();
             Collisions::instance().handleBlackHoles();
             Collisions::instance().handlePlayerAndBuffs();
@@ -349,6 +350,7 @@ void GameRoot::update() const
 
 void GameRoot::render()
 {
+    // Draw to the screen
     renderWindow.clear();
 
     // Draw stuff with bloom
@@ -359,16 +361,17 @@ void GameRoot::render()
     Enemies::instance().draw();
     BlackHoles::instance().draw();
     Bullets::instance().draw();
+    ShapeKeeper::instance().draw();
     PlayerShip::instance().draw();
     Buffs::instance().draw();
-    GaussianBlur::instance().drawToScreen();
 
-    // Draws without bloom
+    GaussianBlur::instance().drawToScreen();
     LivesAndNukes::instance().draw();
     FloatingKillTexts::instance().draw();
     UserInterface::instance().draw();
     Buffs::instance().drawText();
     Buttons::instance().draw();
+    ShapeKeeper::instance().drawFont();
     Input::instance().draw();
 
     renderWindow.display();

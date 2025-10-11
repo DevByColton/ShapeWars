@@ -36,6 +36,45 @@ Art::Art()
         snakeTail = sf::Texture("Content\\Images\\SnakeTail.png");
         snakeTail.setSmooth(true);
 
+        shapeKeeperCore = sf::Texture("Content\\Images\\ShapeKeeperCore.png");
+        shapeKeeperCore.setSmooth(true);
+
+        shapeKeeperTop = sf::Texture("Content\\Images\\ShapeKeeperTop.png");
+        shapeKeeperTop.setSmooth(true);
+
+        shapeKeeperMiddleLeft = sf::Texture("Content\\Images\\ShapeKeeperMiddleLeft.png");
+        shapeKeeperMiddleLeft.setSmooth(true);
+
+        shapeKeeperMiddleRight = sf::Texture("Content\\Images\\ShapeKeeperMiddleRight.png");
+        shapeKeeperMiddleRight.setSmooth(true);
+
+        shapeKeeperBottomLeft = sf::Texture("Content\\Images\\ShapeKeeperBottomLeft.png");
+        shapeKeeperBottomLeft.setSmooth(true);
+
+        shapeKeeperBottomRight = sf::Texture("Content\\Images\\ShapeKeeperBottomRight.png");
+        shapeKeeperBottomRight.setSmooth(true);
+
+        shapeKeeperHealthBarCore = sf::Texture("Content\\Images\\ShapeKeeperHealthBarCore.png");
+        shapeKeeperHealthBarCore.setSmooth(true);
+
+        shapeKeeperHealthBarTop = sf::Texture("Content\\Images\\ShapeKeeperHealthBarTop.png");
+        shapeKeeperHealthBarTop.setSmooth(true);
+
+        shapeKeeperHealthBarMiddleLeft = sf::Texture("Content\\Images\\ShapeKeeperHealthBarMiddleLeft.png");
+        shapeKeeperHealthBarMiddleLeft.setSmooth(true);
+
+        shapeKeeperHealthBarMiddleRight = sf::Texture("Content\\Images\\ShapeKeeperHealthBarMiddleRight.png");
+        shapeKeeperHealthBarMiddleRight.setSmooth(true);
+
+        shapeKeeperHealthBarBottomLeft = sf::Texture("Content\\Images\\ShapeKeeperHealthBarBottomLeft.png");
+        shapeKeeperHealthBarBottomLeft.setSmooth(true);
+
+        shapeKeeperHealthBarBottomRight = sf::Texture("Content\\Images\\ShapeKeeperHealthBarBottomRight.png");
+        shapeKeeperHealthBarBottomRight.setSmooth(true);
+
+        shapeKeeperHealthFrame = sf::Texture("Content\\Images\\ShapeKeeperHealthFrame.png");
+        shapeKeeperHealthFrame.setSmooth(true);
+
         bullet = sf::Texture("Content\\Images\\Bullet.png");
         bullet.setSmooth(true);
 
@@ -125,6 +164,9 @@ Art::Art()
 
         font = sf::Font("Content\\Font\\TurretRoad-Regular.ttf");
         font.setSmooth(true);
+
+        shapeKeeperFont = sf::Font("Content\\Font\\MajorMonoDisplay-Regular.ttf");
+        shapeKeeperFont.setSmooth(true);
 
     }
     catch (sf::Exception &ex)

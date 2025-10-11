@@ -254,7 +254,7 @@ void Enemies::Enemy::activateWanderer()
     sprite.setTexture(Art::instance().wanderer);
     sprite.setPosition(SpawnHelper::instance().createSpawnPosition());
     sprite.setOrigin({sprite.getTexture().getSize().x / 2.f, sprite.getTexture().getSize().y / 2.f});
-    radius = 20;
+    radius = sprite.getTexture().getSize().x / 2.f;
     timeUntilAct = maxTimeUntilAct;
     maxTimeUntilNewDirection = 3.f;
     timeUntilNewDirection = maxTimeUntilNewDirection;
@@ -327,7 +327,7 @@ void Enemies::Enemy::activateSeeker()
     sprite.setTexture(Art::instance().seeker);
     sprite.setPosition(SpawnHelper::instance().createSpawnPosition());
     sprite.setOrigin({sprite.getTexture().getSize().x / 2.f, sprite.getTexture().getSize().y / 2.f});
-    radius = 20;
+    radius = sprite.getTexture().getSize().x / 2.f;
     timeUntilAct = maxTimeUntilAct;
     speed = 0.9f;
     pointValue = 25;

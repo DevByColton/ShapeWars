@@ -73,6 +73,8 @@ add_executable(ShapeWars src/main.cpp
         src/UserInterface/Include/LivesAndNukes.h
         src/UserInterface/Src/Buttons.cpp
         src/UserInterface/Include/Buttons.h
+        src/Entities/Src/ShapeKeeper.cpp
+        src/Entities/Include/ShapeKeeper.h
 )
 
 target_compile_features(ShapeWars PRIVATE cxx_std_20)
