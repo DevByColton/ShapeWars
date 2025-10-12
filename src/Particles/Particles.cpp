@@ -179,15 +179,6 @@ void Particles::create(const float duration,
 }
 
 
-
-float Particles::randomStartingSpeed(const float size, const float min, const float max)
-{
-    std::uniform_real_distribution particleSpeed {min, max};
-    return size * (1.f - 1.f / particleSpeed(randEngine));
-}
-
-
-
 void Particles::update()
 {
     for (int i = 0; i < MAX_PARTICLE_COUNT; i++)
@@ -282,10 +273,10 @@ bool Particles::Particle::animate()
     switch (particleSize)
     {
     case Spark:
-        velocity *= 0.92f;
+        velocity *= 0.95f;
         break;
     case Explosion:
-        velocity *= 0.94f;
+        velocity *= 0.97f;
         break;
     case Massive:
         velocity *= 0.98f;

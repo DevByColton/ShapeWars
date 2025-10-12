@@ -22,6 +22,7 @@ struct Art {
     sf::Texture snakeHead;
     sf::Texture snakeBody;
     sf::Texture snakeTail;
+    sf::Texture shapeKeeperCoreShield;
     sf::Texture shapeKeeperCore;
     sf::Texture shapeKeeperBottomRight;
     sf::Texture shapeKeeperBottomLeft;

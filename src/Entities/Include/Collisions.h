@@ -3,10 +3,11 @@
 #include "SFML/System/Vector2.hpp"
 
 
-struct Collisions {
-    Collisions() = default;
-    ~Collisions() = default;
+class Collisions {
+private:
+    static sf::Vector2f calculateCircleCollisionPoint(const sf::Vector2f& from, const sf::Vector2f& to, float radius);
 
+public:
     static Collisions &instance() {
         static auto *instance = new Collisions;
         return *instance;
@@ -23,6 +24,7 @@ struct Collisions {
     void handleEnemyPlayerBullets();
     void handleBlackHoles();
     void handlePlayerAndBuffs();
+    void handlePlayerAndShapeKeeper();
 };
 
 

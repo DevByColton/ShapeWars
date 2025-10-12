@@ -127,13 +127,12 @@ void Enemies::Enemy::reset(const bool canDropBuffChance)
 
         for (int i = 0; i < 120; i++)
         {
-            const float speed = Particles::instance().randomStartingSpeed(15.0, 1.f, 10.f);
             Particles::instance().create(
-                3.f,
+                1.f,
                 DontIgnoreGravity,
-                Explosion,
+                Spark,
                 getPosition(),
-                RandomVector::instance().next(speed, speed),
+                RandomVector::instance().next(2.f, 24.f),
                 ColorPicker::instance().lerp(color1, color2)
             );
         }

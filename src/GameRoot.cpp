@@ -302,6 +302,7 @@ void GameRoot::update() const
     {
         // Always update the player status first
         PlayerStatus::instance().update();
+        ShapeKeeper::instance().update();
 
         // When the player is alive
         if (!PlayerStatus::instance().isDead())
@@ -315,6 +316,7 @@ void GameRoot::update() const
             Collisions::instance().handleEnemyPlayerBullets();
             Collisions::instance().handleBlackHoles();
             Collisions::instance().handlePlayerAndBuffs();
+            Collisions::instance().handlePlayerAndShapeKeeper();
         }
 
         // When the player dies during a round

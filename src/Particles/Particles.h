@@ -78,7 +78,6 @@ public:
     std::array<Particle, MAX_PARTICLE_COUNT> particles {};
     std::default_random_engine randEngine {std::random_device{}()};
 
-    float randomStartingSpeed(float, float, float);
     void create(float, ParticleType, ParticleSize, sf::Vector2f, sf::Vector2f, sf::Color);
     void create(float, ParticleType, ParticleSize, sf::Vector2f, sf::Vector2f, sf::Color, sf::Color);
     void update();

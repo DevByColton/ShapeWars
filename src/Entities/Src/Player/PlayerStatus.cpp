@@ -5,6 +5,7 @@
 #include "../../../Particles/Particles.h"
 #include "../../../System/Include/ColorPicker.h"
 #include "../../../System/Include/Extensions.h"
+#include "../../../System/Include/RandomVector.h"
 #include "../../Include/Player/PlayerShip.h"
 
 
@@ -80,40 +81,35 @@ void PlayerStatus::removeLife()
         respawnTime = 3.f;
     }
 
+    // Grid explosion
+    Grid::instance().applyExplosiveForce(PlayerShip::instance().getPosition(), 500.f, 200.f, 0.3f);
+
     // Add particles for a grand player explosion!
     float hue1 = ColorPicker::instance().generateHue();
     float hue2 = ColorPicker::instance().generateShiftedHue(hue1);
-    sf::Color color1 = ColorPicker::instance().hsvToRgb(hue1, 0.7f, 1.f);
-    sf::Color color2 = ColorPicker::instance().hsvToRgb(hue2, 0.7f, 1.f);
-    std::uniform_real_distribution<float> particleStartOffset {0.f, PI / KILL_PARTICLE_COUNT};
-    std::uniform_real_distribution<float> magnitude {2.f, 24.f};
-    const float startOffset = particleStartOffset(randEngine);
+    sf::Color color1 = ColorPicker::instance().hsvToRgb(hue1, 0.8f, 1.f);
+    sf::Color color2 = ColorPicker::instance().hsvToRgb(hue2, 0.8f, 1.f);
 
     for (int i = 0; i < KILL_PARTICLE_COUNT; i++)
     {
-        const sf::Vector2f sprayVelocity = Extensions::fromPolar(PI * 2 * i / KILL_PARTICLE_COUNT + startOffset, magnitude(instance().randEngine));
-        const sf::Vector2f position = PlayerShip::instance().getPosition() + 2.f * sprayVelocity;
         Particles::instance().create(
             3.f,
             DontIgnoreGravity,
-            Massive,
-            position,
-            sprayVelocity,
+            i % 3 == 0 ? Explosion : Spark,
+            PlayerShip::instance().getPosition(),
+            RandomVector::instance().next(6.f, 64.f),
             ColorPicker::instance().lerp(color1, color2)
         );
 
-        // Every particles pick new colors
+        // Periodically pick new colors
         if (i % 16 == 0)
         {
             hue1 = ColorPicker::instance().generateHue();
             hue2 = ColorPicker::instance().generateShiftedHue(hue1);
-            color1 = ColorPicker::instance().hsvToRgb(hue1, 0.7f, 1.f);
-            color2 = ColorPicker::instance().hsvToRgb(hue2, 0.7f, 1.f);
+            color1 = ColorPicker::instance().hsvToRgb(hue1, 0.8f, 1.f);
+            color2 = ColorPicker::instance().hsvToRgb(hue2, 0.8f, 1.f);
         }
     }
-
-    // Grid explosions
-    Grid::instance().applyExplosiveForce(PlayerShip::instance().getPosition(), 500.f, 200.f, 0.3f);
 }
 
 
