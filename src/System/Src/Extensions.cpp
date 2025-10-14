@@ -61,11 +61,6 @@ sf::Vector2f Extensions::transform(const sf::Vector2f &vector, const Quaternion 
 }
 
 
-float Extensions::normalize(const float value, const float min, const float max) {
-    return (value - min) / (max - min);
-}
-
-
 std::string Extensions::formatNumberWithCommas(const int number) {
 
     std::string numberString = std::to_string(number);
@@ -81,3 +76,39 @@ std::string Extensions::formatNumberWithCommas(const int number) {
 
     return numberString;
 }
+
+
+sf::Vector2f Extensions::lerp(const sf::Vector2f& start, const sf::Vector2f& end, const float t)
+{
+    return {
+        std::lerp(start.x, end.x, t),
+        std::lerp(start.y, end.y, t)
+    };
+}
+
+
+sf::Vector2f Extensions::easeBackIn(const sf::Vector2f& start, const sf::Vector2f& end, const float t)
+{
+    constexpr float c1 = 1.70158f;
+    constexpr float c3 = c1 + 1.f;
+    const float easeBackIn = c3 * t * t * t - c1 * t * t;
+
+    return {
+        std::lerp(start.x, end.x, easeBackIn),
+        std::lerp(start.y, end.y, easeBackIn)
+    };
+}
+
+
+sf::Vector2f Extensions::easeOutBack(const sf::Vector2f& start, const sf::Vector2f& end, const float t)
+{
+    constexpr float c1 = 1.70158f;
+    constexpr float c3 = c1 + 1.f;
+    const float easeOutBack = 1.f + c3 * std::pow(t - 1.f, 3) + c1 * std::pow(t - 1.f, 2);
+
+    return {
+        std::lerp(start.x, end.x, easeOutBack),
+        std::lerp(start.y, end.y, easeOutBack)
+    };
+}
+

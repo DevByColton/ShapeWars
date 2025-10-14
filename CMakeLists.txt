@@ -73,8 +73,20 @@ add_executable(ShapeWars src/main.cpp
         src/UserInterface/Include/LivesAndNukes.h
         src/UserInterface/Src/Buttons.cpp
         src/UserInterface/Include/Buttons.h
-        src/Entities/Src/ShapeKeeper.cpp
-        src/Entities/Include/ShapeKeeper.h
+        src/Entities/Src/ShapeKeeper/ShapeKeeper.cpp
+        src/Entities/Include/ShapeKeeper/ShapeKeeper.h
+        src/Entities/Src/ShapeKeeper/ShapeKeeperCore.cpp
+        src/Entities/Include/ShapeKeeper/ShapeKeeperCore.h
+        src/Entities/Src/ShapeKeeper/ShapeKeeperHealthBar.cpp
+        src/Entities/Include/ShapeKeeper/ShapeKeeperHealthBar.h
+        src/Entities/Src/ShapeKeeper/ShapeKeeperBodyPart.cpp
+        src/Entities/Include/ShapeKeeper/ShapeKeeperBodyPart.h
+        src/Entities/Src/ShapeKeeper/ShapeKeeperHealthContainer.cpp
+        src/Entities/Include/ShapeKeeper/ShapeKeeperHealthContainer.h
+        src/Entities/Src/ShapeKeeper/DirectionalAttack.cpp
+        src/Entities/Include/ShapeKeeper/DirectionalAttack.h
+        src/Entities/Src/ShapeKeeper/LasersAttack.cpp
+        src/Entities/Include/ShapeKeeper/LasersAttack.h
 )
 
 target_compile_features(ShapeWars PRIVATE cxx_std_20)

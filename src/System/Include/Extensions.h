@@ -21,8 +21,10 @@ struct Extensions
     static sf::Vector2f multiply(const sf::Vector2f &vector1, const sf::Vector2f &vector2);
     static sf::Vector3f multiply(const sf::Vector3f &vector1, const sf::Vector3f &vector2);
     static sf::Vector2f transform(const sf::Vector2f &vector, const Quaternion &rotation);
-    static float normalize(float value, float min, float max);
     static std::string formatNumberWithCommas(int number);
+    static sf::Vector2f lerp(const sf::Vector2f& start, const sf::Vector2f& end, float t);
+    static sf::Vector2f easeBackIn(const sf::Vector2f& start, const sf::Vector2f& end, float t);
+    static sf::Vector2f easeOutBack(const sf::Vector2f& start, const sf::Vector2f& end, float t);
 };
 
 

@@ -8,7 +8,7 @@
 #include "Entities/Include/Collisions.h"
 #include "Entities/Include/Enemies.h"
 #include "Entities/Include/Nukes.h"
-#include "Entities/Include/ShapeKeeper.h"
+#include "Entities/Include/ShapeKeeper/ShapeKeeper.h"
 #include "Entities/Include/Player/PlayerShip.h"
 #include "Grid/Grid.h"
 #include "Input/Include/Input.h"
@@ -229,6 +229,15 @@ void GameRoot::processKeyReleased(const sf::Event::KeyReleased* keyReleased)
         return;
     }
 
+    if (keyReleased->scancode == sf::Keyboard::Scancode::R)
+        ShapeKeeper::instance().startEncounter();
+
+    if (keyReleased->scancode == sf::Keyboard::Scancode::E)
+        ShapeKeeper::instance().endEncounter();
+
+    // if (keyReleased->scancode == sf::Keyboard::Scancode::Num7)
+    //     ShapeKeeper::instance().triggerDirectionalAttack();
+
     // Last one, so no need to return
     if (keyReleased->scancode == sf::Keyboard::Scancode::V)
         toggleVsync();
@@ -373,7 +382,7 @@ void GameRoot::render()
     UserInterface::instance().draw();
     Buffs::instance().drawText();
     Buttons::instance().draw();
-    ShapeKeeper::instance().drawFont();
+    ShapeKeeper::instance().drawText();
     Input::instance().draw();
 
     renderWindow.display();
