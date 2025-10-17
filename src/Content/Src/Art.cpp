@@ -42,20 +42,38 @@ Art::Art()
         shapeKeeperCore = sf::Texture("Content\\Images\\ShapeKeeperCore.png");
         shapeKeeperCore.setSmooth(true);
 
+        shapeKeeperCoreTrail = sf::Texture("Content\\Images\\ShapeKeeperCoreTrail.png");
+        shapeKeeperCoreTrail.setSmooth(true);
+
         shapeKeeperTop = sf::Texture("Content\\Images\\ShapeKeeperTop.png");
         shapeKeeperTop.setSmooth(true);
+
+        shapeKeeperTopTrail = sf::Texture("Content\\Images\\ShapeKeeperTopTrail.png");
+        shapeKeeperTopTrail.setSmooth(true);
 
         shapeKeeperMiddleLeft = sf::Texture("Content\\Images\\ShapeKeeperMiddleLeft.png");
         shapeKeeperMiddleLeft.setSmooth(true);
 
+        shapeKeeperMiddleLeftTrail = sf::Texture("Content\\Images\\ShapeKeeperMiddleLeftTrail.png");
+        shapeKeeperMiddleLeftTrail.setSmooth(true);
+
         shapeKeeperMiddleRight = sf::Texture("Content\\Images\\ShapeKeeperMiddleRight.png");
         shapeKeeperMiddleRight.setSmooth(true);
+
+        shapeKeeperMiddleRightTrail = sf::Texture("Content\\Images\\ShapeKeeperMiddleRightTrail.png");
+        shapeKeeperMiddleRightTrail.setSmooth(true);
 
         shapeKeeperBottomLeft = sf::Texture("Content\\Images\\ShapeKeeperBottomLeft.png");
         shapeKeeperBottomLeft.setSmooth(true);
 
+        shapeKeeperBottomLeftTrail = sf::Texture("Content\\Images\\ShapeKeeperBottomLeftTrail.png");
+        shapeKeeperBottomLeftTrail.setSmooth(true);
+
         shapeKeeperBottomRight = sf::Texture("Content\\Images\\ShapeKeeperBottomRight.png");
         shapeKeeperBottomRight.setSmooth(true);
+
+        shapeKeeperBottomRightTrail = sf::Texture("Content\\Images\\ShapeKeeperBottomRightTrail.png");
+        shapeKeeperBottomRightTrail.setSmooth(true);
 
         shapeKeeperHealthBarCore = sf::Texture("Content\\Images\\ShapeKeeperHealthBarCore.png");
         shapeKeeperHealthBarCore.setSmooth(true);

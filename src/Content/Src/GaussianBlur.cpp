@@ -78,20 +78,16 @@ void GaussianBlur::drawToScreen()
 {
     if (gaussianBlurEnabled)
     {
-        sf::Sprite baseTextureSprite {baseTexture.getTexture()};
-
         // Pass 1: Saturate
         saturate.setUniform("saturationSigma", saturationSigma);
         saturationTexture.draw(baseTextureSprite, &saturate);
         saturationTexture.display();
-        const sf::Sprite saturationSprite {saturationTexture.getTexture()};
 
         // Pass 2: Horizontal gaussian blur
         const float dx = 1.f / saturationTexture.getSize().x;
         setGaussianBlurParameters(dx, 0.0);
         gaussianBlurTexture.draw(saturationSprite, gaussianRenderState);
         gaussianBlurTexture.display();
-        const sf::Sprite gaussianBlurSprite {gaussianBlurTexture.getTexture()};
 
         // Pass 3: Vertical gaussian blur, draw back into the saturation sprite
         const float dy = 1.f / saturationTexture.getSize().y;
@@ -103,12 +99,11 @@ void GaussianBlur::drawToScreen()
         blurSaturateCombine.setUniform("baseTexture", baseTexture.getTexture());
         blurSaturateCombine.setUniform("saturationTexture", saturationTexture.getTexture());
         GameRoot::instance().renderWindow.draw(saturationSprite, &blurSaturateCombine);
+
+        return;
     }
-    else
-    {
-        const sf::Sprite baseTextureSprite {baseTexture.getTexture()};
-        GameRoot::instance().renderWindow.draw(baseTextureSprite);
-    }
+
+    GameRoot::instance().renderWindow.draw(baseTextureSprite);
 }
 
 

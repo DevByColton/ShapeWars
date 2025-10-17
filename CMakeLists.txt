@@ -83,10 +83,10 @@ add_executable(ShapeWars src/main.cpp
         src/Entities/Include/ShapeKeeper/ShapeKeeperBodyPart.h
         src/Entities/Src/ShapeKeeper/ShapeKeeperHealthContainer.cpp
         src/Entities/Include/ShapeKeeper/ShapeKeeperHealthContainer.h
-        src/Entities/Src/ShapeKeeper/DirectionalAttack.cpp
-        src/Entities/Include/ShapeKeeper/DirectionalAttack.h
         src/Entities/Src/ShapeKeeper/LasersAttack.cpp
         src/Entities/Include/ShapeKeeper/LasersAttack.h
+        src/Entities/Src/ShapeKeeper/SpriteTrail.cpp
+        src/Entities/Include/ShapeKeeper/SpriteTrail.h
 )
 
 target_compile_features(ShapeWars PRIVATE cxx_std_20)

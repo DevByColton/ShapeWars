@@ -1,4 +1,5 @@
 ﻿#include "../Include/Extensions.h"
+#include <algorithm>
 #include "SFML/System/Vector2.hpp"
 #include <cmath>
 #include <string>
@@ -78,6 +79,13 @@ std::string Extensions::formatNumberWithCommas(const int number) {
 }
 
 
+void Extensions::clamp(sf::Vector2f& vector, const float min, const float max)
+{
+    vector.x = std::clamp(vector.x, min, max);
+    vector.y = std::clamp(vector.y, min, max);
+}
+
+
 sf::Vector2f Extensions::lerp(const sf::Vector2f& start, const sf::Vector2f& end, const float t)
 {
     return {
@@ -112,3 +120,49 @@ sf::Vector2f Extensions::easeOutBack(const sf::Vector2f& start, const sf::Vector
     };
 }
 
+
+sf::Vector2f Extensions::easeInOutElastic(const sf::Vector2f& start, const sf::Vector2f& end, const float t)
+{
+    constexpr float c5 = 2.f * PI / 4.5;
+    float easeInOutElastic = 0.f;
+
+    if (t == 0.f)
+        easeInOutElastic = 0.f;
+    else if (t == 1.f)
+        easeInOutElastic = 1.f;
+    else if (t < 0.5f)
+        easeInOutElastic = -(std::pow(2, 20 * t - 10) * std::sin((20 * t - 11.125) * c5)) / 2.f;
+    else
+        easeInOutElastic = (std::pow(2, -20 * t + 10) * std::sin((20 * t - 11.125) * c5)) / 2.f + 1.f;
+
+    return {
+        std::lerp(start.x, end.x, easeInOutElastic),
+        std::lerp(start.y, end.y, easeInOutElastic)
+    };
+}
+
+
+sf::Vector2f Extensions::easeInOutBack(const sf::Vector2f& start, const sf::Vector2f& end, float t)
+{
+    constexpr float c1 = 1.70158f;
+    constexpr float c2 = c1 * 1.525f;
+    float easeInOutBack = 0.f;
+
+    if (t < 0.5)
+        easeInOutBack = std::pow(2 * t, 2) * ((c2 + 1.f) * 2.f * t - c2) / 2.f;
+    else
+        easeInOutBack = (std::pow(2 * t - 2, 2) * ((c2 + 1.f) * (t * 2.f - 2.f) + c2) + 2.f) / 2.f;
+
+    return {
+        std::lerp(start.x, end.x, easeInOutBack),
+        std::lerp(start.y, end.y, easeInOutBack)
+    };
+}
+
+
+float Extensions::easeInOutSine(const float start, const float end, const float t)
+{
+    const float easeInOutSine = -(std::cos(PI * t) - 1.f) / 2.f;
+
+    return std::lerp(start, end, easeInOutSine);
+}

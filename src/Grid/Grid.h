@@ -53,7 +53,7 @@ private:
     std::vector<std::vector<PointMass>> fixedPoints;
     std::vector<std::vector<PointMass>> points;
     std::vector<Spring> springs = std::vector<Spring>(0);
-    const sf::Color gridColor {94, 39, 204, 115};
+    const sf::Color gridColor {85, 0, 255, 115};
 
 public:
     Grid();

@@ -373,10 +373,11 @@ void GameRoot::render()
     BlackHoles::instance().draw();
     Bullets::instance().draw();
     ShapeKeeper::instance().draw();
-    PlayerShip::instance().draw();
     Buffs::instance().draw();
-
+    PlayerShip::instance().draw();
     GaussianBlur::instance().drawToScreen();
+
+    // Stuff with no bloom
     LivesAndNukes::instance().draw();
     FloatingKillTexts::instance().draw();
     UserInterface::instance().draw();

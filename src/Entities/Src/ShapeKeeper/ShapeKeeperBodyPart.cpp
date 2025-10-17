@@ -6,9 +6,10 @@
 #include "../../../System/Include/RandomVector.h"
 
 
-ShapeKeeperBodyPart::ShapeKeeperBodyPart(const sf::Texture& texture, const sf::Color& color,
+ShapeKeeperBodyPart::ShapeKeeperBodyPart(const sf::Texture& texture, const sf::Texture& trailTexture, const sf::Color& color,
                                          ShapeKeeperHealthBar* healthBar, ShapeKeeperCore* core,
-                                         const float coreXOffset, const float coreYOffset) : Sprite(texture)
+                                         const float coreXOffset, const float coreYOffset)
+: Sprite(texture), trailSprite(trailTexture)
 {
     this->coreXOffset = coreXOffset;
     this->coreYOffset = coreYOffset;
@@ -17,6 +18,21 @@ ShapeKeeperBodyPart::ShapeKeeperBodyPart(const sf::Texture& texture, const sf::C
     this->core = core;
     radius = getTexture().getSize().x / 2.f - 10.f;
     setOrigin({radius, getTexture().getSize().y / 2.f});
+    updatePositionRelativeToCore();
+    trailSprite.setPosition(getPosition());
+    trailSprite.setRotation(getRotation());
+    trailSprite.setOrigin(getOrigin());
+}
+
+
+void ShapeKeeperBodyPart::reset()
+{
+    lastHitAmount = 0;
+    lastHitPosition = getPosition();
+    wasHit = false;
+    hasBeenHitByNuke = false;
+    health = MAX_HEALTH;
+    spriteTrail.reset();
     updatePositionRelativeToCore();
 }
 
@@ -63,49 +79,45 @@ void ShapeKeeperBodyPart::updateHealth()
         health -= lastHitAmount;
         wasHit = false;
         lastHitAmount = 0;
-
-        // Update the health bar width to reflect health left
-        healthBar->update(health, MAX_HEALTH);
-
-        // Check death
-        if (!isAlive())
-        {
-            Grid::instance().applyExplosiveForce(getPosition(), 400.f, 200.f, 0.8f);
-
-            for (int i = 0; i < 750; i++)
-                Particles::instance().create(
-                    3.f,
-                    DontIgnoreGravity,
-                    i % 6 == 0 ? Explosion : Spark,
-                    getPosition(),
-                    RandomVector::instance().next(12.f, 48.f),
-                    color
-                );
-        }
     }
-}
 
+    // Update the health bar width to reflect health left
+    healthBar->update(health, MAX_HEALTH);
 
-void ShapeKeeperBodyPart::updateDirectionalAttack(const float t)
-{
-    sf::Vector2f direction = core->getPosition() - getPosition();
+    // Check death
+    if (!isAlive())
+    {
+        Grid::instance().applyExplosiveForce(getPosition(), 400.f, 200.f, 0.8f);
 
-    if (direction.lengthSquared() > 1.f)
-        direction = direction.normalized();
-
-    direction.x *= directionalAttackAmount.x;
-    direction.y *= directionalAttackAmount.y;
-
-    setPosition(Extensions::lerp( positionRelativeToCore, positionRelativeToCore + direction, t));
+        for (int i = 0; i < 750; i++)
+            Particles::instance().create(
+                3.f,
+                DontIgnoreGravity,
+                i % 6 == 0 ? Explosion : Spark,
+                getPosition(),
+                RandomVector::instance().next(12.f, 48.f),
+                color
+            );
+    }
 }
 
 
 void ShapeKeeperBodyPart::update()
 {
+    if (!isAlive())
+        return;
+
     // Update health and life
     updateHealth();
     updatePositionRelativeToCore();
-    setPosition(positionRelativeToCore);
+
+    // Rotation
+    const Quaternion quaternion = Quaternion::createFromYawPitchRoll(0.f, 0.f, core->currentBodyPartRotation.asRadians());
+    setPosition(positionRelativeToCore + Extensions::transform({coreXOffset * 0.75f, coreYOffset * 0.75f}, quaternion));
+    setRotation(core->currentBodyPartRotation);
+    trailSprite.setPosition(getPosition());
+    trailSprite.setRotation(getRotation());
+    spriteTrail.update();
 
     // Todo: this will change in updates
     // Maybe that's why attack methods can return is vectors of new positions???
@@ -113,8 +125,11 @@ void ShapeKeeperBodyPart::update()
 }
 
 
-void ShapeKeeperBodyPart::draw() const
+void ShapeKeeperBodyPart::draw()
 {
-    if (isAlive())
-        GaussianBlur::instance().drawToBase(*this);
+    if (!isAlive())
+        return;
+
+    spriteTrail.draw();
+    GaussianBlur::instance().drawToBase(*this);
 }

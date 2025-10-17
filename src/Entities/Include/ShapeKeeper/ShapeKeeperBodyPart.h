@@ -8,8 +8,8 @@ struct ShapeKeeperHealthBar;
 
 struct ShapeKeeperBodyPart final : sf::Sprite
 {
-    explicit ShapeKeeperBodyPart(const sf::Texture& texture, const sf::Color& color, ShapeKeeperHealthBar* healthBar,
-                                 ShapeKeeperCore* core, float coreXOffset, float coreYOffset);
+    explicit ShapeKeeperBodyPart(const sf::Texture& texture, const sf::Texture& trailTexture, const sf::Color& color,
+                                 ShapeKeeperHealthBar* healthBar, ShapeKeeperCore* core, float coreXOffset, float coreYOffset);
 
     static constexpr int MAX_HEALTH = 30;
     bool wasHit = false;
@@ -20,19 +20,20 @@ struct ShapeKeeperBodyPart final : sf::Sprite
     float radius = 0.f;
     int lastHitAmount = 0;
     sf::Vector2f positionRelativeToCore {0.f, 0.f};
-    sf::Vector2f directionalAttackAmount {400.f, 400.f};
     sf::Vector2f lastHitPosition = getPosition();
     sf::Color color {sf::Color::Transparent};
     ShapeKeeperCore* core {nullptr};
     ShapeKeeperHealthBar* healthBar {nullptr};
+    sf::Sprite trailSprite;
+    SpriteTrail spriteTrail {&trailSprite};
 
+    void reset();
     bool isAlive() const;
     void markForHit(const sf::Vector2f &hitPosition, int amount);
     void update();
     void updateHealth();
     void updatePositionRelativeToCore();
-    void updateDirectionalAttack(float t);
-    void draw() const;
+    void draw();
 };
 
 

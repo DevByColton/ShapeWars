@@ -1,23 +1,40 @@
 ﻿#include "../../Include/ShapeKeeper/ShapeKeeper.h"
+#include "../../Include/Player/PlayerShip.h"
 
 
 void ShapeKeeper::startEncounter()
 {
+    if (isActive)
+        return;
+
     // Trigger health container transitions
-    if (!healthContainer.isTransitioningIn && !healthContainer.isTransitioningOut)
+    if (!healthContainer.isTransitioningIn)
         healthContainer.isTransitioningIn = true;
 
-    // Trigger boss enter
+    // Spawn the boss opposite of the player, by default the boss is on the left side
+    // Make sure all parts are in sync
+    core.activate(PlayerShip::instance().getPosition().x > GameRoot::instance().windowSizeF.x / 2.f);
+    core.onDeath = [this]{ endEncounter(); };
+    top.reset();
+    middleLeft.reset();
+    middleRight.reset();
+    bottomLeft.reset();
+    bottomRight.reset();
+
+    isActive = true;
 }
 
 
 void ShapeKeeper::endEncounter()
 {
+    if (!isActive)
+        return;
+
     // Trigger health container transitions
-    if (!healthContainer.isTransitioningOut && !healthContainer.isTransitioningIn)
+    if (!healthContainer.isTransitioningOut)
         healthContainer.isTransitioningOut = true;
 
-    // Trigger boss leave or resets??
+    isActive = false;
 }
 
 
@@ -32,8 +49,11 @@ void ShapeKeeper::update()
     healthContainer.transitionIn();
     healthContainer.transitionOut();
 
+    if (!isActive)
+        return;
+
     // Update each part first
-    core.update(); // Todo: base core movement
+    core.update();
     top.update();
     middleLeft.update();
     middleRight.update();
@@ -44,13 +64,7 @@ void ShapeKeeper::update()
 
     // TODO: Check if an attack type is running, if not activate new one chance
 
-    // Update each special attack type
-    directionalAttack.update(&top);
-    directionalAttack.update(&middleLeft);
-    directionalAttack.update(&middleRight);
-    directionalAttack.update(&bottomLeft);
-    directionalAttack.update(&bottomRight);
-
+    // Update lasers
     lasersAttack.update(&top);
     lasersAttack.update(&middleLeft);
     lasersAttack.update(&middleRight);
@@ -61,13 +75,17 @@ void ShapeKeeper::update()
 
 void ShapeKeeper::draw()
 {
+    healthContainer.draw();
+
+    if (!isActive)
+        return;
+
     top.draw();
     middleLeft.draw();
     middleRight.draw();
     bottomLeft.draw();
     bottomRight.draw();
     core.draw(canTakeCoreDamage());
-    healthContainer.draw();
 }
 
 

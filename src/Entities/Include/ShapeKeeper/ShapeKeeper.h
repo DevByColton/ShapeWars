@@ -1,6 +1,5 @@
 ﻿#ifndef SHAPEKEEPER_H
 #define SHAPEKEEPER_H
-#include "DirectionalAttack.h"
 #include "LasersAttack.h"
 #include "ShapeKeeperBodyPart.h"
 #include "ShapeKeeperCore.h"
@@ -10,7 +9,6 @@
 
 class ShapeKeeper {
 private:
-    DirectionalAttack directionalAttack {};
     LasersAttack lasersAttack {};
 
 public:
@@ -30,6 +28,7 @@ public:
 
     ShapeKeeperBodyPart top {
         Art::instance().shapeKeeperTop,
+        Art::instance().shapeKeeperTopTrail,
         {255, 233, 38, 255},
         &healthContainer.top,
         &core,
@@ -38,6 +37,7 @@ public:
     };
     ShapeKeeperBodyPart middleLeft {
         Art::instance().shapeKeeperMiddleLeft,
+        Art::instance().shapeKeeperMiddleLeftTrail,
         {53, 255, 203, 255},
         &healthContainer.middleLeft,
         &core,
@@ -47,6 +47,7 @@ public:
 
     ShapeKeeperBodyPart middleRight {
         Art::instance().shapeKeeperMiddleRight,
+        Art::instance().shapeKeeperMiddleRightTrail,
         {48, 255, 53, 255},
         &healthContainer.middleRight,
         &core,
@@ -56,6 +57,7 @@ public:
 
     ShapeKeeperBodyPart bottomLeft {
         Art::instance().shapeKeeperBottomLeft,
+        Art::instance().shapeKeeperBottomLeftTrail,
         {255, 156, 25, 255},
         &healthContainer.bottomLeft,
         &core,
@@ -65,12 +67,15 @@ public:
 
     ShapeKeeperBodyPart bottomRight {
         Art::instance().shapeKeeperBottomRight,
+        Art::instance().shapeKeeperBottomRightTrail,
         {241, 38, 255, 255},
         &healthContainer.bottomRight,
         &core,
         93.f,
         133.f
     };
+
+    bool isActive = false;
 
     void startEncounter();
     void endEncounter();

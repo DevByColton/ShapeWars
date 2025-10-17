@@ -13,8 +13,7 @@
 
 PlayerShip::PlayerShip()
 {
-    // Set the players position in the middle of the screen // todo: put back to middle of screen
-    // ship.setPosition(GameRoot::instance().windowSizeF / 2.f);
+    ship.setPosition(GameRoot::instance().windowSizeF / 2.f);
     ship.setOrigin({
         ship.getTexture().getSize().x / 2.f,
         ship.getTexture().getSize().y / 2.f

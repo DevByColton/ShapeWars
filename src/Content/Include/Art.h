@@ -24,11 +24,17 @@ struct Art {
     sf::Texture snakeTail;
     sf::Texture shapeKeeperCoreShield;
     sf::Texture shapeKeeperCore;
+    sf::Texture shapeKeeperCoreTrail;
     sf::Texture shapeKeeperBottomRight;
+    sf::Texture shapeKeeperBottomRightTrail;
     sf::Texture shapeKeeperBottomLeft;
+    sf::Texture shapeKeeperBottomLeftTrail;
     sf::Texture shapeKeeperMiddleLeft;
+    sf::Texture shapeKeeperMiddleLeftTrail;
     sf::Texture shapeKeeperMiddleRight;
+    sf::Texture shapeKeeperMiddleRightTrail;
     sf::Texture shapeKeeperTop;
+    sf::Texture shapeKeeperTopTrail;
     sf::Texture shapeKeeperHealthBarCore;
     sf::Texture shapeKeeperHealthBarBottomRight;
     sf::Texture shapeKeeperHealthBarBottomLeft;

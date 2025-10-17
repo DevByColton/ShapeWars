@@ -172,6 +172,9 @@ void Collisions::handlePlayerAndBuffs()
 
 void Collisions::handlePlayerAndShapeKeeper()
 {
+    if (!ShapeKeeper::instance().isActive)
+        return;
+
     auto &bullets = Bullets::instance().bullets;
     auto &core = ShapeKeeper::instance().core;
     auto &top = ShapeKeeper::instance().top;

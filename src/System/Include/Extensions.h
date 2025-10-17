@@ -22,9 +22,13 @@ struct Extensions
     static sf::Vector3f multiply(const sf::Vector3f &vector1, const sf::Vector3f &vector2);
     static sf::Vector2f transform(const sf::Vector2f &vector, const Quaternion &rotation);
     static std::string formatNumberWithCommas(int number);
+    static void clamp(sf::Vector2f &vector, float min, float max);
     static sf::Vector2f lerp(const sf::Vector2f& start, const sf::Vector2f& end, float t);
     static sf::Vector2f easeBackIn(const sf::Vector2f& start, const sf::Vector2f& end, float t);
     static sf::Vector2f easeOutBack(const sf::Vector2f& start, const sf::Vector2f& end, float t);
+    static sf::Vector2f easeInOutElastic(const sf::Vector2f& start, const sf::Vector2f& end, float t);
+    static sf::Vector2f easeInOutBack(const sf::Vector2f& start, const sf::Vector2f& end, float t);
+    static float easeInOutSine(float start, float end, float t);
 };
 
 
