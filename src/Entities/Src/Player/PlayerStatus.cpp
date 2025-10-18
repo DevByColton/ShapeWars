@@ -1,11 +1,11 @@
 ﻿#include <fstream>
 #include "../../Include/Player/PlayerStatus.h"
 #include "../../../GameRoot.h"
-#include "../../../Grid/Grid.h"
-#include "../../../Particles/Particles.h"
-#include "../../../System/Include/ColorPicker.h"
-#include "../../../System/Include/Extensions.h"
-#include "../../../System/Include/RandomVector.h"
+#include "../../../Systems/Include/Grid.h"
+#include "../../../Systems/Include/Particles.h"
+#include "../../../Core/Include/ColorPicker.h"
+#include "../../../Core/Include/Extensions.h"
+#include "../../../Core/Include/RandomVector.h"
 #include "../../Include/Player/PlayerShip.h"
 
 

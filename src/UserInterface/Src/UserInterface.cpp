@@ -3,7 +3,7 @@
 #include "../../GameRoot.h"
 #include "../../Content/Include/GaussianBlur.h"
 #include "../../Entities/Include/Player/PlayerStatus.h"
-#include "../../System/Include/Extensions.h"
+#include "../../Core/Include/Extensions.h"
 
 
 UserInterface::UserInterface()

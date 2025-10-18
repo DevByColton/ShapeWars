@@ -1,9 +1,9 @@
 ﻿#include "../../Include/ShapeKeeper/ShapeKeeperBodyPart.h"
 #include "../../../Content/Include/GaussianBlur.h"
-#include "../../../Grid/Grid.h"
-#include "../../../Particles/Particles.h"
-#include "../../../System/Include/Extensions.h"
-#include "../../../System/Include/RandomVector.h"
+#include "../../../Systems/Include/Grid.h"
+#include "../../../Systems/Include/Particles.h"
+#include "../../../Core/Include/Extensions.h"
+#include "../../../Core/Include/RandomVector.h"
 
 
 ShapeKeeperBodyPart::ShapeKeeperBodyPart(const sf::Texture& texture, const sf::Texture& trailTexture, const sf::Color& color,

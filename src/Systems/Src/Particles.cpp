@@ -1,9 +1,9 @@
 ﻿#include <cmath>
-#include "Particles.h"
-#include "../GameRoot.h"
-#include "../Content/Include/GaussianBlur.h"
-#include "../Entities/Include/BlackHoles.h"
-#include "../System/Include/Extensions.h"
+#include "../Include/Particles.h"
+#include "../../GameRoot.h"
+#include "../../Content/Include/GaussianBlur.h"
+#include "../../Entities/Include/BlackHoles.h"
+#include "../../Core/Include/Extensions.h"
 
 
 Particles::Particles()

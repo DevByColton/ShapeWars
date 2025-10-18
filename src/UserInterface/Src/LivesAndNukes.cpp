@@ -2,7 +2,7 @@
 #include "../../GameRoot.h"
 #include "../../Entities/Include/Nukes.h"
 #include "../../Entities/Include/Player/PlayerStatus.h"
-#include "../../System/Include/Extensions.h"
+#include "../../Core/Include/Extensions.h"
 
 
 LivesAndNukes::LivesAndNukes()

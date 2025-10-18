@@ -2,7 +2,7 @@
 #define PARTICLES_H
 #include <array>
 #include <random>
-#include "../Content/Include/Art.h"
+#include "../../Content/Include/Art.h"
 #include "SFML/Graphics/Sprite.hpp"
 
 

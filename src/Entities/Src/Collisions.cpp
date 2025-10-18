@@ -2,7 +2,7 @@
 #include "../Include/Collisions.h"
 #include "../Include/Player/Buffs.h"
 #include "../Include/Player/PlayerStatus.h"
-#include "../../System/Include/Extensions.h"
+#include "../../Core/Include/Extensions.h"
 #include "../Include/BlackHoles.h"
 #include "../Include/Bullets.h"
 #include "../Include/Enemies.h"

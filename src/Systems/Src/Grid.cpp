@@ -1,8 +1,8 @@
 ﻿#include <cmath>
-#include "Grid.h"
-#include "../GameRoot.h"
-#include "../Content/Include/GaussianBlur.h"
-#include "../System/Include/Extensions.h"
+#include "../Include/Grid.h"
+#include "../../GameRoot.h"
+#include "../../Content/Include/GaussianBlur.h"
+#include "../../Core/Include/Extensions.h"
 
 
 Grid::Grid()

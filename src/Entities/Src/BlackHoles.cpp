@@ -2,12 +2,12 @@
 #include <numbers>
 #include "../Include/BlackHoles.h"
 #include "../../Content/Include/GaussianBlur.h"
-#include "../../Grid/Grid.h"
-#include "../../Particles/Particles.h"
+#include "../../Systems/Include/Grid.h"
+#include "../../Systems/Include/Particles.h"
 #include "../Include/Player/PlayerStatus.h"
-#include "../../System/Include/ColorPicker.h"
-#include "../../System/Include/Extensions.h"
-#include "../../System/Include/SpawnHelper.h"
+#include "../../Core/Include/ColorPicker.h"
+#include "../../Core/Include/Extensions.h"
+#include "../../Core/Include/SpawnHelper.h"
 #include "../../UserInterface/Include/FloatingKillTexts.h"
 
 BlackHoles::BlackHoles()

@@ -1,8 +1,8 @@
 ﻿#include <cmath>
 #include "../Include/GaussianBlur.h"
 #include "../../GameRoot.h"
-#include "../../System/Include/Logger.h"
-#include "../../System/Include/Extensions.h"
+#include "../../Core/Include/Logger.h"
+#include "../../Core/Include/Extensions.h"
 
 
 GaussianBlur::GaussianBlur()

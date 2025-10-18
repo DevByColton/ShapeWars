@@ -7,7 +7,7 @@
 #include "../../../GameRoot.h"
 #include "../../../Content/Include/Art.h"
 #include "../../../Content/Include/GaussianBlur.h"
-#include "../../../System/Include/Extensions.h"
+#include "../../../Core/Include/Extensions.h"
 #include "SFML/Graphics/Color.hpp"
 #include "SFML/Graphics/RectangleShape.hpp"
 #include "SFML/Graphics/Sprite.hpp"
