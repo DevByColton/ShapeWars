@@ -80,6 +80,7 @@ void ShapeKeeper::draw()
     if (!isActive)
         return;
 
+    core.drawLasers();
     top.draw();
     middleLeft.draw();
     middleRight.draw();

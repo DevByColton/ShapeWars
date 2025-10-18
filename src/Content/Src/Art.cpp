@@ -36,6 +36,9 @@ Art::Art()
         snakeTail = sf::Texture("Content\\Images\\SnakeTail.png");
         snakeTail.setSmooth(true);
 
+        shapeKeeperLaser = sf::Texture("Content\\Images\\ShapeKeeperLaser.png");
+        shapeKeeperLaser.setSmooth(true);
+
         shapeKeeperCoreShield = sf::Texture("Content\\Images\\ShapeKeeperCoreShielded.png");
         shapeKeeperCoreShield.setSmooth(true);
 

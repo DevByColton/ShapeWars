@@ -9,6 +9,7 @@
 #include "../../../Content/Include/GaussianBlur.h"
 #include "../../../System/Include/Extensions.h"
 #include "SFML/Graphics/Color.hpp"
+#include "SFML/Graphics/RectangleShape.hpp"
 #include "SFML/Graphics/Sprite.hpp"
 #include "SFML/System/Vector2.hpp"
 
@@ -56,8 +57,17 @@ struct ShapeKeeperCore final : sf::Sprite
     std::uniform_real_distribution<float> timeUntilRotationChangeDistribution {1.f, 3.f};
     std::uniform_real_distribution<float> rotationChangeDistribution {0.f, TWO_PI};
 
+    // Laser attack
+    static constexpr int LASERS_SIZE = 5;
+    static constexpr float LASER_EXPAND_DURATION = 0.15f;
+    float laserExpandTime = 0.f;
+    std::array<sf::RectangleShape, LASERS_SIZE> lasers;
+    sf::Sprite shapeKeeperLaser {Art::instance().shapeKeeperLaser};
+
+
     std::function<void()> onDeath;
 
+    void initLasers();
     bool isAlive() const;
     void reset();
     void markForHit(const sf::Vector2f &hitPosition, int amount);
@@ -66,8 +76,8 @@ struct ShapeKeeperCore final : sf::Sprite
     void updateHealth();
     void updateMovement();
     void updateRotation();
-    void setMovementVariables();
     void draw(bool canTakeCoreDamage);
+    void drawLasers() const;
 };
 
 
