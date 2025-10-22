@@ -1,12 +1,11 @@
 ﻿#ifndef PLAYERSTATUS_H
 #define PLAYERSTATUS_H
-#include <random>
 #include "SFML/System/Clock.hpp"
 
 
 class PlayerStatus {
 private:
-    static constexpr int KILL_PARTICLE_COUNT = 1400;
+    static constexpr int KILL_PARTICLE_COUNT = 1500;
     static constexpr int MAX_MULTIPLIER = 20;
     static constexpr int MAX_LIVES = 5;
     static constexpr float MAX_MULTIPLIER_TIME = 0.8f;
@@ -21,7 +20,6 @@ private:
 
 public:
     PlayerStatus();
-    ~PlayerStatus() = default;
 
     static PlayerStatus &instance() {
         static auto *instance = new PlayerStatus;
@@ -35,7 +33,6 @@ public:
     bool needTotalReset = false;
     bool needBaseReset = false;
     float roundTimeSeconds = 0.f;
-    std::default_random_engine randEngine {std::random_device{}()};
 
     void stopRoundClock();
     void startRoundClock();

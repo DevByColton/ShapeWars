@@ -8,11 +8,12 @@
 #include "Entities/Include/Collisions.h"
 #include "Entities/Include/Enemies.h"
 #include "Entities/Include/Nukes.h"
+#include "Entities/Include/ShapeKeeper/ShapeKeeper.h"
 #include "Entities/Include/Player/PlayerShip.h"
-#include "Grid/Grid.h"
+#include "Systems/Include/Grid.h"
 #include "Input/Include/Input.h"
-#include "System/Include/Logger.h"
-#include "Particles/Particles.h"
+#include "Core/Include/Logger.h"
+#include "Systems/Include/Particles.h"
 #include "Entities/Include/Player/Buffs.h"
 #include "Entities/Include/Player/PlayerStatus.h"
 #include "SFML/Graphics/Image.hpp"
@@ -228,6 +229,15 @@ void GameRoot::processKeyReleased(const sf::Event::KeyReleased* keyReleased)
         return;
     }
 
+    if (keyReleased->scancode == sf::Keyboard::Scancode::R)
+        ShapeKeeper::instance().startEncounter();
+
+    if (keyReleased->scancode == sf::Keyboard::Scancode::E)
+        ShapeKeeper::instance().endEncounter();
+
+    // if (keyReleased->scancode == sf::Keyboard::Scancode::Num7)
+    //     ShapeKeeper::instance().triggerDirectionalAttack();
+
     // Last one, so no need to return
     if (keyReleased->scancode == sf::Keyboard::Scancode::V)
         toggleVsync();
@@ -301,6 +311,7 @@ void GameRoot::update() const
     {
         // Always update the player status first
         PlayerStatus::instance().update();
+        ShapeKeeper::instance().update();
 
         // When the player is alive
         if (!PlayerStatus::instance().isDead())
@@ -314,6 +325,7 @@ void GameRoot::update() const
             Collisions::instance().handleEnemyPlayerBullets();
             Collisions::instance().handleBlackHoles();
             Collisions::instance().handlePlayerAndBuffs();
+            Collisions::instance().handleShapeKeeper();
         }
 
         // When the player dies during a round
@@ -324,6 +336,7 @@ void GameRoot::update() const
             Enemies::instance().killAll();
             BlackHoles::instance().killAll();
             Nukes::instance().reset();
+            Nukes::instance().resetEnemiesSpawnTimer();
             PlayerStatus::instance().needBaseReset = false;
         }
 
@@ -349,6 +362,7 @@ void GameRoot::update() const
 
 void GameRoot::render()
 {
+    // Draw to the screen
     renderWindow.clear();
 
     // Draw stuff with bloom
@@ -359,16 +373,18 @@ void GameRoot::render()
     Enemies::instance().draw();
     BlackHoles::instance().draw();
     Bullets::instance().draw();
-    PlayerShip::instance().draw();
+    ShapeKeeper::instance().draw();
     Buffs::instance().draw();
+    PlayerShip::instance().draw();
     GaussianBlur::instance().drawToScreen();
 
-    // Draws without bloom
+    // Stuff with no bloom
     LivesAndNukes::instance().draw();
     FloatingKillTexts::instance().draw();
     UserInterface::instance().draw();
     Buffs::instance().drawText();
     Buttons::instance().draw();
+    ShapeKeeper::instance().drawText();
     Input::instance().draw();
 
     renderWindow.display();

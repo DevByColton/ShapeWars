@@ -31,7 +31,7 @@ public:
         return *instance;
     }
 
-    float frameUIOpacity = 0.35f;
+    float frameUIOpacity = 0.7f;
     float elapsedGameTime = 0.f;
     float deltaTime = 0.f;
     bool isPaused = false;

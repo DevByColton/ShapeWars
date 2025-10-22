@@ -1,8 +1,8 @@
 ﻿#include "../Include/Nukes.h"
 #include "../../Content/Include/GaussianBlur.h"
-#include "../../Grid/Grid.h"
+#include "../../Systems/Include/Grid.h"
 #include "../Include/Player/PlayerStatus.h"
-#include "../../System/Include/Extensions.h"
+#include "../../Core/Include/Extensions.h"
 #include "../Include/BlackHoles.h"
 #include "../Include/Enemies.h"
 
@@ -25,23 +25,15 @@ void Nukes::reset()
 }
 
 
-void Nukes::resetNukeCount()
+void Nukes::resetEnemiesSpawnTimer()
 {
-    count = MAX_NUKE_COUNT;
+    timeUntilEnemiesSpawnAfterElapsed = 0.f;
 }
 
 
-void Nukes::markDetonate(const sf::Vector2f &fromPosition)
+void Nukes::resetNukeCount()
 {
-    if (!PlayerStatus::instance().isDead() && !isDetonating && count > 0)
-    {
-        Enemies::instance().canSpawn = false;
-        BlackHoles::instance().canSpawn = false;
-        isDetonating = true;
-        count -= 1;
-        nukeCircle.setPosition(fromPosition);
-        Grid::instance().applyExplosiveForce(fromPosition, 400.f, 450.f, 0.9f);
-    }
+    count = MAX_NUKE_COUNT;
 }
 
 
@@ -51,8 +43,46 @@ sf::Vector2f Nukes::getPosition() const
 }
 
 
+void Nukes::markDetonate(const sf::Vector2f &fromPosition)
+{
+    if (!PlayerStatus::instance().isDead() && !isDetonating && count > 0)
+    {
+        isDetonating = true;
+        count -= 1;
+        startEnemiesSpawnTimer();
+        nukeCircle.setPosition(fromPosition);
+        Grid::instance().applyExplosiveForce(fromPosition, 400.f, 450.f, 0.9f);
+    }
+}
+
+
+void Nukes::startEnemiesSpawnTimer()
+{
+    Enemies::instance().canSpawn = false;
+    BlackHoles::instance().canSpawn = false;
+    timeUntilEnemiesSpawnAfterElapsed = TIME_UNTIL_ENEMIES_SPAWN_AFTER_DETONATION_DURATION;
+}
+
+
+void Nukes::updateEnemiesSpawnTimer()
+{
+    if (timeUntilEnemiesSpawnAfterElapsed > 0.f)
+    {
+        timeUntilEnemiesSpawnAfterElapsed -= GameRoot::instance().deltaTime;
+
+        if (timeUntilEnemiesSpawnAfterElapsed < 0.f)
+        {
+            Enemies::instance().canSpawn = true;
+            BlackHoles::instance().canSpawn = true;
+        }
+    }
+}
+
+
 void Nukes::update()
 {
+    updateEnemiesSpawnTimer();
+
     if (isDetonating)
     {
         radius = nukeCircle.getRadius() + velocity;
@@ -68,10 +98,6 @@ void Nukes::update()
         if (topLeftContained && topRightContained && bottomRightContained && bottomLeftContained)
             reset();
     }
-
-    // If a bomb is not detonating, make sure enemies and black holes can spawn
-    Enemies::instance().canSpawn = true;
-    BlackHoles::instance().canSpawn = true;
 }
 
 

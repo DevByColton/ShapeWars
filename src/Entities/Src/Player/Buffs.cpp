@@ -2,7 +2,7 @@
 #include "../../Include/Player/Buffs.h"
 #include "../../../GameRoot.h"
 #include "../../../Content/Include/GaussianBlur.h"
-#include "../../../System/Include/Extensions.h"
+#include "../../../Core/Include/Extensions.h"
 #include "../../Include/Player/PlayerShip.h"
 #include "SFML/Graphics/Text.hpp"
 

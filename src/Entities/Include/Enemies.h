@@ -4,7 +4,7 @@
 #include <functional>
 #include <random>
 #include "../../Content/Include/Art.h"
-#include "../../System/Include/Extensions.h"
+#include "../../Core/Include/Extensions.h"
 #include "SFML/Graphics/Sprite.hpp"
 #include "SFML/System/Vector2.hpp"
 

@@ -9,8 +9,8 @@
 
 class GaussianBlur {
 private:
-    const float saturationSigma = 0.5f;
-    const float blurAmount = 4.f; // Smaller sigma leads to a faster decay
+    const float saturationSigma = 0.6f;
+    const float blurAmount = 6.f;
     bool gaussianBlurEnabled = true;
 
     float computeGaussian(float) const;
@@ -18,7 +18,6 @@ private:
 
 public:
     GaussianBlur();
-    ~GaussianBlur() = default;
 
     static GaussianBlur &instance() {
         static auto *instance = new GaussianBlur;
@@ -29,9 +28,14 @@ public:
     sf::Shader gaussianBlur;
     sf::Shader blurSaturateCombine;
     sf::RenderStates gaussianRenderState;
+
     sf::RenderTexture baseTexture {{GameRoot::instance().renderWindow.getSize().x, GameRoot::instance().renderWindow.getSize().y}};
     sf::RenderTexture saturationTexture {{GameRoot::instance().renderWindow.getSize().x, GameRoot::instance().renderWindow.getSize().y}};
     sf::RenderTexture gaussianBlurTexture {{GameRoot::instance().renderWindow.getSize().x, GameRoot::instance().renderWindow.getSize().y}};
+
+    sf::Sprite baseTextureSprite {baseTexture.getTexture()};
+    sf::Sprite saturationSprite {saturationTexture.getTexture()};
+    sf::Sprite gaussianBlurSprite {gaussianBlurTexture.getTexture()};
 
     void toggleGaussianBlur();
     void clearTextures();

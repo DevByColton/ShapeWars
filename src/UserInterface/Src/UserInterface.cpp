@@ -1,8 +1,9 @@
 ﻿#include <string>
 #include "../Include/UserInterface.h"
 #include "../../GameRoot.h"
+#include "../../Content/Include/GaussianBlur.h"
 #include "../../Entities/Include/Player/PlayerStatus.h"
-#include "../../System/Include/Extensions.h"
+#include "../../Core/Include/Extensions.h"
 
 
 UserInterface::UserInterface()
@@ -23,13 +24,13 @@ UserInterface::UserInterface()
         multiplierHeaderText.getLocalBounds().size.x / 2.f,
         multiplierHeaderText.getLocalBounds().size.y / 2.f
     });
-    multiplierHeaderText.setPosition({ scoreText.getPosition().x, scoreText.getPosition().y + 47.f });
+    multiplierHeaderText.setPosition({ scoreText.getPosition().x + 132.5f, scoreText.getPosition().y + 50.f });
     multiplierHeaderText.setStyle(sf::Text::Bold);
-    multiplierText.setPosition({ multiplierHeaderText.getPosition().x + 40.f, multiplierHeaderText.getPosition().y });
+    multiplierText.setPosition({ multiplierHeaderText.getPosition().x + 51.5f, multiplierHeaderText.getPosition().y + 1.f });
     multiplierText.setStyle(sf::Text::Bold);
 
     // Set the timer text just under the score and multiplier
-    timerText.setPosition({ scoreText.getPosition().x + 8.f, scoreText.getPosition().y + 100.f });
+    timerText.setPosition({ scoreText.getPosition().x - 167.5f, scoreText.getPosition().y + 50.f });
     timerText.setLetterSpacing(1.5f);
     timerText.setStyle(sf::Text::Bold);
 

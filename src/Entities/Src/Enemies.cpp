@@ -3,13 +3,13 @@
 #include "../../GameRoot.h"
 #include "../../Content/Include/GaussianBlur.h"
 #include "../../Content/Include/Sound.h"
-#include "../../Particles/Particles.h"
+#include "../../Systems/Include/Particles.h"
 #include "../Include/Player/Buffs.h"
 #include "../Include/Player/PlayerStatus.h"
-#include "../../System/Include/ColorPicker.h"
-#include "../../System/Include/Extensions.h"
-#include "../../System/Include/RandomVector.h"
-#include "../../System/Include/SpawnHelper.h"
+#include "../../Core/Include/ColorPicker.h"
+#include "../../Core/Include/Extensions.h"
+#include "../../Core/Include/RandomVector.h"
+#include "../../Core/Include/SpawnHelper.h"
 #include "../../UserInterface/Include/FloatingKillTexts.h"
 #include "../Include/Player/PlayerShip.h"
 #include "SFML/Graphics/Text.hpp"
@@ -127,13 +127,12 @@ void Enemies::Enemy::reset(const bool canDropBuffChance)
 
         for (int i = 0; i < 120; i++)
         {
-            const float speed = Particles::instance().randomStartingSpeed(15.0, 1.f, 10.f);
             Particles::instance().create(
-                3.f,
+                1.f,
                 DontIgnoreGravity,
-                Explosion,
+                Spark,
                 getPosition(),
-                RandomVector::instance().next(speed, speed),
+                RandomVector::instance().next(2.f, 24.f),
                 ColorPicker::instance().lerp(color1, color2)
             );
         }
@@ -254,7 +253,7 @@ void Enemies::Enemy::activateWanderer()
     sprite.setTexture(Art::instance().wanderer);
     sprite.setPosition(SpawnHelper::instance().createSpawnPosition());
     sprite.setOrigin({sprite.getTexture().getSize().x / 2.f, sprite.getTexture().getSize().y / 2.f});
-    radius = 20;
+    radius = sprite.getTexture().getSize().x / 2.f;
     timeUntilAct = maxTimeUntilAct;
     maxTimeUntilNewDirection = 3.f;
     timeUntilNewDirection = maxTimeUntilNewDirection;
@@ -327,7 +326,7 @@ void Enemies::Enemy::activateSeeker()
     sprite.setTexture(Art::instance().seeker);
     sprite.setPosition(SpawnHelper::instance().createSpawnPosition());
     sprite.setOrigin({sprite.getTexture().getSize().x / 2.f, sprite.getTexture().getSize().y / 2.f});
-    radius = 20;
+    radius = sprite.getTexture().getSize().x / 2.f;
     timeUntilAct = maxTimeUntilAct;
     speed = 0.9f;
     pointValue = 25;

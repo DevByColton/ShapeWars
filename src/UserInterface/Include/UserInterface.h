@@ -13,7 +13,7 @@ private:
     sf::Text scoreText {Art::instance().font, {}, 60};
     sf::Text multiplierHeaderText {Art::instance().font, {"mult x "}, 20};
     sf::Text multiplierText {Art::instance().font, {}, 20};
-    sf::Text timerText {Art::instance().font, {}, 24};
+    sf::Text timerText {Art::instance().font, {}, 20};
     sf::Text highScoreHeaderText {Art::instance().font, {"== [ highscore ] =="}, 30};
     sf::Text highScoreText {Art::instance().font, {}, 30};
     sf::Text gameOverText {Art::instance().font, {}, 60};

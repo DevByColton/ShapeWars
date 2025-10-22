@@ -1,5 +1,5 @@
 ﻿#include "../Include/Art.h"
-#include "../../System/Include/Logger.h"
+#include "../../Core/Include/Logger.h"
 #include "SFML/System/Exception.hpp"
 
 Art::Art()
@@ -35,6 +35,69 @@ Art::Art()
 
         snakeTail = sf::Texture("Content\\Images\\SnakeTail.png");
         snakeTail.setSmooth(true);
+
+        laser = sf::Texture("Content\\Images\\Laser.png");
+        laser.setSmooth(true);
+
+        shapeKeeperCoreShield = sf::Texture("Content\\Images\\ShapeKeeperCoreShielded.png");
+        shapeKeeperCoreShield.setSmooth(true);
+
+        shapeKeeperCore = sf::Texture("Content\\Images\\ShapeKeeperCore.png");
+        shapeKeeperCore.setSmooth(true);
+
+        shapeKeeperCoreTrail = sf::Texture("Content\\Images\\ShapeKeeperCoreTrail.png");
+        shapeKeeperCoreTrail.setSmooth(true);
+
+        shapeKeeperTop = sf::Texture("Content\\Images\\ShapeKeeperTop.png");
+        shapeKeeperTop.setSmooth(true);
+
+        shapeKeeperTopTrail = sf::Texture("Content\\Images\\ShapeKeeperTopTrail.png");
+        shapeKeeperTopTrail.setSmooth(true);
+
+        shapeKeeperMiddleLeft = sf::Texture("Content\\Images\\ShapeKeeperMiddleLeft.png");
+        shapeKeeperMiddleLeft.setSmooth(true);
+
+        shapeKeeperMiddleLeftTrail = sf::Texture("Content\\Images\\ShapeKeeperMiddleLeftTrail.png");
+        shapeKeeperMiddleLeftTrail.setSmooth(true);
+
+        shapeKeeperMiddleRight = sf::Texture("Content\\Images\\ShapeKeeperMiddleRight.png");
+        shapeKeeperMiddleRight.setSmooth(true);
+
+        shapeKeeperMiddleRightTrail = sf::Texture("Content\\Images\\ShapeKeeperMiddleRightTrail.png");
+        shapeKeeperMiddleRightTrail.setSmooth(true);
+
+        shapeKeeperBottomLeft = sf::Texture("Content\\Images\\ShapeKeeperBottomLeft.png");
+        shapeKeeperBottomLeft.setSmooth(true);
+
+        shapeKeeperBottomLeftTrail = sf::Texture("Content\\Images\\ShapeKeeperBottomLeftTrail.png");
+        shapeKeeperBottomLeftTrail.setSmooth(true);
+
+        shapeKeeperBottomRight = sf::Texture("Content\\Images\\ShapeKeeperBottomRight.png");
+        shapeKeeperBottomRight.setSmooth(true);
+
+        shapeKeeperBottomRightTrail = sf::Texture("Content\\Images\\ShapeKeeperBottomRightTrail.png");
+        shapeKeeperBottomRightTrail.setSmooth(true);
+
+        shapeKeeperHealthBarCore = sf::Texture("Content\\Images\\ShapeKeeperHealthBarCore.png");
+        shapeKeeperHealthBarCore.setSmooth(true);
+
+        shapeKeeperHealthBarTop = sf::Texture("Content\\Images\\ShapeKeeperHealthBarTop.png");
+        shapeKeeperHealthBarTop.setSmooth(true);
+
+        shapeKeeperHealthBarMiddleLeft = sf::Texture("Content\\Images\\ShapeKeeperHealthBarMiddleLeft.png");
+        shapeKeeperHealthBarMiddleLeft.setSmooth(true);
+
+        shapeKeeperHealthBarMiddleRight = sf::Texture("Content\\Images\\ShapeKeeperHealthBarMiddleRight.png");
+        shapeKeeperHealthBarMiddleRight.setSmooth(true);
+
+        shapeKeeperHealthBarBottomLeft = sf::Texture("Content\\Images\\ShapeKeeperHealthBarBottomLeft.png");
+        shapeKeeperHealthBarBottomLeft.setSmooth(true);
+
+        shapeKeeperHealthBarBottomRight = sf::Texture("Content\\Images\\ShapeKeeperHealthBarBottomRight.png");
+        shapeKeeperHealthBarBottomRight.setSmooth(true);
+
+        shapeKeeperHealthFrame = sf::Texture("Content\\Images\\ShapeKeeperHealthFrame.png");
+        shapeKeeperHealthFrame.setSmooth(true);
 
         bullet = sf::Texture("Content\\Images\\Bullet.png");
         bullet.setSmooth(true);
@@ -125,6 +188,9 @@ Art::Art()
 
         font = sf::Font("Content\\Font\\TurretRoad-Regular.ttf");
         font.setSmooth(true);
+
+        shapeKeeperFont = sf::Font("Content\\Font\\MajorMonoDisplay-Regular.ttf");
+        shapeKeeperFont.setSmooth(true);
 
     }
     catch (sf::Exception &ex)

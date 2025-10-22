@@ -1,10 +1,8 @@
 ﻿#ifndef GRID_H
 #define GRID_H
 #include <vector>
-#include "../Content/Include/Art.h"
 #include "SFML/Graphics/Color.hpp"
 #include "SFML/System/Vector2.hpp"
-#include "SFML/System/Vector3.hpp"
 
 
 class Grid {
@@ -53,7 +51,7 @@ private:
     std::vector<std::vector<PointMass>> fixedPoints;
     std::vector<std::vector<PointMass>> points;
     std::vector<Spring> springs = std::vector<Spring>(0);
-    const sf::Color gridColor {94, 39, 204, 115};
+    const sf::Color gridColor {85, 0, 255, 115};
 
 public:
     Grid();

@@ -22,13 +22,18 @@ public:
         return *instance;
     }
 
+    static constexpr float TIME_UNTIL_ENEMIES_SPAWN_AFTER_DETONATION_DURATION = 3.5f;
+    float timeUntilEnemiesSpawnAfterElapsed = 0.f;
     bool isDetonating = false;
     int count = MAX_NUKE_COUNT;
     float radius = INITIAL_RADIUS;
 
     void reset();
+    void resetEnemiesSpawnTimer();
     void resetNukeCount();
     void markDetonate(const sf::Vector2f &fromPosition);
+    void startEnemiesSpawnTimer();
+    void updateEnemiesSpawnTimer();
     void update();
     void draw() const;
     sf::Vector2f getPosition() const;

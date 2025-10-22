@@ -17,19 +17,19 @@ FetchContent_MakeAvailable(SFML)
 add_executable(ShapeWars src/main.cpp
         src/GameRoot.cpp
         src/GameRoot.h
-        src/System/Src/Logger.cpp
-        src/System/Include/Logger.h
+        src/Core/Src/Logger.cpp
+        src/Core/Include/Logger.h
         src/Content/Src/Art.cpp
         src/Content/Include/Art.h
         src/Entities/Src/Player/PlayerShip.cpp
         src/Entities/Include/Player/PlayerShip.h
         src/Input/Src/Input.cpp
         src/Input/Include/Input.h
-        src/System/Include/Extensions.h
+        src/Core/Include/Extensions.h
         src/Entities/Src/Bullets.cpp
         src/Entities/Include/Bullets.h
-        src/System/Src/Quaternion.cpp
-        src/System/Include/Quaternion.h
+        src/Core/Src/Quaternion.cpp
+        src/Core/Include/Quaternion.h
         src/Entities/Src/Enemies.cpp
         src/Entities/Include/Enemies.h
         src/Entities/Src/Collisions.cpp
@@ -44,19 +44,19 @@ add_executable(ShapeWars src/main.cpp
         src/Content/Include/GaussianBlur.h
         src/Entities/Src/BlackHoles.cpp
         src/Entities/Include/BlackHoles.h
-        src/System/Src/SpawnHelper.cpp
-        src/System/Include/SpawnHelper.h
+        src/Core/Src/SpawnHelper.cpp
+        src/Core/Include/SpawnHelper.h
         src/UserInterface/Src/FloatingKillTexts.cpp
         src/UserInterface/Include/FloatingKillTexts.h
-        src/Particles/Particles.cpp
-        src/Particles/Particles.h
-        src/System/Src/RandomVector.cpp
-        src/System/Include/RandomVector.h
-        src/System/Src/ColorPicker.cpp
-        src/System/Include/ColorPicker.h
-        src/Grid/Grid.cpp
-        src/Grid/Grid.h
-        src/System/Src/Extensions.cpp
+        src/Systems/Src/Particles.cpp
+        src/Systems/Include/Particles.h
+        src/Core/Src/RandomVector.cpp
+        src/Core/Include/RandomVector.h
+        src/Core/Src/ColorPicker.cpp
+        src/Core/Include/ColorPicker.h
+        src/Systems/Src/Grid.cpp
+        src/Systems/Include/Grid.h
+        src/Core/Src/Extensions.cpp
         src/Entities/Src/Nukes.cpp
         src/Entities/Include/Nukes.h
         src/Input/Src/Xbox.cpp
@@ -73,6 +73,20 @@ add_executable(ShapeWars src/main.cpp
         src/UserInterface/Include/LivesAndNukes.h
         src/UserInterface/Src/Buttons.cpp
         src/UserInterface/Include/Buttons.h
+        src/Entities/Src/ShapeKeeper/ShapeKeeper.cpp
+        src/Entities/Include/ShapeKeeper/ShapeKeeper.h
+        src/Entities/Src/ShapeKeeper/ShapeKeeperCore.cpp
+        src/Entities/Include/ShapeKeeper/ShapeKeeperCore.h
+        src/Entities/Src/ShapeKeeper/ShapeKeeperHealthBar.cpp
+        src/Entities/Include/ShapeKeeper/ShapeKeeperHealthBar.h
+        src/Entities/Src/ShapeKeeper/ShapeKeeperBodyPart.cpp
+        src/Entities/Include/ShapeKeeper/ShapeKeeperBodyPart.h
+        src/Entities/Src/ShapeKeeper/ShapeKeeperHealthContainer.cpp
+        src/Entities/Include/ShapeKeeper/ShapeKeeperHealthContainer.h
+        src/Entities/Src/ShapeKeeper/LasersBeams.cpp
+        src/Entities/Include/ShapeKeeper/LasersBeams.h
+        src/Entities/Src/ShapeKeeper/SpriteTrail.cpp
+        src/Entities/Include/ShapeKeeper/SpriteTrail.h
 )
 
 target_compile_features(ShapeWars PRIVATE cxx_std_20)

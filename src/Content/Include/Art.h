@@ -22,6 +22,27 @@ struct Art {
     sf::Texture snakeHead;
     sf::Texture snakeBody;
     sf::Texture snakeTail;
+    sf::Texture laser;
+    sf::Texture shapeKeeperCoreShield;
+    sf::Texture shapeKeeperCore;
+    sf::Texture shapeKeeperCoreTrail;
+    sf::Texture shapeKeeperBottomRight;
+    sf::Texture shapeKeeperBottomRightTrail;
+    sf::Texture shapeKeeperBottomLeft;
+    sf::Texture shapeKeeperBottomLeftTrail;
+    sf::Texture shapeKeeperMiddleLeft;
+    sf::Texture shapeKeeperMiddleLeftTrail;
+    sf::Texture shapeKeeperMiddleRight;
+    sf::Texture shapeKeeperMiddleRightTrail;
+    sf::Texture shapeKeeperTop;
+    sf::Texture shapeKeeperTopTrail;
+    sf::Texture shapeKeeperHealthBarCore;
+    sf::Texture shapeKeeperHealthBarBottomRight;
+    sf::Texture shapeKeeperHealthBarBottomLeft;
+    sf::Texture shapeKeeperHealthBarMiddleLeft;
+    sf::Texture shapeKeeperHealthBarMiddleRight;
+    sf::Texture shapeKeeperHealthBarTop;
+    sf::Texture shapeKeeperHealthFrame;
     sf::Texture bullet;
     sf::Texture pointer;
     sf::Texture enemyPlaceholder;
@@ -53,6 +74,7 @@ struct Art {
     sf::Texture xboxYButton;
     sf::Texture xboxRightTrigger;
     sf::Font font;
+    sf::Font shapeKeeperFont;
 };
 
 
