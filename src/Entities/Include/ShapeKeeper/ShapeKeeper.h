@@ -73,7 +73,7 @@ public:
         133.f
     };
 
-    LasersBeams lasersAttack {&core};
+    LasersBeams laserBeams {&core};
 
     // Enemies spawn
     static constexpr float DEFAULT_TIME_UNTIL_ENEMIES_SPAWN = 5.f;

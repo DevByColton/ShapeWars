@@ -20,7 +20,7 @@ void ShapeKeeper::startEncounter()
         endEncounter();
         PlayerStatus::instance().addPoints(50'000);
     };
-    lasersAttack.reset();
+    laserBeams.reset();
     top.reset();
     middleLeft.reset();
     middleRight.reset();
@@ -68,7 +68,7 @@ void ShapeKeeper::update()
 
     // Update each part first
     core.update();
-    lasersAttack.update();
+    laserBeams.update();
     top.update();
     middleLeft.update();
     middleRight.update();
@@ -114,7 +114,7 @@ void ShapeKeeper::draw()
 {
     if (isActive)
     {
-        lasersAttack.draw();
+        laserBeams.draw();
         core.draw(canTakeCoreDamage());
         top.draw();
         middleLeft.draw();

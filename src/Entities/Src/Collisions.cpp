@@ -187,7 +187,7 @@ void Collisions::handleShapeKeeper()
         return;
 
     auto &bullets = Bullets::instance().bullets;
-    auto &lasers = ShapeKeeper::instance().lasersAttack.lasers;
+    auto &lasers = ShapeKeeper::instance().laserBeams.lasers;
     auto &core = ShapeKeeper::instance().core;
     auto &top = ShapeKeeper::instance().top;
     auto &middleLeft = ShapeKeeper::instance().middleLeft;
@@ -196,23 +196,26 @@ void Collisions::handleShapeKeeper()
     auto &bottomRight = ShapeKeeper::instance().bottomRight;
 
     // Check the player against each boss part
-    checkPlayer(top);
-    checkPlayer(middleLeft);
-    checkPlayer(middleRight);
-    checkPlayer(bottomLeft);
-    checkPlayer(bottomRight);
-    if (ShapeKeeper::instance().canTakeCoreDamage() && core.isAlive() && isColliding(PlayerShip::instance().radius + core.radius, PlayerShip::instance().getPosition(), core.getPosition()))
+    if (!PlayerShip::instance().isInvincible)
     {
-        core.markForHit(PlayerShip::instance().getPosition(), 5);
-        PlayerStatus::instance().markForKill();
-    }
+        checkPlayer(top);
+        checkPlayer(middleLeft);
+        checkPlayer(middleRight);
+        checkPlayer(bottomLeft);
+        checkPlayer(bottomRight);
+        if (ShapeKeeper::instance().canTakeCoreDamage() && core.isAlive() && isColliding(PlayerShip::instance().radius + core.radius, PlayerShip::instance().getPosition(), core.getPosition()))
+        {
+            core.markForHit(PlayerShip::instance().getPosition(), 5);
+            PlayerStatus::instance().markForKill();
+        }
 
-    // Check the player against all the lasers
-    if (ShapeKeeper::instance().lasersAttack.areLasersActive())
-        for (int l = 0; l < lasers.size(); l++)
-            for (int c = 0; c < lasers.at(l).colliders.size(); c++)
-                if (isColliding(PlayerShip::instance().radius + lasers.at(l).colliders.at(c).getRadius(), PlayerShip::instance().getPosition(), lasers.at(l).colliders.at(c).getPosition()))
-                    PlayerStatus::instance().markForKill();
+        // Check the player against all the lasers
+        if (ShapeKeeper::instance().laserBeams.areLasersActive())
+            for (int l = 0; l < lasers.size(); l++)
+                for (int c = 0; c < lasers.at(l).colliders.size(); c++)
+                    if (isColliding(PlayerShip::instance().radius + lasers.at(l).colliders.at(c).getRadius(), PlayerShip::instance().getPosition(), lasers.at(l).colliders.at(c).getPosition()))
+                        PlayerStatus::instance().markForKill();
+    }
 
     // Check all the bullets against each boss part
     // Short circuit each iteration if a bullet hits a part
@@ -246,7 +249,7 @@ void Collisions::handleShapeKeeper()
                 bullet.markForBlowUp();
 
             // Collision with lasers
-            if (ShapeKeeper::instance().lasersAttack.areLasersActive())
+            if (ShapeKeeper::instance().laserBeams.areLasersActive())
                 for (int l = 0; l < lasers.size(); l++)
                     for (int c = 0; c < lasers.at(l).colliders.size(); c++)
                         if (isColliding(bullet.radius + lasers.at(l).colliders.at(c).getRadius(), bullet.getPosition(), lasers.at(l).colliders.at(c).getPosition()))
@@ -286,7 +289,7 @@ void Collisions::handleShapeKeeper()
 
 void Collisions::checkPlayer(ShapeKeeperBodyPart& part)
 {
-    if (!part.hasBeenHitByNuke && part.isAlive() && isColliding(part.radius + PlayerShip::instance().radius, part.getPosition(), PlayerShip::instance().getPosition()))
+    if (part.isAlive() && isColliding(part.radius + PlayerShip::instance().radius, part.getPosition(), PlayerShip::instance().getPosition()))
     {
         part.markForHit(
             calculateCircleCollisionPoint(PlayerShip::instance().getPosition(), part.getPosition(), part.radius),
