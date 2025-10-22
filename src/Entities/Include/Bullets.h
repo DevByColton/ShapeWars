@@ -20,7 +20,6 @@ private:
             Bullet *next {nullptr};
         };
 
-        sf::Sprite sprite {Art::instance().bullet};
         bool shouldBlowUp = false;
 
     public:
@@ -28,6 +27,7 @@ private:
 
         float radius = 0.0;
         bool isActive = false;
+        sf::Sprite sprite {Art::instance().bullet};
 
         Bullet *getNext() const;
         void setNext(Bullet *);

@@ -83,8 +83,8 @@ add_executable(ShapeWars src/main.cpp
         src/Entities/Include/ShapeKeeper/ShapeKeeperBodyPart.h
         src/Entities/Src/ShapeKeeper/ShapeKeeperHealthContainer.cpp
         src/Entities/Include/ShapeKeeper/ShapeKeeperHealthContainer.h
-        src/Entities/Src/ShapeKeeper/LasersAttack.cpp
-        src/Entities/Include/ShapeKeeper/LasersAttack.h
+        src/Entities/Src/ShapeKeeper/LasersBeams.cpp
+        src/Entities/Include/ShapeKeeper/LasersBeams.h
         src/Entities/Src/ShapeKeeper/SpriteTrail.cpp
         src/Entities/Include/ShapeKeeper/SpriteTrail.h
 )

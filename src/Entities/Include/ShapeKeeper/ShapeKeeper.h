@@ -1,6 +1,6 @@
 ﻿#ifndef SHAPEKEEPER_H
 #define SHAPEKEEPER_H
-#include "LasersAttack.h"
+#include "LasersBeams.h"
 #include "ShapeKeeperBodyPart.h"
 #include "ShapeKeeperCore.h"
 #include "ShapeKeeperHealthContainer.h"
@@ -9,7 +9,7 @@
 
 class ShapeKeeper {
 private:
-    LasersAttack lasersAttack {};
+    ShapeKeeperHealthContainer healthContainer {};
 
 public:
     static ShapeKeeper &instance()
@@ -17,8 +17,6 @@ public:
         static auto *instance = new ShapeKeeper;
         return *instance;
     }
-
-    ShapeKeeperHealthContainer healthContainer {};
 
     ShapeKeeperCore core {
         Art::instance().shapeKeeperCore,
@@ -74,6 +72,8 @@ public:
         93.f,
         133.f
     };
+
+    LasersBeams lasersAttack {&core};
 
     bool isActive = false;
 

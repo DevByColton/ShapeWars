@@ -1,10 +1,8 @@
 ﻿#ifndef GRID_H
 #define GRID_H
 #include <vector>
-#include "../../Content/Include/Art.h"
 #include "SFML/Graphics/Color.hpp"
 #include "SFML/System/Vector2.hpp"
-#include "SFML/System/Vector3.hpp"
 
 
 class Grid {

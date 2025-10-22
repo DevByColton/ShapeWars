@@ -25,17 +25,6 @@ ShapeKeeperCore::ShapeKeeperCore(const sf::Texture& texture, const sf::Color& co
     });
     shield.setPosition(getPosition());
     shield.setRotation(getRotation());
-
-    setPosition({1000.f, 700.f});
-    // Set laser properties
-    shapeKeeperLaser.setOrigin({
-        shapeKeeperLaser.getTexture().getSize().x / 2.f,
-        shapeKeeperLaser.getTexture().getSize().y / 2.f + 50.f
-    });
-    shapeKeeperLaser.setPosition(getPosition());
-
-    // Todo: probs need to move this
-    initLasers();
 }
 
 
@@ -59,29 +48,6 @@ void ShapeKeeperCore::reset()
     previousRotationTarget = currentBodyPartRotation;
     currentRotationTarget = currentBodyPartRotation;
     spriteTrail.reset();
-}
-
-
-void ShapeKeeperCore::initLasers()
-{
-    lasers.fill(sf::RectangleShape({600.f, 50.f}));
-
-    // Set each lasers rotation and position based off of the core
-    float laserAngle = PI / 2.f;
-    for (int i = 0; i < LASERS_SIZE; ++i)
-    {
-        const Quaternion quaternion = Quaternion::createFromYawPitchRoll(0, 0, laserAngle);
-        const sf::Vector2f offset = Extensions::transform({-320.f, 0.f}, quaternion);
-
-        lasers.at(i).setOrigin(lasers.at(i).getGeometricCenter());
-        lasers.at(i).setPosition(getPosition() + offset);
-        lasers.at(i).rotate(sf::radians(Extensions::toAngle(getPosition() - lasers.at(i).getPosition())));
-        lasers.at(i).setFillColor({205, 235, 249, 255});
-        lasers.at(i).setOutlineColor({73, 142, 242, 255});
-        lasers.at(i).setOutlineThickness(-12.5f);
-
-        laserAngle += sf::radians(TWO_PI / LASERS_SIZE).asRadians();
-    }
 }
 
 
@@ -182,17 +148,8 @@ void ShapeKeeperCore::updateMovement()
     // Increment for position ease
     timeUntilMovementChange += GameRoot::instance().deltaTime;
 
-
-    if (laserExpandTime < LASER_EXPAND_DURATION)
-    {
-        laserExpandTime += GameRoot::instance().deltaTime;
-        float scale = laserExpandTime / LASER_EXPAND_DURATION;
-        shapeKeeperLaser.setScale({scale, scale});
-    }
-
     // Ease position
-    //setPosition(Extensions::easeInOutBack(previousTargetPosition, currentTargetPosition, timeUntilMovementChange / timeUntilMovementChangeDuration));
-    setPosition({1000.f, 700.f});
+    setPosition(Extensions::easeInOutBack(previousTargetPosition, currentTargetPosition, timeUntilMovementChange / timeUntilMovementChangeDuration));
     shield.setPosition(getPosition());
     trailSprite.setPosition(getPosition());
 
@@ -222,18 +179,6 @@ void ShapeKeeperCore::updateRotation()
         previousRotationTarget = currentBodyPartRotation;
         currentRotationTarget = sf::radians(rotationChangeDistribution(rotationChangeRandEngine));
     }
-}
-
-
-void ShapeKeeperCore::drawLasers() const
-{
-    if (!isAlive())
-        return;
-
-    // for (int i = 0; i < LASERS_SIZE; ++i)
-    //     GaussianBlur::instance().drawToBase(lasers.at(i));
-
-    GaussianBlur::instance().drawToBase(shapeKeeperLaser);
 }
 
 

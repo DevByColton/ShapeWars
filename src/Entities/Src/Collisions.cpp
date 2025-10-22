@@ -176,6 +176,7 @@ void Collisions::handlePlayerAndShapeKeeper()
         return;
 
     auto &bullets = Bullets::instance().bullets;
+    auto &lasers = ShapeKeeper::instance().lasersAttack.lasers;
     auto &core = ShapeKeeper::instance().core;
     auto &top = ShapeKeeper::instance().top;
     auto &middleLeft = ShapeKeeper::instance().middleLeft;
@@ -228,14 +229,23 @@ void Collisions::handlePlayerAndShapeKeeper()
                 continue;
             }
 
+            // Core collision
             if (ShapeKeeper::instance().canTakeCoreDamage() && core.isAlive() && isColliding(bullet.radius + core.radius, bullet.getPosition(), core.getPosition()))
             {
                 core.markForHit(bullet.getPosition(), 1);
                 bullet.markForBlowUp();
             }
 
+            // Shield collision, just kill the bullet
             if (!ShapeKeeper::instance().canTakeCoreDamage() && core.isAlive() && isColliding(bullet.radius + core.shieldRadius, bullet.getPosition(), core.shield.getPosition()))
                 bullet.markForBlowUp();
+
+            // Collision with lasers
+            if (ShapeKeeper::instance().lasersAttack.areLasersActive())
+                for (int l = 0; l < lasers.size(); l++)
+                    for (int c = 0; c < lasers.at(l).colliders.size(); c++)
+                        if (isColliding(bullet.radius + lasers.at(l).colliders.at(c).getRadius(), bullet.getPosition(), lasers.at(l).colliders.at(c).getPosition()))
+                            bullet.markForBlowUp();
         }
 
     // Check nukes. While a nuke is detonating, make sure it only hits the part once. Otherwise, just make sure
