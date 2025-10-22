@@ -17,6 +17,17 @@ bool Collisions::isColliding(const float radii, const sf::Vector2f position1, co
 }
 
 
+sf::Vector2f Collisions::calculateCircleCollisionPoint(const sf::Vector2f& from, const sf::Vector2f& to, const float radius)
+{
+    sf::Vector2f direction = from - to;
+
+    if (direction.lengthSquared() > 1.f)
+        direction = direction.normalized();
+
+    return direction * radius + to;
+}
+
+
 void Collisions::handleEnemyPlayerBullets()
 {
     auto &enemies = Enemies::instance().enemies;
@@ -170,7 +181,7 @@ void Collisions::handlePlayerAndBuffs()
 }
 
 
-void Collisions::handlePlayerAndShapeKeeper()
+void Collisions::handleShapeKeeper()
 {
     if (!ShapeKeeper::instance().isActive)
         return;
@@ -184,50 +195,44 @@ void Collisions::handlePlayerAndShapeKeeper()
     auto &bottomLeft = ShapeKeeper::instance().bottomLeft;
     auto &bottomRight = ShapeKeeper::instance().bottomRight;
 
+    // Check the player against each boss part
+    checkPlayer(top);
+    checkPlayer(middleLeft);
+    checkPlayer(middleRight);
+    checkPlayer(bottomLeft);
+    checkPlayer(bottomRight);
+    if (ShapeKeeper::instance().canTakeCoreDamage() && core.isAlive() && isColliding(PlayerShip::instance().radius + core.radius, PlayerShip::instance().getPosition(), core.getPosition()))
+    {
+        core.markForHit(PlayerShip::instance().getPosition(), 5);
+        PlayerStatus::instance().markForKill();
+    }
+
+    // Check the player against all the lasers
+    if (ShapeKeeper::instance().lasersAttack.areLasersActive())
+        for (int l = 0; l < lasers.size(); l++)
+            for (int c = 0; c < lasers.at(l).colliders.size(); c++)
+                if (isColliding(PlayerShip::instance().radius + lasers.at(l).colliders.at(c).getRadius(), PlayerShip::instance().getPosition(), lasers.at(l).colliders.at(c).getPosition()))
+                    PlayerStatus::instance().markForKill();
+
     // Check all the bullets against each boss part
     // Short circuit each iteration if a bullet hits a part
     for (int b = 0; b < bullets.size(); b++)
         if (auto &bullet = bullets.at(b); bullet.isActive)
         {
-            // Top boss part
-            if (top.isAlive() && isColliding(bullet.radius + top.radius, bullet.getPosition(), top.getPosition()))
-            {
-                top.markForHit(bullet.getPosition(), 1);
-                bullet.markForBlowUp();
+            if (check(top, bullet))
                 continue;
-            }
 
-            // Middle left boss part
-            if (middleLeft.isAlive() && isColliding(bullet.radius + middleLeft.radius, bullet.getPosition(), middleLeft.getPosition()))
-            {
-                middleLeft.markForHit(bullet.getPosition(), 1);
-                bullet.markForBlowUp();
+            if (check(middleLeft, bullet))
                 continue;
-            }
 
-            // Middle right boss part
-            if (middleRight.isAlive() && isColliding(bullet.radius + middleRight.radius, bullet.getPosition(), middleRight.getPosition()))
-            {
-                middleRight.markForHit(bullet.getPosition(), 1);
-                bullet.markForBlowUp();
+            if (check(middleRight, bullet))
                 continue;
-            }
 
-            // Bottom left boss part
-            if (bottomLeft.isAlive() && isColliding(bullet.radius + bottomLeft.radius, bullet.getPosition(), bottomLeft.getPosition()))
-            {
-                bottomLeft.markForHit(bullet.getPosition(), 1);
-                bullet.markForBlowUp();
+            if (check(bottomLeft, bullet))
                 continue;
-            }
 
-            // Bottom right boss part
-            if (bottomRight.isAlive() && isColliding(bullet.radius + bottomRight.radius, bullet.getPosition(), bottomRight.getPosition()))
-            {
-                bottomRight.markForHit(bullet.getPosition(), 1);
-                bullet.markForBlowUp();
+            if (check(bottomRight, bullet))
                 continue;
-            }
 
             // Core collision
             if (ShapeKeeper::instance().canTakeCoreDamage() && core.isAlive() && isColliding(bullet.radius + core.radius, bullet.getPosition(), core.getPosition()))
@@ -252,50 +257,11 @@ void Collisions::handlePlayerAndShapeKeeper()
     // the hasBeenHitByNukes set to false. This is a weird place to do this but good enough for now
     if (Nukes::instance().isDetonating)
     {
-        if (!top.hasBeenHitByNuke && top.isAlive() && isColliding(top.radius + Nukes::instance().radius, top.getPosition(), Nukes::instance().getPosition()))
-        {
-            top.hasBeenHitByNuke = true;
-            top.markForHit(
-                calculateCircleCollisionPoint(Nukes::instance().getPosition(), top.getPosition(), top.radius),
-                10
-            );
-        }
-
-        if (!middleLeft.hasBeenHitByNuke && middleLeft.isAlive() && isColliding(middleLeft.radius + Nukes::instance().radius, middleLeft.getPosition(), Nukes::instance().getPosition()))
-        {
-            middleLeft.hasBeenHitByNuke = true;
-            middleLeft.markForHit(
-                calculateCircleCollisionPoint(Nukes::instance().getPosition(), middleLeft.getPosition(), middleLeft.radius),
-                10
-            );
-        }
-
-        if (!middleRight.hasBeenHitByNuke && middleRight.isAlive() && isColliding(middleRight.radius + Nukes::instance().radius, middleRight.getPosition(), Nukes::instance().getPosition()))
-        {
-            middleRight.hasBeenHitByNuke = true;
-            middleRight.markForHit(
-                calculateCircleCollisionPoint(Nukes::instance().getPosition(), middleRight.getPosition(), middleRight.radius),
-                10
-            );
-        }
-
-        if (!bottomLeft.hasBeenHitByNuke && bottomLeft.isAlive() && isColliding(bottomLeft.radius + Nukes::instance().radius, bottomLeft.getPosition(), Nukes::instance().getPosition()))
-        {
-            bottomLeft.hasBeenHitByNuke = true;
-            bottomLeft.markForHit(
-                calculateCircleCollisionPoint(Nukes::instance().getPosition(), bottomLeft.getPosition(), bottomLeft.radius),
-                10
-            );
-        }
-
-        if (!bottomRight.hasBeenHitByNuke && bottomRight.isAlive() && isColliding(bottomRight.radius + Nukes::instance().radius, bottomRight.getPosition(), Nukes::instance().getPosition()))
-        {
-            bottomRight.hasBeenHitByNuke = true;
-            bottomRight.markForHit(
-                calculateCircleCollisionPoint(Nukes::instance().getPosition(), bottomRight.getPosition(), bottomRight.radius),
-                10
-            );
-        }
+        checkNuke(top);
+        checkNuke(middleLeft);
+        checkNuke(middleRight);
+        checkNuke(bottomLeft);
+        checkNuke(bottomRight);
 
         if (ShapeKeeper::instance().canTakeCoreDamage() && !core.hasBeenHitByNuke && core.isAlive() && isColliding(core.radius + Nukes::instance().radius, core.getPosition(), Nukes::instance().getPosition()))
         {
@@ -318,12 +284,41 @@ void Collisions::handlePlayerAndShapeKeeper()
 }
 
 
-sf::Vector2f Collisions::calculateCircleCollisionPoint(const sf::Vector2f& from, const sf::Vector2f& to, const float radius)
+void Collisions::checkPlayer(ShapeKeeperBodyPart& part)
 {
-    sf::Vector2f direction = from - to;
-
-    if (direction.lengthSquared() > 1.f)
-        direction = direction.normalized();
-
-    return direction * radius + to;
+    if (!part.hasBeenHitByNuke && part.isAlive() && isColliding(part.radius + PlayerShip::instance().radius, part.getPosition(), PlayerShip::instance().getPosition()))
+    {
+        part.markForHit(
+            calculateCircleCollisionPoint(PlayerShip::instance().getPosition(), part.getPosition(), part.radius),
+            5
+        );
+        PlayerStatus::instance().markForKill();
+    }
 }
+
+
+bool Collisions::check(ShapeKeeperBodyPart& part, Bullets::Bullet& bullet)
+{
+    if (part.isAlive() && isColliding(bullet.radius + part.radius, bullet.getPosition(), part.getPosition()))
+    {
+        part.markForHit(bullet.getPosition(), 1);
+        bullet.markForBlowUp();
+        return true;
+    }
+
+    return false;
+}
+
+
+void Collisions::checkNuke(ShapeKeeperBodyPart& part)
+{
+    if (!part.hasBeenHitByNuke && part.isAlive() && isColliding(part.radius + Nukes::instance().radius, part.getPosition(), Nukes::instance().getPosition()))
+    {
+        part.hasBeenHitByNuke = true;
+        part.markForHit(
+            calculateCircleCollisionPoint(Nukes::instance().getPosition(), part.getPosition(), part.radius),
+            10
+        );
+    }
+}
+

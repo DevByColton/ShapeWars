@@ -317,15 +317,15 @@ void GameRoot::update() const
         if (!PlayerStatus::instance().isDead())
         {
             Nukes::instance().update();
-            //Enemies::instance().update();
+            Enemies::instance().update();
             Buffs::instance().update();
             PlayerShip::instance().update();
             Bullets::instance().update();
-            //BlackHoles::instance().update();
+            BlackHoles::instance().update();
             Collisions::instance().handleEnemyPlayerBullets();
             Collisions::instance().handleBlackHoles();
             Collisions::instance().handlePlayerAndBuffs();
-            Collisions::instance().handlePlayerAndShapeKeeper();
+            Collisions::instance().handleShapeKeeper();
         }
 
         // When the player dies during a round
@@ -336,6 +336,7 @@ void GameRoot::update() const
             Enemies::instance().killAll();
             BlackHoles::instance().killAll();
             Nukes::instance().reset();
+            Nukes::instance().resetEnemiesSpawnTimer();
             PlayerStatus::instance().needBaseReset = false;
         }
 

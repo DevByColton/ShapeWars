@@ -1,5 +1,7 @@
 ﻿#include "../../Include/ShapeKeeper/ShapeKeeper.h"
+#include "../../Include/Enemies.h"
 #include "../../Include/Player/PlayerShip.h"
+#include "../../Include/Player/PlayerStatus.h"
 
 
 void ShapeKeeper::startEncounter()
@@ -11,16 +13,22 @@ void ShapeKeeper::startEncounter()
     if (!healthContainer.isTransitioningIn)
         healthContainer.isTransitioningIn = true;
 
-    // Spawn the boss opposite of the player, by default the boss is on the left side
-    // Make sure all parts are in sync
+    // Spawn the boss opposite of the player, by default the boss is on the left side and reset to make sure all parts are in sync
     core.activate(PlayerShip::instance().getPosition().x > GameRoot::instance().windowSizeF.x / 2.f);
-    core.onDeath = [this]{ endEncounter(); };
+    core.onDeath = [this]
+    {
+        endEncounter();
+        PlayerStatus::instance().addPoints(50'000);
+    };
     lasersAttack.reset();
     top.reset();
     middleLeft.reset();
     middleRight.reset();
     bottomLeft.reset();
     bottomRight.reset();
+
+    // Enemies spawn will be triggered randomly
+    Enemies::instance().canSpawn = false;
 
     isActive = true;
 }
@@ -34,6 +42,11 @@ void ShapeKeeper::endEncounter()
     // Trigger health container transitions
     if (!healthContainer.isTransitioningOut)
         healthContainer.isTransitioningOut = true;
+
+    // Make enemies keep spawning for endless mode, black holes can spawn again
+    timeUntilEnemiesSpawnElapsed = DEFAULT_TIME_UNTIL_ENEMIES_SPAWN;
+    enemiesSpawningElapsed = 0.f;
+    Enemies::instance().canSpawn = true;
 
     isActive = false;
 }
@@ -62,7 +75,38 @@ void ShapeKeeper::update()
     bottomLeft.update();
     bottomRight.update();
 
-    // TODO: Periodically set enemies spawn to true for a few seconds or so
+    //updateEnemiesSpawn();
+}
+
+
+void ShapeKeeper::updateEnemiesSpawn()
+{
+    if (!isActive)
+        return;
+
+    // Update enemies spawning trigger
+    if (timeUntilEnemiesSpawnElapsed > 0.f)
+    {
+        timeUntilEnemiesSpawnElapsed -= GameRoot::instance().deltaTime;
+
+        if (timeUntilEnemiesSpawnElapsed < 0.f)
+        {
+            Enemies::instance().canSpawn = true;
+            enemiesSpawningElapsed = enemiesSpawningTimeDistribution(enemiesSpawningTimeEngine);
+        }
+    }
+
+    // Update enemies spawn time
+    if (enemiesSpawningElapsed > 0.f)
+    {
+        enemiesSpawningElapsed -= GameRoot::instance().deltaTime;
+
+        if (enemiesSpawningElapsed < 0.f)
+        {
+            Enemies::instance().canSpawn = false;
+            timeUntilEnemiesSpawnElapsed = timeUntilEnemiesSpawnDistribution(timeUntilEnemiesSpawnEngine);
+        }
+    }
 }
 
 

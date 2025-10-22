@@ -68,32 +68,32 @@ std::string UserInterface::formattedTime()
 
 void UserInterface::draw()
 {
-    // // Draw the score text todo: uncomment
-    // scoreFrame.setColor({255, 255, 255, static_cast<std::uint8_t>(255 * GameRoot::instance().frameUIOpacity)});
-    // GameRoot::instance().renderWindow.draw(scoreFrame);
-    // scoreText.setString(Extensions::formatNumberWithCommas(PlayerStatus::instance().score));
-    // scoreText.setOrigin({
-    //     scoreText.getLocalBounds().size.x / 2.f,
-    //     scoreText.getLocalBounds().size.y / 2.f,
-    // });
-    // GameRoot::instance().renderWindow.draw(scoreText);
-    //
-    // // Draw the multiplier header and text
-    // GameRoot::instance().renderWindow.draw(multiplierHeaderText);
-    // multiplierText.setString(std::to_string(PlayerStatus::instance().multiplier));
-    // multiplierText.setOrigin({
-    //     multiplierText.getLocalBounds().size.x / 2.f,
-    //     multiplierText.getLocalBounds().size.y / 2.f
-    // });
-    // GameRoot::instance().renderWindow.draw(multiplierText);
-    //
-    // // Draw the timer text
-    // timerText.setString(formattedTime());
-    // const sf::FloatRect timerTextRect = timerText.getLocalBounds();
-    // float timerOriginTextX = timerTextRect.size.x / 2.f;
-    // float timerOriginTextY = timerTextRect.size.y / 2.f;
-    // timerText.setOrigin({timerOriginTextX, timerOriginTextY});
-    // GameRoot::instance().renderWindow.draw(timerText);
+    // Draw the score text
+    scoreFrame.setColor({255, 255, 255, static_cast<std::uint8_t>(255 * GameRoot::instance().frameUIOpacity)});
+    GameRoot::instance().renderWindow.draw(scoreFrame);
+    scoreText.setString(Extensions::formatNumberWithCommas(PlayerStatus::instance().score));
+    scoreText.setOrigin({
+        scoreText.getLocalBounds().size.x / 2.f,
+        scoreText.getLocalBounds().size.y / 2.f,
+    });
+    GameRoot::instance().renderWindow.draw(scoreText);
+
+    // Draw the multiplier header and text
+    GameRoot::instance().renderWindow.draw(multiplierHeaderText);
+    multiplierText.setString(std::to_string(PlayerStatus::instance().multiplier));
+    multiplierText.setOrigin({
+        multiplierText.getLocalBounds().size.x / 2.f,
+        multiplierText.getLocalBounds().size.y / 2.f
+    });
+    GameRoot::instance().renderWindow.draw(multiplierText);
+
+    // Draw the timer text
+    timerText.setString(formattedTime());
+    const sf::FloatRect timerTextRect = timerText.getLocalBounds();
+    float timerOriginTextX = timerTextRect.size.x / 2.f;
+    float timerOriginTextY = timerTextRect.size.y / 2.f;
+    timerText.setOrigin({timerOriginTextX, timerOriginTextY});
+    GameRoot::instance().renderWindow.draw(timerText);
 
     // Draw paused screen
     if (GameRoot::instance().isPaused)

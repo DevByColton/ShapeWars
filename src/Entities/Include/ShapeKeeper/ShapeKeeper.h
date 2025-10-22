@@ -75,11 +75,21 @@ public:
 
     LasersBeams lasersAttack {&core};
 
+    // Enemies spawn
+    static constexpr float DEFAULT_TIME_UNTIL_ENEMIES_SPAWN = 5.f;
+    float timeUntilEnemiesSpawnElapsed = DEFAULT_TIME_UNTIL_ENEMIES_SPAWN;
+    float enemiesSpawningElapsed = 0.f;
+    std::default_random_engine timeUntilEnemiesSpawnEngine {std::random_device{}()};
+    std::default_random_engine enemiesSpawningTimeEngine {std::random_device{}()};
+    std::uniform_real_distribution<float> timeUntilEnemiesSpawnDistribution {5.f, 15.f};
+    std::uniform_real_distribution<float> enemiesSpawningTimeDistribution {5.f, 10.f};
+
     bool isActive = false;
 
     void startEncounter();
     void endEncounter();
     bool canTakeCoreDamage() const;
+    void updateEnemiesSpawn();
     void update();
     void draw();
     void drawText();

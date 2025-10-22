@@ -6,7 +6,14 @@
 #include "SFML/Graphics/Sprite.hpp"
 
 class Bullets {
-private:
+public:
+    Bullets();
+
+    static Bullets &instance() {
+        static auto *instance = new Bullets;
+        return *instance;
+    }
+
     class Bullet {
     private:
         union
@@ -43,18 +50,6 @@ private:
     };
 
     static constexpr int MAX_BULLET_COUNT = 1001;
-    Bullet *firstAvailable {nullptr};
-
-    void resetBulletPool();
-
-public:
-    Bullets();
-
-    static Bullets &instance() {
-        static auto *instance = new Bullets;
-        return *instance;
-    }
-
     sf::Color bulletExplosionColor {255, 197, 51, 255};
     std::array<Bullet, MAX_BULLET_COUNT> bullets {};
     std::default_random_engine randEngine {std::random_device{}()};
@@ -64,6 +59,11 @@ public:
     void addBulletGroup(const sf::Vector2f& position, float direction);
     void update();
     void draw() const;
+
+private:
+    Bullet *firstAvailable {nullptr};
+
+    void resetBulletPool();
 };
 
 

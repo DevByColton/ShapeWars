@@ -1,11 +1,17 @@
 ﻿#ifndef COLLISIONS_H
 #define COLLISIONS_H
+#include "Bullets.h"
 #include "SFML/System/Vector2.hpp"
+#include "ShapeKeeper/ShapeKeeperBodyPart.h"
 
 
 class Collisions {
 private:
     static sf::Vector2f calculateCircleCollisionPoint(const sf::Vector2f& from, const sf::Vector2f& to, float radius);
+
+    void checkPlayer(ShapeKeeperBodyPart& part);
+    bool check(ShapeKeeperBodyPart& part, Bullets::Bullet& bullet);
+    void checkNuke(ShapeKeeperBodyPart& part);
 
 public:
     static Collisions &instance() {
@@ -24,7 +30,7 @@ public:
     void handleEnemyPlayerBullets();
     void handleBlackHoles();
     void handlePlayerAndBuffs();
-    void handlePlayerAndShapeKeeper();
+    void handleShapeKeeper();
 };
 
 
