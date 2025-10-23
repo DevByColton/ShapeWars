@@ -10,7 +10,7 @@
 #include "../../Core/Include/Extensions.h"
 #include "../../Core/Include/RandomVector.h"
 #include "../../Core/Include/SpawnHelper.h"
-#include "../../UserInterface/Include/FloatingKillTexts.h"
+#include "../../GameState/UI/Include/FloatingKillTexts.h"
 #include "../Include/Player/PlayerShip.h"
 #include "SFML/Graphics/Text.hpp"
 

@@ -1,6 +1,6 @@
 ﻿#include "../Include/Buttons.h"
 #include "../../GameRoot.h"
-#include "../../Input/Include/Input.h"
+#include "../Include/Input.h"
 
 
 Buttons::Buttons()

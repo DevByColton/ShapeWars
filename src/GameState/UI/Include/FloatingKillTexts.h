@@ -1,7 +1,7 @@
 ﻿#ifndef FLOATINGKILLTEXTS_H
 #define FLOATINGKILLTEXTS_H
 #include <array>
-#include "../../Content/Include/Art.h"
+#include "../../../Content/Include/Art.h"
 #include "SFML/Graphics/Text.hpp"
 
 

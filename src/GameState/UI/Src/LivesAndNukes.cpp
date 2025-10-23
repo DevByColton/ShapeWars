@@ -1,8 +1,8 @@
 ﻿#include "../Include/LivesAndNukes.h"
-#include "../../GameRoot.h"
-#include "../../Entities/Include/Nukes.h"
-#include "../../Entities/Include/Player/PlayerStatus.h"
-#include "../../Core/Include/Extensions.h"
+#include "../../../GameRoot.h"
+#include "../../../Entities/Include/Nukes.h"
+#include "../../../Entities/Include/Player/PlayerStatus.h"
+#include "../../../Core/Include/Extensions.h"
 
 
 LivesAndNukes::LivesAndNukes()

@@ -8,7 +8,7 @@
 #include "../../Core/Include/ColorPicker.h"
 #include "../../Core/Include/Extensions.h"
 #include "../../Core/Include/SpawnHelper.h"
-#include "../../UserInterface/Include/FloatingKillTexts.h"
+#include "../../GameState/UI/Include/FloatingKillTexts.h"
 #include "../Include/ShapeKeeper/ShapeKeeper.h"
 
 BlackHoles::BlackHoles()

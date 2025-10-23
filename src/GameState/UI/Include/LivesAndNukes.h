@@ -1,6 +1,6 @@
 ﻿#ifndef LIVESANDNUKES_H
 #define LIVESANDNUKES_H
-#include "../../Content/Include/Art.h"
+#include "../../../Content/Include/Art.h"
 #include "SFML/Graphics/Sprite.hpp"
 
 
