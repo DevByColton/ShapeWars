@@ -1,4 +1,5 @@
 ﻿#include "../Include/GamePlay.h"
+#include "../../Core/Include/Logger.h"
 #include "../../Entities/Include/BlackHoles.h"
 #include "../../Entities/Include/Bullets.h"
 #include "../../Entities/Include/Collisions.h"
@@ -14,6 +15,51 @@
 #include "../../Systems/Include/Particles.h"
 #include "../UI/Include/FloatingKillTexts.h"
 #include "../UI/Include/LivesAndNukes.h"
+
+
+GamePlay::GamePlay()
+{
+    ShapeKeeper::instance().currentGamePlayState = &currentGamePlayState;
+}
+
+
+void GamePlay::doBaseReset()
+{
+    Buffs::instance().resetBuffDrops();
+    Bullets::instance().resetAll();
+    Enemies::instance().killAll();
+    BlackHoles::instance().killAll();
+    Nukes::instance().reset();
+    Nukes::instance().resetEnemiesSpawnTimer();
+    PlayerStatus::instance().needBaseReset = false;
+}
+
+
+void GamePlay::doTotalReset()
+{
+    Buffs::instance().resetBuffs();
+    PlayerStatus::instance().reset();
+    PlayerShip::instance().reset();
+    Nukes::instance().resetNukeCount();
+    Enemies::instance().resetSpawnRates();
+    BlackHoles::instance().resetSpawnRate();
+    GamePlayHUD::instance().resetObjective();
+    PlayerStatus::instance().needTotalReset = false;
+    ShapeKeeper::instance().isDefeated = false;
+    currentGamePlayState = PreBoss;
+}
+
+
+void GamePlay::startRound()
+{
+    markRoundStart = true;
+}
+
+
+void GamePlay::endRound()
+{
+    markRoundEnd = true;
+}
 
 
 void GamePlay::processKeyReleased(const sf::Event::KeyReleased* keyReleased)
@@ -60,9 +106,6 @@ void GamePlay::processKeyReleased(const sf::Event::KeyReleased* keyReleased)
         Nukes::instance().markDetonate(PlayerShip::instance().getPosition());
         return;
     }
-
-    if (keyReleased->scancode == sf::Keyboard::Scancode::R)
-        ShapeKeeper::instance().startEncounter();
 
     if (keyReleased->scancode == sf::Keyboard::Scancode::E)
         ShapeKeeper::instance().endEncounter();
@@ -114,11 +157,40 @@ void GamePlay::processJoystickAxisMoved(const sf::Event::JoystickMoved* joystick
 
 void GamePlay::update()
 {
+    // Check when the score area needs to transition in
+    if (markRoundStart && !GamePlayHUD::instance().isTransitioningScoreAreaIn)
+    {
+        GamePlayHUD::instance().isTransitioningScoreAreaIn = true;
+        markRoundStart = false;
+    }
+
+    // Check when the score area or health area needs to transition out
+    if (markRoundEnd && !GamePlayHUD::instance().isTransitioningScoreAreaOut)
+    {
+        // Check if the shape keeper killed the player
+        if (ShapeKeeper::instance().isActive && !ShapeKeeper::instance().isDefeated)
+        {
+            GamePlayHUD::instance().markHealthAreaTransitionOut(false);
+            ShapeKeeper::instance().markDeactivate();
+        }
+        else
+            GamePlayHUD::instance().isTransitioningScoreAreaOut = true;
+
+        markRoundEnd = false;
+    }
+
     // Always update the player status first
     PlayerStatus::instance().update();
-    ShapeKeeper::instance().update();
 
-    // When the player is alive
+    // Check when to activate the boss
+    if (currentGamePlayState == PreBoss)
+        ShapeKeeper::instance().checkActivate();
+
+    // Make sure the boss gets updated during the fight
+    if (currentGamePlayState == BossFight)
+        ShapeKeeper::instance().update();
+
+    // Core updates
     if (!PlayerStatus::instance().isDead())
     {
         Nukes::instance().update();
@@ -130,37 +202,28 @@ void GamePlay::update()
         Collisions::instance().handleEnemyPlayerBullets();
         Collisions::instance().handleBlackHoles();
         Collisions::instance().handlePlayerAndBuffs();
-        Collisions::instance().handleShapeKeeper();
     }
+
+    // Update boss collisions after core updates
+    if (currentGamePlayState == BossFight)
+        Collisions::instance().handleShapeKeeper();
 
     // When the player dies during a round
     if (PlayerStatus::instance().needBaseReset)
-    {
-        Buffs::instance().resetBuffDrops();
-        Bullets::instance().resetAll();
-        Enemies::instance().killAll();
-        BlackHoles::instance().killAll();
-        Nukes::instance().reset();
-        Nukes::instance().resetEnemiesSpawnTimer();
-        PlayerStatus::instance().needBaseReset = false;
-    }
+        doBaseReset();
 
-    // At the restart of a new round
+    // At the re-start of a new round
     if (PlayerStatus::instance().needTotalReset)
     {
-        Buffs::instance().resetBuffs();
-        PlayerStatus::instance().reset();
-        PlayerShip::instance().reset();
-        Nukes::instance().resetNukeCount();
-        Enemies::instance().resetSpawnRates();
-        BlackHoles::instance().resetSpawnRate();
-        PlayerStatus::instance().needTotalReset = false;
+        doTotalReset();
+        GameRoot::instance().setCurrentGameState(InStartMenu);
     }
 
     // Independent of player status
     FloatingKillTexts::instance().update();
     Particles::instance().update();
     Grid::instance().update();
+    GamePlayHUD::instance().update();
 }
 
 
@@ -173,9 +236,13 @@ void GamePlay::renderGaussianBlur()
     Enemies::instance().draw();
     BlackHoles::instance().draw();
     Bullets::instance().draw();
-    ShapeKeeper::instance().draw();
     Buffs::instance().draw();
+
+    if (currentGamePlayState == BossFight)
+        ShapeKeeper::instance().draw();
+
     PlayerShip::instance().draw();
+    GamePlayHUD::instance().healthContainer.draw();
     GaussianBlur::instance().drawToScreen();
 }
 
@@ -184,9 +251,7 @@ void GamePlay::renderToScreen()
     LivesAndNukes::instance().draw();
     FloatingKillTexts::instance().draw();
     Buffs::instance().drawText();
-    ShapeKeeper::instance().drawText();
-    gamePlayHud.drawToScreen();
-
-    //UserInterface::instance().draw();
     Buttons::instance().draw();
+    GamePlayHUD::instance().drawToScreen();
+    GamePlayHUD::instance().healthContainer.drawText();
 }

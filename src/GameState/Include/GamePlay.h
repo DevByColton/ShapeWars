@@ -3,17 +3,39 @@
 #include "IGameState.h"
 #include "../UI/Include/GamePlayHUD.h"
 
-
-struct GamePlay final : IGameState
+enum GamePlayState
 {
+    PreBoss,
+    BossFight,
+    Endless
+};
+
+
+class GamePlay final : IGameState
+{
+private:
+    GamePlayState currentGamePlayState = PreBoss;
+
+public:
+    GamePlay();
+
     static GamePlay &instance()
     {
         static auto *instance = new GamePlay;
         return *instance;
     }
 
-    GamePlayHUD gamePlayHud {};
+    bool isShapeKeeperEncounterStarting = false;
 
+    bool markRoundStart = false;
+    bool markShapeKeeperStart = false;
+    bool markShapeKeeperEnd = false;
+    bool markRoundEnd = false;
+
+    void doBaseReset();
+    void doTotalReset();
+    void startRound();
+    void endRound();
     void processKeyReleased(const sf::Event::KeyReleased* keyReleased) override;
     void processJoystickButtonReleased(const sf::Event::JoystickButtonReleased* joystickButtonReleased) override;
     void processJoystickAxisMoved(const sf::Event::JoystickMoved* joystickMoved) override;

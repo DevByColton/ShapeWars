@@ -155,6 +155,9 @@ void Collisions::handleBlackHoles()
 
 void Collisions::handlePlayerAndBuffs()
 {
+    if (PlayerStatus::instance().isDead())
+        return;
+
     if (Buffs::instance().canPickUpBuff())
     {
         // Buff drop 1
@@ -183,7 +186,7 @@ void Collisions::handlePlayerAndBuffs()
 
 void Collisions::handleShapeKeeper()
 {
-    if (!ShapeKeeper::instance().isActive)
+    if (!ShapeKeeper::instance().isActive || PlayerStatus::instance().isDead())
         return;
 
     auto &bullets = Bullets::instance().bullets;
@@ -203,11 +206,17 @@ void Collisions::handleShapeKeeper()
         checkPlayer(middleRight);
         checkPlayer(bottomLeft);
         checkPlayer(bottomRight);
+
+        // Core damage
         if (ShapeKeeper::instance().canTakeCoreDamage() && core.isAlive() && isColliding(PlayerShip::instance().radius + core.radius, PlayerShip::instance().getPosition(), core.getPosition()))
         {
             core.markForHit(PlayerShip::instance().getPosition(), 5);
             PlayerStatus::instance().markForKill();
         }
+
+        // Shield damage
+        if (!ShapeKeeper::instance().canTakeCoreDamage() && core.isAlive() && isColliding(PlayerShip::instance().radius + core.shieldRadius, PlayerShip::instance().getPosition(), core.shield.getPosition()))
+            PlayerStatus::instance().markForKill();
 
         // Check the player against all the lasers
         if (ShapeKeeper::instance().laserBeams.areLasersActive())

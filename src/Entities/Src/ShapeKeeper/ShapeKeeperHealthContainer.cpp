@@ -30,7 +30,7 @@ void ShapeKeeperHealthContainer::transitionIn()
         transitionTime += GameRoot::instance().deltaTime;
 
         // Ease position
-        sprite.setPosition(Extensions::easeOutBack(healthWrapperOffScreenPosition, healthWrapperOnScreenPosition, transitionTime / TRANSITION_DURATION));
+        sprite.setPosition(Extensions::easeOutCubic(healthWrapperOffScreenPosition, healthWrapperOnScreenPosition, transitionTime / TRANSITION_DURATION));
 
         // Set stopping point
         if (transitionTime > TRANSITION_DURATION)
@@ -43,7 +43,7 @@ void ShapeKeeperHealthContainer::transitionIn()
 }
 
 
-void ShapeKeeperHealthContainer::transitionOut()
+bool ShapeKeeperHealthContainer::transitionOut()
 {
     if (isTransitioningOut)
     {
@@ -51,7 +51,7 @@ void ShapeKeeperHealthContainer::transitionOut()
         transitionTime += GameRoot::instance().deltaTime;
 
         // Ease position
-        sprite.setPosition(Extensions::easeBackIn(healthWrapperOnScreenPosition, healthWrapperOffScreenPosition, transitionTime / TRANSITION_DURATION));
+        sprite.setPosition(Extensions::easeInCubic(healthWrapperOnScreenPosition, healthWrapperOffScreenPosition, transitionTime / TRANSITION_DURATION));
 
         // Set stopping point
         if (transitionTime > TRANSITION_DURATION)
@@ -59,8 +59,11 @@ void ShapeKeeperHealthContainer::transitionOut()
             isTransitioningOut = false;
             transitionTime = 0.f;
             sprite.setPosition(healthWrapperOffScreenPosition);
+            return true;
         }
     }
+
+    return false;
 }
 
 

@@ -86,6 +86,16 @@ void ShapeKeeperCore::activate(const bool isOnLeftSideOfScreen)
 }
 
 
+void ShapeKeeperCore::deactivate()
+{
+    // Manually set the position off-screen so it can transition out
+    timeUntilMovementChangeDuration = 3.5f;
+    timeUntilMovementChange = 0.f;
+    previousTargetPosition = getPosition();
+    currentTargetPosition = {-1000.f, GameRoot::instance().windowSizeF.y / 2.f};
+}
+
+
 void ShapeKeeperCore::update()
 {
     if (!isAlive())

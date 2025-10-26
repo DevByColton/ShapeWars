@@ -122,8 +122,8 @@ void Enemies::Enemy::reset(const bool canDropBuffChance)
     {
         const float hue1 = ColorPicker::instance().generateHue();
         const float hue2 = ColorPicker::instance().generateShiftedHue(hue1);
-        const sf::Color color1 = ColorPicker::instance().hsvToRgb(hue1, 0.7f, 1.f);
-        const sf::Color color2 = ColorPicker::instance().hsvToRgb(hue2, 0.7f, 1.f);
+        const sf::Color color1 = ColorPicker::instance().hsvToRgb(hue1, 0.9f, 0.8f);
+        const sf::Color color2 = ColorPicker::instance().hsvToRgb(hue2, 0.9f, 0.8f);
 
         for (int i = 0; i < 120; i++)
         {

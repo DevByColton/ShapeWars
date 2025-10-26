@@ -13,7 +13,7 @@ private:
     bool vsyncEnabled = true;
     sf::Clock gameClock {};
     sf::Clock deltaClock {};
-    GameState currentGameState = InGamePlay;
+    GameState currentGameState = InStartMenu;
 
     void toggleVsync();
     void processInput();

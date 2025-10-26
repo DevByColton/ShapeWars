@@ -7,15 +7,14 @@
 GamePlayHUD::GamePlayHUD()
 {
     // Set the score to be in the top middle of the screen
-    scoreText.setPosition({GameRoot::instance().windowSizeF.x / 2.f, 15.f});
-    scoreFrame.setOrigin({
-        scoreFrame.getTexture().getSize().x / 2.f,
-        scoreFrame.getTexture().getSize().y / 2.f
+    scoreAreaTexture.setSmooth(true);
+    scoreArea.setPosition(scoreAreaOnScreenPosition);
+    scoreArea.setOrigin({
+        scoreAreaTexture.getSize().x / 2.f,
+        scoreAreaTexture.getSize().y / 2.f
     });
-    scoreFrame.setPosition({
-        GameRoot::instance().windowSizeF.x / 2.f,
-        42.5
-    });
+
+    scoreText.setPosition({scoreAreaTexture.getSize().x / 2.f, 30.f});
 
     // Set the multiplier text to be in the right top of the window
     multiplierHeaderText.setOrigin({
@@ -32,8 +31,119 @@ GamePlayHUD::GamePlayHUD()
     timerText.setLetterSpacing(1.5f);
     timerText.setStyle(sf::Text::Bold);
 
+    // Objective text
+    objectiveText.setStyle(sf::Text::Bold);
+    objectiveText.setOrigin({
+        objectiveText.getLocalBounds().size.x / 2.f,
+        objectiveText.getLocalBounds().size.y / 2.f
+    });
+    objectiveText.setPosition({
+        scoreAreaTexture.getSize().x / 2.f,
+        scoreAreaTexture.getSize().y - 38.f
+    });
+
     // Set the game over text in the middle of the screen
     gameOverText.setPosition({GameRoot::instance().windowSizeF.x / 2.f, GameRoot::instance().windowSizeF.y / 2.f});
+}
+
+
+void GamePlayHUD::resetObjective()
+{
+    objectiveText.setString(SCORE_OBJECTIVE_TEXT);
+    objectiveText.setOrigin({
+        objectiveText.getLocalBounds().size.x / 2.f,
+        objectiveText.getLocalBounds().size.y / 2.f
+    });
+}
+
+
+void GamePlayHUD::setObjectiveEndless()
+{
+    objectiveText.setString(ENDLESS_OBJECTIVE_TEXT);
+    objectiveText.setOrigin({
+        objectiveText.getLocalBounds().size.x / 2.f,
+        objectiveText.getLocalBounds().size.y / 2.f
+    });
+}
+
+
+void GamePlayHUD::markHealthAreaTransitionOut(const bool shouldStartScoreArea)
+{
+    this->shouldStartScoreArea = shouldStartScoreArea;
+    healthContainer.isTransitioningOut = true;
+}
+
+
+void GamePlayHUD::markScoreAreaTransitionOut(const bool shouldStartHealthArea)
+{
+    this->shouldStartHealthArea = shouldStartHealthArea;
+    isTransitioningScoreAreaOut = true;
+}
+
+
+bool GamePlayHUD::transitionInScoreArea()
+{
+    if (isTransitioningScoreAreaIn)
+    {
+        // Increment for position ease
+        transitionTime += GameRoot::instance().deltaTime;
+
+        // Ease position
+        scoreArea.setPosition(Extensions::easeOutCubic(scoreAreaOffScreenPosition, scoreAreaOnScreenPosition, transitionTime / TRANSITION_DURATION));
+
+        // Set stopping point
+        if (transitionTime > TRANSITION_DURATION)
+        {
+            isTransitioningScoreAreaIn = false;
+            transitionTime = 0.f;
+            scoreArea.setPosition(scoreAreaOnScreenPosition);
+
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
+bool GamePlayHUD::transitionOutScoreArea()
+{
+    if (isTransitioningScoreAreaOut)
+    {
+        // Increment for position ease
+        transitionTime += GameRoot::instance().deltaTime;
+
+        // Ease position
+        scoreArea.setPosition(Extensions::easeInCubic(scoreAreaOnScreenPosition, scoreAreaOffScreenPosition, transitionTime / TRANSITION_DURATION));
+
+        // Set stopping point
+        if (transitionTime > TRANSITION_DURATION)
+        {
+            isTransitioningScoreAreaOut = false;
+            transitionTime = 0.f;
+            scoreArea.setPosition(scoreAreaOffScreenPosition);
+            healthContainer.isTransitioningIn = shouldStartHealthArea;
+            shouldStartHealthArea = false;
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
+void GamePlayHUD::update()
+{
+    // Update any transitions that need to happen
+    transitionInScoreArea();
+    transitionOutScoreArea();
+    healthContainer.transitionIn();
+
+    if (healthContainer.transitionOut())
+    {
+        isTransitioningScoreAreaIn = shouldStartScoreArea;
+        shouldStartScoreArea = false;
+    }
 }
 
 
@@ -56,32 +166,41 @@ std::string GamePlayHUD::formattedTime()
 
 void GamePlayHUD::drawToScreen()
 {
-    // Draw the score text
+    // Draw everything to the area texture
+    scoreAreaTexture.clear(sf::Color::Transparent);
+
+    // Draw the score frame
     scoreFrame.setColor({255, 255, 255, static_cast<std::uint8_t>(255 * GameRoot::instance().frameUIOpacity)});
-    GameRoot::instance().renderWindow.draw(scoreFrame);
+    scoreAreaTexture.draw(scoreFrame);
+
+    // Draw the score text and reset the origin based on how large the text value is
     scoreText.setString(Extensions::formatNumberWithCommas(PlayerStatus::instance().score));
     scoreText.setOrigin({
         scoreText.getLocalBounds().size.x / 2.f,
         scoreText.getLocalBounds().size.y / 2.f,
     });
-    GameRoot::instance().renderWindow.draw(scoreText);
+    scoreAreaTexture.draw(scoreText);
 
     // Draw the multiplier header and text
-    GameRoot::instance().renderWindow.draw(multiplierHeaderText);
     multiplierText.setString(std::to_string(PlayerStatus::instance().multiplier));
     multiplierText.setOrigin({
         multiplierText.getLocalBounds().size.x / 2.f,
         multiplierText.getLocalBounds().size.y / 2.f
     });
-    GameRoot::instance().renderWindow.draw(multiplierText);
+    scoreAreaTexture.draw(multiplierHeaderText);
+    scoreAreaTexture.draw(multiplierText);
 
     // Draw the timer text
     timerText.setString(formattedTime());
-    const sf::FloatRect timerTextRect = timerText.getLocalBounds();
-    float timerOriginTextX = timerTextRect.size.x / 2.f;
-    float timerOriginTextY = timerTextRect.size.y / 2.f;
-    timerText.setOrigin({timerOriginTextX, timerOriginTextY});
-    GameRoot::instance().renderWindow.draw(timerText);
+    timerText.setOrigin({timerText.getLocalBounds().size.x / 2.f, timerText.getLocalBounds().size.y / 2.f});
+    scoreAreaTexture.draw(timerText);
+
+    // Objective text
+    scoreAreaTexture.draw(objectiveText);
+
+    // Display and draw to screen
+    scoreAreaTexture.display();
+    GameRoot::instance().renderWindow.draw(scoreArea);
 
     // Draw game over text
     if (PlayerStatus::instance().isGameOver()) {

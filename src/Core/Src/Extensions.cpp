@@ -160,6 +160,28 @@ sf::Vector2f Extensions::easeInOutBack(const sf::Vector2f& start, const sf::Vect
 }
 
 
+sf::Vector2f Extensions::easeInCubic(const sf::Vector2f& start, const sf::Vector2f& end, const float t)
+{
+    const float easeInCubic = t * t * t;
+
+    return {
+        std::lerp(start.x, end.x, easeInCubic),
+        std::lerp(start.y, end.y, easeInCubic)
+    };
+}
+
+
+sf::Vector2f Extensions::easeOutCubic(const sf::Vector2f& start, const sf::Vector2f& end, const float t)
+{
+    const float easeOutSine = 1.f - std::pow(1.f - t, 3);
+
+    return {
+        std::lerp(start.x, end.x, easeOutSine),
+        std::lerp(start.y, end.y, easeOutSine)
+    };
+}
+
+
 float Extensions::easeInOutSine(const float start, const float end, const float t)
 {
     const float easeInOutSine = -(std::cos(PI * t) - 1.f) / 2.f;
