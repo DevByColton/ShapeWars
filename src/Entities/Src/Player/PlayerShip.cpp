@@ -254,6 +254,9 @@ void PlayerShip::setUsingBulletsAllDirections(const bool isUsingBulletsAllDirect
 
 void PlayerShip::update()
 {
+    if (PlayerStatus::instance().isDead())
+        return;
+
     // Move the player and clamp to window bounds
     velocity += speed * Input::instance().getMovementDirection();
     const sf::Vector2f nextPosition = ship.getPosition() + velocity;

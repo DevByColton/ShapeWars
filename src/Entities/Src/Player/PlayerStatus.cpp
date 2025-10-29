@@ -7,6 +7,7 @@
 #include "../../../Core/Include/Extensions.h"
 #include "../../../Core/Include/RandomVector.h"
 #include "../../../GameState/Include/GamePlay.h"
+#include "../../Include/Enemies.h"
 #include "../../Include/Player/PlayerShip.h"
 
 
@@ -180,18 +181,26 @@ void PlayerStatus::update()
     roundTimeSeconds = roundClock.getElapsedTime().asSeconds();
 
     if (shouldKill)
+    {
         kill();
+        Enemies::instance().canSpawn = false;
+    }
 
     // Make sure the player is alive
     if (isDead())
     {
         respawnTime -= GameRoot::instance().deltaTime;
 
-        // When the game was over and the long respawn ends
-        if (respawnTime <= 0 && isGameOver())
+        if (respawnTime <= 0)
         {
-            needTotalReset = true;
-            roundClock.restart();
+            Enemies::instance().canSpawn = true;
+
+            // When the game was over and the long respawn ends
+            if (isGameOver())
+            {
+                needTotalReset = true;
+                roundClock.restart();
+            }
         }
 
         return;

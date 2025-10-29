@@ -225,7 +225,7 @@ void GameRoot::update() const
 
 void GameRoot::render()
 {
-    // Clear the screen texture
+    // Clear the screen
     renderWindow.clear();
 
     if (currentGameState == InStartMenu)

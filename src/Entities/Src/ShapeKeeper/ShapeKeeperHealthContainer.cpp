@@ -69,6 +69,7 @@ bool ShapeKeeperHealthContainer::transitionOut()
 
 void ShapeKeeperHealthContainer::draw()
 {
+    frame.setColor({255, 255, 255, static_cast<std::uint8_t>(255 * GameRoot::instance().frameUIOpacity)});
     renderTexture.clear(sf::Color::Transparent);
     renderTexture.draw(frame);
     renderTexture.draw(top.background);
@@ -90,8 +91,6 @@ void ShapeKeeperHealthContainer::draw()
 
 void ShapeKeeperHealthContainer::drawText()
 {
-    frame.setColor({255, 255, 255, static_cast<std::uint8_t>(255 * GameRoot::instance().frameUIOpacity)});
-
     renderTexture.clear(sf::Color::Transparent);
     renderTexture.draw(headerText);
     renderTexture.display();

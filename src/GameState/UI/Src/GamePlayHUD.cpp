@@ -1,6 +1,7 @@
 ﻿#include "../Include/GamePlayHUD.h"
 #include "../../../GameRoot.h"
 #include "../../../Core/Include/Extensions.h"
+#include "../../../Entities/Include/Player/Buffs.h"
 #include "../../../Entities/Include/Player/PlayerStatus.h"
 
 
@@ -135,6 +136,8 @@ bool GamePlayHUD::transitionOutScoreArea()
 void GamePlayHUD::update()
 {
     // Update any transitions that need to happen
+    gamePlayControlArea.transitionIn();
+    gamePlayControlArea.transitionOut();
     transitionInScoreArea();
     transitionOutScoreArea();
     healthContainer.transitionIn();
@@ -161,6 +164,13 @@ std::string GamePlayHUD::formattedTime()
         timeString.append(std::to_string(seconds));
 
     return timeString;
+}
+
+
+void GamePlayHUD::drawToBlur()
+{
+    healthContainer.draw();
+    gamePlayControlArea.drawToBlur();
 }
 
 
@@ -201,6 +211,9 @@ void GamePlayHUD::drawToScreen()
     // Display and draw to screen
     scoreAreaTexture.display();
     GameRoot::instance().renderWindow.draw(scoreArea);
+
+    gamePlayControlArea.drawToScreen();
+    healthContainer.drawText();
 
     // Draw game over text
     if (PlayerStatus::instance().isGameOver()) {

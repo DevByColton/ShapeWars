@@ -81,7 +81,7 @@ void Collisions::handleEnemyPlayerBullets()
                 }
 
             // Check player
-            if (isColliding(enemy.radius + PlayerShip::instance().radius, enemy.getPosition(), PlayerShip::instance().getPosition()))
+            if (!PlayerStatus::instance().isDead() && isColliding(enemy.radius + PlayerShip::instance().radius, enemy.getPosition(), PlayerShip::instance().getPosition()))
             {
                 enemy.markForKill();
                 if (!PlayerShip::instance().isInvincible)
@@ -133,7 +133,7 @@ void Collisions::handleBlackHoles()
             }
 
             // Check player
-            if (Extensions::distanceSquared(blackHole.getPosition(), PlayerShip::instance().getPosition()) < LARGE_PROXIMITY_RADIUS_SQR)
+            if (!PlayerStatus::instance().isDead() && Extensions::distanceSquared(blackHole.getPosition(), PlayerShip::instance().getPosition()) < LARGE_PROXIMITY_RADIUS_SQR)
             {
                 // Apply attractive linear force
                 sf::Vector2f direction = blackHole.getPosition() - PlayerShip::instance().getPosition();

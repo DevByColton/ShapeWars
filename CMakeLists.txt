@@ -67,8 +67,6 @@ add_executable(ShapeWars src/main.cpp
         src/Input/Include/MouseAndKeyboard.h
         src/Entities/Src/Player/Buffs.cpp
         src/Entities/Include/Player/Buffs.h
-        src/GameState/UI/Src/LivesAndNukes.cpp
-        src/GameState/UI/Include/LivesAndNukes.h
         src/Input/Src/Buttons.cpp
         src/Input/Include/Buttons.h
         src/Entities/Src/ShapeKeeper/ShapeKeeper.cpp
@@ -96,6 +94,8 @@ add_executable(ShapeWars src/main.cpp
         src/GameRoot.h
         src/GameState/UI/Src/GamePlayHUD.cpp
         src/GameState/UI/Include/GamePlayHUD.h
+        src/GameState/UI/Src/GamePlayControlArea.cpp
+        src/GameState/UI/Include/GamePlayControlArea.h
 )
 
 target_compile_features(ShapeWars PRIVATE cxx_std_20)

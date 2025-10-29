@@ -1,5 +1,4 @@
 ﻿#include "../Include/GamePlay.h"
-#include "../../Core/Include/Logger.h"
 #include "../../Entities/Include/BlackHoles.h"
 #include "../../Entities/Include/Bullets.h"
 #include "../../Entities/Include/Collisions.h"
@@ -9,12 +8,10 @@
 #include "../../Entities/Include/Player/PlayerShip.h"
 #include "../../Entities/Include/Player/PlayerStatus.h"
 #include "../../Entities/Include/ShapeKeeper/ShapeKeeper.h"
-#include "../../Input/Include/Buttons.h"
 #include "../../Input/Include/Input.h"
 #include "../../Systems/Include/Grid.h"
 #include "../../Systems/Include/Particles.h"
 #include "../UI/Include/FloatingKillTexts.h"
-#include "../UI/Include/LivesAndNukes.h"
 
 
 GamePlay::GamePlay()
@@ -29,8 +26,6 @@ void GamePlay::doBaseReset()
     Bullets::instance().resetAll();
     Enemies::instance().killAll();
     BlackHoles::instance().killAll();
-    Nukes::instance().reset();
-    Nukes::instance().resetEnemiesSpawnTimer();
     PlayerStatus::instance().needBaseReset = false;
 }
 
@@ -40,12 +35,14 @@ void GamePlay::doTotalReset()
     Buffs::instance().resetBuffs();
     PlayerStatus::instance().reset();
     PlayerShip::instance().reset();
+    Nukes::instance().reset();
+    Nukes::instance().resetEnemiesSpawnTimer();
     Nukes::instance().resetNukeCount();
     Enemies::instance().resetSpawnRates();
     BlackHoles::instance().resetSpawnRate();
     GamePlayHUD::instance().resetObjective();
-    PlayerStatus::instance().needTotalReset = false;
     ShapeKeeper::instance().isDefeated = false;
+    PlayerStatus::instance().needTotalReset = false;
     currentGamePlayState = PreBoss;
 }
 
@@ -161,6 +158,9 @@ void GamePlay::update()
     if (markRoundStart && !GamePlayHUD::instance().isTransitioningScoreAreaIn)
     {
         GamePlayHUD::instance().isTransitioningScoreAreaIn = true;
+        GamePlayHUD::instance().gamePlayControlArea.isTransitioningIn = true;
+        Enemies::instance().canSpawn = true;
+        BlackHoles::instance().canSpawn = true;
         markRoundStart = false;
     }
 
@@ -176,6 +176,10 @@ void GamePlay::update()
         else
             GamePlayHUD::instance().isTransitioningScoreAreaOut = true;
 
+        // Transition the control area out always
+        GamePlayHUD::instance().gamePlayControlArea.isTransitioningOut = true;
+        Enemies::instance().canSpawn = false;
+        BlackHoles::instance().canSpawn = false;
         markRoundEnd = false;
     }
 
@@ -191,18 +195,15 @@ void GamePlay::update()
         ShapeKeeper::instance().update();
 
     // Core updates
-    if (!PlayerStatus::instance().isDead())
-    {
-        Nukes::instance().update();
-        Enemies::instance().update();
-        Buffs::instance().update();
-        PlayerShip::instance().update();
-        Bullets::instance().update();
-        BlackHoles::instance().update();
-        Collisions::instance().handleEnemyPlayerBullets();
-        Collisions::instance().handleBlackHoles();
-        Collisions::instance().handlePlayerAndBuffs();
-    }
+    Nukes::instance().update();
+    Enemies::instance().update();
+    Buffs::instance().update();
+    PlayerShip::instance().update();
+    Bullets::instance().update();
+    BlackHoles::instance().update();
+    Collisions::instance().handleEnemyPlayerBullets();
+    Collisions::instance().handleBlackHoles();
+    Collisions::instance().handlePlayerAndBuffs();
 
     // Update boss collisions after core updates
     if (currentGamePlayState == BossFight)
@@ -236,22 +237,17 @@ void GamePlay::renderGaussianBlur()
     Enemies::instance().draw();
     BlackHoles::instance().draw();
     Bullets::instance().draw();
-    Buffs::instance().draw();
 
     if (currentGamePlayState == BossFight)
         ShapeKeeper::instance().draw();
 
     PlayerShip::instance().draw();
-    GamePlayHUD::instance().healthContainer.draw();
+    GamePlayHUD::instance().drawToBlur();
     GaussianBlur::instance().drawToScreen();
 }
 
 void GamePlay::renderToScreen()
 {
-    LivesAndNukes::instance().draw();
     FloatingKillTexts::instance().draw();
-    Buffs::instance().drawText();
-    Buttons::instance().draw();
     GamePlayHUD::instance().drawToScreen();
-    GamePlayHUD::instance().healthContainer.drawText();
 }

@@ -1,5 +1,6 @@
 ﻿#ifndef GAMEPLAYHUD_H
 #define GAMEPLAYHUD_H
+#include "GamePlayControlArea.h"
 #include "../../../GameRoot.h"
 #include "../../../Content/Include/Art.h"
 #include "../../../Entities/Include/ShapeKeeper/ShapeKeeperHealthContainer.h"
@@ -37,6 +38,7 @@ struct GamePlayHUD {
     sf::Text objectiveText {Art::instance().font, SCORE_OBJECTIVE_TEXT, 17};
     sf::Text gameOverText {Art::instance().font, {}, 60};
     ShapeKeeperHealthContainer healthContainer {};
+    GamePlayControlArea gamePlayControlArea {};
 
     void resetObjective();
     void setObjectiveEndless();
@@ -46,6 +48,7 @@ struct GamePlayHUD {
     bool transitionOutScoreArea();
     static std::string formattedTime();
     void update();
+    void drawToBlur();
     void drawToScreen();
 };
 

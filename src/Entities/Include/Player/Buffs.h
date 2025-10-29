@@ -4,6 +4,7 @@
 #include "../../../Content/Include/Art.h"
 #include "SFML/Graphics/Sprite.hpp"
 #include "SFML/Graphics/Text.hpp"
+#include "SFML/Graphics/RenderTexture.hpp"
 
 
 enum struct BuffType
@@ -85,8 +86,9 @@ public:
     void resetBuffDrops();
     void resetBuffs();
     void update();
-    void draw();
-    void drawText() const;
+    void drawBuffs(sf::RenderTexture& renderTexture);
+    void drawBuffDrops() const;
+    void drawText(sf::RenderTexture& renderTexture) const;
 };
 
 
