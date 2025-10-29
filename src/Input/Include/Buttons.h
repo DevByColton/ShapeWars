@@ -2,28 +2,26 @@
 #define BUTTONS_H
 #include "../../Content/Include/Art.h"
 #include "SFML/Graphics/Sprite.hpp"
-#include "SFML/Graphics/Text.hpp"
+#include "SFML/Graphics/RenderTexture.hpp"
 
 
-class Buttons {
-private:
-    struct Key
+struct Buttons {
+    Buttons();
+
+    struct Key final : sf::Sprite
     {
+        explicit Key(const sf::Texture &texture);
+
         sf::Sprite frame {Art::instance().keyboardFrame};
-        sf::Sprite key {Art::instance().num1}; // Placeholder key
+
+        void setFramePosition(const sf::Vector2f& position);
     };
 
-    struct Button
-    {
-        sf::Sprite frame {Art::instance().keyboardFrame};
-        sf::Sprite button {Art::instance().xboxAButton}; // Placeholder button
-    };
-
-    Key num1 {};
-    Key num2 {};
-    Key num3 {};
-    Key num4 {};
-    Key spaceBar {};
+    Key num1 {Art::instance().num1};
+    Key num2 {Art::instance().num2};
+    Key num3 {Art::instance().num3};
+    Key num4 {Art::instance().num4};
+    Key spaceBar {Art::instance().spaceBar};
 
     sf::Sprite xboxAButton {Art::instance().xboxAButton};
     sf::Sprite xboxBButton {Art::instance().xboxBButton};
@@ -37,16 +35,7 @@ private:
     sf::Sprite dualsenseTriangleButton {Art::instance().dualsenseTriangleButton};
     sf::Sprite dualsenseRightTrigger {Art::instance().dualsenseRightTrigger};
 
-public:
-    Buttons();
-
-    static Buttons &instance()
-    {
-        static auto *instance = new Buttons;
-        return *instance;
-    }
-
-    void draw();
+    void draw(sf::RenderTexture& renderTexture) const;
 };
 
 

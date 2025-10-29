@@ -1,7 +1,32 @@
 ﻿#include "../../Include/ShapeKeeper/ShapeKeeper.h"
+#include "../../../Core/Include/Logger.h"
+#include "../../../GameState/UI/Include/GamePlayHUD.h"
 #include "../../Include/Enemies.h"
 #include "../../Include/Player/PlayerShip.h"
 #include "../../Include/Player/PlayerStatus.h"
+
+
+void ShapeKeeper::checkActivate()
+{
+    if (!isActive && !isDefeated && PlayerStatus::instance().score > 250)
+    {
+        *currentGamePlayState = BossFight;
+        GamePlayHUD::instance().markScoreAreaTransitionOut(true);
+        startEncounter();
+    }
+}
+
+
+void ShapeKeeper::checkDeactivate()
+{
+    if (timeUntilDeactivateElapsed > 0.f)
+    {
+        timeUntilDeactivateElapsed -= GameRoot::instance().deltaTime;
+
+        if (timeUntilDeactivateElapsed < 0.f)
+            endEncounter();
+    }
+}
 
 
 void ShapeKeeper::startEncounter()
@@ -9,18 +34,17 @@ void ShapeKeeper::startEncounter()
     if (isActive)
         return;
 
-    // Trigger health container transitions
-    if (!healthContainer.isTransitioningIn)
-        healthContainer.isTransitioningIn = true;
-
     // Spawn the boss opposite of the player, by default the boss is on the left side and reset to make sure all parts are in sync
     core.activate(PlayerShip::instance().getPosition().x > GameRoot::instance().windowSizeF.x / 2.f);
     core.onDeath = [this]
     {
+        isDefeated = true;
         endEncounter();
         PlayerStatus::instance().addPoints(50'000);
+        GamePlayHUD::instance().setObjectiveEndless();
+        GamePlayHUD::instance().markHealthAreaTransitionOut(true);
     };
-    lasersAttack.reset();
+    laserBeams.reset();
     top.reset();
     middleLeft.reset();
     middleRight.reset();
@@ -30,6 +54,7 @@ void ShapeKeeper::startEncounter()
     // Enemies spawn will be triggered randomly
     Enemies::instance().canSpawn = false;
 
+    isDefeated = false;
     isActive = true;
 }
 
@@ -39,16 +64,22 @@ void ShapeKeeper::endEncounter()
     if (!isActive)
         return;
 
-    // Trigger health container transitions
-    if (!healthContainer.isTransitioningOut)
-        healthContainer.isTransitioningOut = true;
-
     // Make enemies keep spawning for endless mode, black holes can spawn again
     timeUntilEnemiesSpawnElapsed = DEFAULT_TIME_UNTIL_ENEMIES_SPAWN;
     enemiesSpawningElapsed = 0.f;
     Enemies::instance().canSpawn = true;
 
+    if (isDefeated)
+        *currentGamePlayState = Endless;
+
     isActive = false;
+}
+
+
+void ShapeKeeper::markDeactivate()
+{
+    timeUntilDeactivateElapsed = TIME_UNTIL_DEACTIVATE_DURATION;
+    core.deactivate();
 }
 
 
@@ -60,22 +91,20 @@ bool ShapeKeeper::canTakeCoreDamage() const
 
 void ShapeKeeper::update()
 {
-    healthContainer.transitionIn();
-    healthContainer.transitionOut();
-
     if (!isActive)
         return;
 
     // Update each part first
     core.update();
-    lasersAttack.update();
+    laserBeams.update();
     top.update();
     middleLeft.update();
     middleRight.update();
     bottomLeft.update();
     bottomRight.update();
 
-    //updateEnemiesSpawn();
+    updateEnemiesSpawn();
+    checkDeactivate();
 }
 
 
@@ -112,23 +141,15 @@ void ShapeKeeper::updateEnemiesSpawn()
 
 void ShapeKeeper::draw()
 {
-    if (isActive)
-    {
-        lasersAttack.draw();
-        core.draw(canTakeCoreDamage());
-        top.draw();
-        middleLeft.draw();
-        middleRight.draw();
-        bottomLeft.draw();
-        bottomRight.draw();
-    }
+    if (!isActive)
+        return;
 
-    healthContainer.draw();
-}
-
-
-void ShapeKeeper::drawText()
-{
-    healthContainer.drawText();
+    laserBeams.draw();
+    core.draw(canTakeCoreDamage());
+    top.draw();
+    middleLeft.draw();
+    middleRight.draw();
+    bottomLeft.draw();
+    bottomRight.draw();
 }
 

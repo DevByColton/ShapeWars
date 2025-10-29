@@ -3,15 +3,12 @@
 #include "LasersBeams.h"
 #include "ShapeKeeperBodyPart.h"
 #include "ShapeKeeperCore.h"
-#include "ShapeKeeperHealthContainer.h"
 #include "../../../Content/Include/Art.h"
+#include "../../../GameState/Include/GamePlay.h"
+#include "../../../GameState/UI/Include/GamePlayHUD.h"
 
 
-class ShapeKeeper {
-private:
-    ShapeKeeperHealthContainer healthContainer {};
-
-public:
+struct ShapeKeeper {
     static ShapeKeeper &instance()
     {
         static auto *instance = new ShapeKeeper;
@@ -21,14 +18,14 @@ public:
     ShapeKeeperCore core {
         Art::instance().shapeKeeperCore,
         {255, 51, 113, 255},
-        &healthContainer.core
+        &GamePlayHUD::instance().healthContainer.core
     };
 
     ShapeKeeperBodyPart top {
         Art::instance().shapeKeeperTop,
         Art::instance().shapeKeeperTopTrail,
         {255, 233, 38, 255},
-        &healthContainer.top,
+        &GamePlayHUD::instance().healthContainer.top,
         &core,
         -8.f,
         -167.f
@@ -37,7 +34,7 @@ public:
         Art::instance().shapeKeeperMiddleLeft,
         Art::instance().shapeKeeperMiddleLeftTrail,
         {53, 255, 203, 255},
-        &healthContainer.middleLeft,
+        &GamePlayHUD::instance().healthContainer.middleLeft,
         &core,
         -167.f,
         -49.f
@@ -47,7 +44,7 @@ public:
         Art::instance().shapeKeeperMiddleRight,
         Art::instance().shapeKeeperMiddleRightTrail,
         {48, 255, 53, 255},
-        &healthContainer.middleRight,
+        &GamePlayHUD::instance().healthContainer.middleRight,
         &core,
         154.f,
         -49.f
@@ -57,7 +54,7 @@ public:
         Art::instance().shapeKeeperBottomLeft,
         Art::instance().shapeKeeperBottomLeftTrail,
         {255, 156, 25, 255},
-        &healthContainer.bottomLeft,
+        &GamePlayHUD::instance().healthContainer.bottomLeft,
         &core,
         -105.f,
         133.f
@@ -67,13 +64,14 @@ public:
         Art::instance().shapeKeeperBottomRight,
         Art::instance().shapeKeeperBottomRightTrail,
         {241, 38, 255, 255},
-        &healthContainer.bottomRight,
+        &GamePlayHUD::instance().healthContainer.bottomRight,
         &core,
         93.f,
         133.f
     };
 
-    LasersBeams lasersAttack {&core};
+    LasersBeams laserBeams {&core};
+    GamePlayState* currentGamePlayState {nullptr};
 
     // Enemies spawn
     static constexpr float DEFAULT_TIME_UNTIL_ENEMIES_SPAWN = 5.f;
@@ -84,15 +82,22 @@ public:
     std::uniform_real_distribution<float> timeUntilEnemiesSpawnDistribution {5.f, 15.f};
     std::uniform_real_distribution<float> enemiesSpawningTimeDistribution {5.f, 10.f};
 
-    bool isActive = false;
+    // Deactivate timing
+    static constexpr float TIME_UNTIL_DEACTIVATE_DURATION = 3.5f;
+    float timeUntilDeactivateElapsed = 0.f;
 
+    bool isActive = false;
+    bool isDefeated = false;
+
+    void markDeactivate();
+    void checkActivate();
+    void checkDeactivate();
     void startEncounter();
     void endEncounter();
     bool canTakeCoreDamage() const;
     void updateEnemiesSpawn();
     void update();
     void draw();
-    void drawText();
 };
 
 

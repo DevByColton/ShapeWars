@@ -16,8 +16,8 @@ Buffs::Buffs()
         buff2.frame.getTexture().getSize().y / 2.f
     });
     buff2.frame.setPosition({
-        GameRoot::instance().windowSizeF.x / 2.f - 40.f,
-        GameRoot::instance().windowSizeF.y - 80.f
+        310.f,
+        40.f
     });
     buff2.icon.setPosition(buff2.frame.getPosition());
     buff2.timerText.setPosition(buff2.frame.getPosition());
@@ -30,7 +30,7 @@ Buffs::Buffs()
     });
     buff1.frame.setPosition({
         buff2.frame.getPosition().x - 80.f,
-        GameRoot::instance().windowSizeF.y - 80.f
+        40.f
     });
     buff1.icon.setPosition(buff1.frame.getPosition());
     buff1.timerText.setPosition(buff1.frame.getPosition());
@@ -42,8 +42,8 @@ Buffs::Buffs()
         buff3.frame.getTexture().getSize().y / 2.f
     });
     buff3.frame.setPosition({
-        GameRoot::instance().windowSizeF.x / 2.f + 40.f,
-        GameRoot::instance().windowSizeF.y - 80.f
+        390.f,
+        40.f
     });
     buff3.icon.setPosition(buff3.frame.getPosition());
     buff3.timerText.setPosition(buff3.frame.getPosition());
@@ -56,7 +56,7 @@ Buffs::Buffs()
     });
     buff4.frame.setPosition({
         buff3.frame.getPosition().x + 80.f,
-        GameRoot::instance().windowSizeF.y - 80.f
+        40.f
     });
     buff4.icon.setPosition(buff4.frame.getPosition());
     buff4.timerText.setPosition(buff4.frame.getPosition());
@@ -411,46 +411,49 @@ void Buffs::Buff::update()
 }
 
 
-void Buffs::draw()
+void Buffs::drawBuffs(sf::RenderTexture& renderTexture)
 {
     std::uint8_t alpha = static_cast<std::uint8_t>(255 * GameRoot::instance().frameUIOpacity);
 
     buff1.frame.setColor({255, 255, 255, alpha});
-    GaussianBlur::instance().drawToBase(buff1.frame);
-    GaussianBlur::instance().drawToBase(buff1.icon);
+    renderTexture.draw(buff1.frame);
+    renderTexture.draw(buff1.icon);
 
     buff2.frame.setColor({255, 255, 255, alpha});
-    GaussianBlur::instance().drawToBase(buff2.frame);
-    GaussianBlur::instance().drawToBase(buff2.icon);
+    renderTexture.draw(buff2.frame);
+    renderTexture.draw(buff2.icon);
 
     buff3.frame.setColor({255, 255, 255, alpha});
-    GaussianBlur::instance().drawToBase(buff3.frame);
-    GaussianBlur::instance().drawToBase(buff3.icon);
+    renderTexture.draw(buff3.frame);
+    renderTexture.draw(buff3.icon);
 
     buff4.frame.setColor({255, 255, 255, alpha});
-    GaussianBlur::instance().drawToBase(buff4.frame);
-    GaussianBlur::instance().drawToBase(buff4.icon);
+    renderTexture.draw(buff4.frame);
+    renderTexture.draw(buff4.icon);
+}
 
-    // Buff drops
+
+void Buffs::drawBuffDrops() const
+{
     buffDrop1.draw();
     buffDrop2.draw();
     buffDrop3.draw();
 }
 
 
-void Buffs::drawText() const
+void Buffs::drawText(sf::RenderTexture& renderTexture) const
 {
     if (buff1.isBeingUsed())
-        GameRoot::instance().renderWindow.draw(buff1.timerText);
+        renderTexture.draw(buff1.timerText);
 
     if (buff2.isBeingUsed())
-        GameRoot::instance().renderWindow.draw(buff2.timerText);
+        renderTexture.draw(buff2.timerText);
 
     if (buff3.isBeingUsed())
-        GameRoot::instance().renderWindow.draw(buff3.timerText);
+        renderTexture.draw(buff3.timerText);
 
     if (buff4.isBeingUsed())
-        GameRoot::instance().renderWindow.draw(buff4.timerText);
+        renderTexture.draw(buff4.timerText);
 }
 
 

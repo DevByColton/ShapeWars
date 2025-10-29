@@ -28,6 +28,8 @@ struct Extensions
     static sf::Vector2f easeOutBack(const sf::Vector2f& start, const sf::Vector2f& end, float t);
     static sf::Vector2f easeInOutElastic(const sf::Vector2f& start, const sf::Vector2f& end, float t);
     static sf::Vector2f easeInOutBack(const sf::Vector2f& start, const sf::Vector2f& end, float t);
+    static sf::Vector2f easeInCubic(const sf::Vector2f& start, const sf::Vector2f& end, float t);
+    static sf::Vector2f easeOutCubic(const sf::Vector2f& start, const sf::Vector2f& end, float t);
     static float easeInOutSine(float start, float end, float t);
 };
 

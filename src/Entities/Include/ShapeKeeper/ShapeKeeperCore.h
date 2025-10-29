@@ -62,6 +62,7 @@ struct ShapeKeeperCore final : sf::Sprite
     void reset();
     void markForHit(const sf::Vector2f &hitPosition, int amount);
     void activate(bool isOnLeftSideOfScreen);
+    void deactivate();
     void update();
     void updateHealth();
     void updateMovement();

@@ -54,7 +54,7 @@ struct ShapeKeeperHealthContainer {
     };
 
     void transitionIn();
-    void transitionOut();
+    bool transitionOut();
     void draw();
     void drawText();
 };

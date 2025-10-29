@@ -6,6 +6,8 @@
 #include "../../../Core/Include/ColorPicker.h"
 #include "../../../Core/Include/Extensions.h"
 #include "../../../Core/Include/RandomVector.h"
+#include "../../../GameState/Include/GamePlay.h"
+#include "../../Include/Enemies.h"
 #include "../../Include/Player/PlayerShip.h"
 
 
@@ -75,10 +77,11 @@ void PlayerStatus::removeLife()
     {
         stopRoundClock();
         respawnTime = 5.f;
+        GamePlay::instance().endRound();
     }
     else
     {
-        respawnTime = 3.f;
+        respawnTime = 2.f;
     }
 
     // Grid explosion
@@ -87,17 +90,17 @@ void PlayerStatus::removeLife()
     // Add particles for a grand player explosion!
     float hue1 = ColorPicker::instance().generateHue();
     float hue2 = ColorPicker::instance().generateShiftedHue(hue1);
-    sf::Color color1 = ColorPicker::instance().hsvToRgb(hue1, 0.8f, 1.f);
-    sf::Color color2 = ColorPicker::instance().hsvToRgb(hue2, 0.8f, 1.f);
+    sf::Color color1 = ColorPicker::instance().hsvToRgb(hue1, 0.9f, 0.8f);
+    sf::Color color2 = ColorPicker::instance().hsvToRgb(hue2, 0.9f, 0.8f);
 
     for (int i = 0; i < KILL_PARTICLE_COUNT; i++)
     {
         Particles::instance().create(
-            3.f,
+            1.5f,
             DontIgnoreGravity,
-            i % 3 == 0 ? Explosion : Spark,
+            Explosion,
             PlayerShip::instance().getPosition(),
-            RandomVector::instance().next(6.f, 64.f),
+            RandomVector::instance().next(2.f, 48.f),
             ColorPicker::instance().lerp(color1, color2)
         );
 
@@ -106,8 +109,8 @@ void PlayerStatus::removeLife()
         {
             hue1 = ColorPicker::instance().generateHue();
             hue2 = ColorPicker::instance().generateShiftedHue(hue1);
-            color1 = ColorPicker::instance().hsvToRgb(hue1, 0.8f, 1.f);
-            color2 = ColorPicker::instance().hsvToRgb(hue2, 0.8f, 1.f);
+            color1 = ColorPicker::instance().hsvToRgb(hue1, 0.9f, 0.8f);
+            color2 = ColorPicker::instance().hsvToRgb(hue2, 0.9f, 0.8f);
         }
     }
 }
@@ -178,18 +181,26 @@ void PlayerStatus::update()
     roundTimeSeconds = roundClock.getElapsedTime().asSeconds();
 
     if (shouldKill)
+    {
         kill();
+        Enemies::instance().canSpawn = false;
+    }
 
     // Make sure the player is alive
     if (isDead())
     {
         respawnTime -= GameRoot::instance().deltaTime;
 
-        // When the game was over and the long respawn ends
-        if (respawnTime <= 0 && isGameOver())
+        if (respawnTime <= 0)
         {
-            needTotalReset = true;
-            roundClock.restart();
+            Enemies::instance().canSpawn = true;
+
+            // When the game was over and the long respawn ends
+            if (isGameOver())
+            {
+                needTotalReset = true;
+                roundClock.restart();
+            }
         }
 
         return;

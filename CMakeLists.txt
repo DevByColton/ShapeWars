@@ -36,8 +36,6 @@ add_executable(ShapeWars src/main.cpp
         src/Entities/Include/Collisions.h
         src/Entities/Src/Player/PlayerStatus.cpp
         src/Entities/Include/Player/PlayerStatus.h
-        src/UserInterface/Src/UserInterface.cpp
-        src/UserInterface/Include/UserInterface.h
         src/Content/Src/Sound.cpp
         src/Content/Include/Sound.h
         src/Content/Src/GaussianBlur.cpp
@@ -46,8 +44,8 @@ add_executable(ShapeWars src/main.cpp
         src/Entities/Include/BlackHoles.h
         src/Core/Src/SpawnHelper.cpp
         src/Core/Include/SpawnHelper.h
-        src/UserInterface/Src/FloatingKillTexts.cpp
-        src/UserInterface/Include/FloatingKillTexts.h
+        src/GameState/UI/Src/FloatingKillTexts.cpp
+        src/GameState/UI/Include/FloatingKillTexts.h
         src/Systems/Src/Particles.cpp
         src/Systems/Include/Particles.h
         src/Core/Src/RandomVector.cpp
@@ -69,10 +67,8 @@ add_executable(ShapeWars src/main.cpp
         src/Input/Include/MouseAndKeyboard.h
         src/Entities/Src/Player/Buffs.cpp
         src/Entities/Include/Player/Buffs.h
-        src/UserInterface/Src/LivesAndNukes.cpp
-        src/UserInterface/Include/LivesAndNukes.h
-        src/UserInterface/Src/Buttons.cpp
-        src/UserInterface/Include/Buttons.h
+        src/Input/Src/Buttons.cpp
+        src/Input/Include/Buttons.h
         src/Entities/Src/ShapeKeeper/ShapeKeeper.cpp
         src/Entities/Include/ShapeKeeper/ShapeKeeper.h
         src/Entities/Src/ShapeKeeper/ShapeKeeperCore.cpp
@@ -87,6 +83,19 @@ add_executable(ShapeWars src/main.cpp
         src/Entities/Include/ShapeKeeper/LasersBeams.h
         src/Entities/Src/ShapeKeeper/SpriteTrail.cpp
         src/Entities/Include/ShapeKeeper/SpriteTrail.h
+        src/GameState/Include/IGameState.h
+        src/GameState/Src/StartMenu.cpp
+        src/GameState/Include/StartMenu.h
+        src/GameState/Src/PauseMenu.cpp
+        src/GameState/Include/PauseMenu.h
+        src/GameState/Src/GamePlay.cpp
+        src/GameState/Include/GamePlay.h
+        src/GameState/Include/GameState.h
+        src/GameRoot.h
+        src/GameState/UI/Src/GamePlayHUD.cpp
+        src/GameState/UI/Include/GamePlayHUD.h
+        src/GameState/UI/Src/GamePlayControlArea.cpp
+        src/GameState/UI/Include/GamePlayControlArea.h
 )
 
 target_compile_features(ShapeWars PRIVATE cxx_std_20)
