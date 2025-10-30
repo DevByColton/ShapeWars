@@ -11,6 +11,7 @@
 #include "../../Input/Include/Input.h"
 #include "../../Systems/Include/Grid.h"
 #include "../../Systems/Include/Particles.h"
+#include "../Include/StartMenu.h"
 #include "../UI/Include/FloatingKillTexts.h"
 
 
@@ -218,6 +219,7 @@ void GamePlay::update()
     {
         doTotalReset();
         GameRoot::instance().setCurrentGameState(InStartMenu);
+        StartMenu::instance().isTransitioningIn = true;
     }
 
     // Independent of player status

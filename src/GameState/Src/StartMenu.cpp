@@ -15,7 +15,7 @@ StartMenu::StartMenu()
 {
     // Menu options
     menuOptionsSprite.setOrigin(menuOptionsSprite.getLocalBounds().getCenter());
-    menuOptionsSprite.setPosition({325.f, GameRoot::instance().windowSizeF.y / 2.f});
+    menuOptionsSprite.setPosition(menuOptionsOnScreenPosition);
     start.setStyle(sf::Text::Bold);
     start.setOrigin({0, start.getLocalBounds().getCenter().y});
     start.setPosition({70.f, menuOptionsTexture.getSize().y * 0.25f});
@@ -28,11 +28,7 @@ StartMenu::StartMenu()
     quit.onSelect = [] { GameRoot::instance().renderWindow.close(); };
 
     // Select functions
-    start.onSelect = []
-    {
-        GameRoot::instance().setCurrentGameState(InGamePlay);
-        GamePlay::instance().startRound();
-    };
+    start.onSelect = [this]{ isTransitioningOut = true; };
     options.onSelect = [] { Logger::printOut("todo: going to options screen"); };
     quit.onSelect = [] { GameRoot::instance().renderWindow.close(); };
 
@@ -47,10 +43,7 @@ StartMenu::StartMenu()
     });
 
     title.setOrigin(title.getLocalBounds().getCenter());
-    title.setPosition({
-        GameRoot::instance().windowSizeF.x - 350.f,
-        GameRoot::instance().windowSizeF.y / 2.f
-    });
+    title.setPosition(titleOnScreenPosition);
 
     shapeText.setOrigin(shapeText.getLocalBounds().getCenter());
     shapeText.setPosition({title.getOrigin().x, title.getOrigin().y - 60.f});
@@ -138,6 +131,13 @@ void StartMenu::update()
 {
     updateBackground();
     updateMenuOptions();
+
+    transitionMenuAndTitleIn();
+    if (transitionMenuAndTitleOut())
+    {
+        GameRoot::instance().setCurrentGameState(InGamePlay);
+        GamePlay::instance().startRound();
+    }
 }
 
 
@@ -204,17 +204,17 @@ void StartMenu::updateMenuOptions()
 
     if (isActiveOptionIndicatorTransitioning)
     {
-        transitionTime += GameRoot::instance().deltaTime;
+        indicatorsTransitionTime += GameRoot::instance().deltaTime;
 
-        const float time = transitionTime / TRANSITION_DURATION;
+        const float time = indicatorsTransitionTime / INDICATORS_TRANSITION_DURATION;
         leftIndicator.transition(time);
         rightIndicator.transition(time);
 
         // Set stopping point
-        if (transitionTime > TRANSITION_DURATION)
+        if (indicatorsTransitionTime > INDICATORS_TRANSITION_DURATION)
         {
             isActiveOptionIndicatorTransitioning = false;
-            transitionTime = 0.f;
+            indicatorsTransitionTime = 0.f;
             leftIndicator.setPosition(leftIndicator.targetPosition);
             rightIndicator.setPosition(rightIndicator.targetPosition);
         }
@@ -235,6 +235,55 @@ void StartMenu::ActiveMenuOptionIndicator::setActive(const sf::Vector2f& targetP
 void StartMenu::ActiveMenuOptionIndicator::transition(const float time)
 {
     setPosition(Extensions::easeOutCubic(previousPosition, targetPosition, time));
+}
+
+
+void StartMenu::transitionMenuAndTitleIn()
+{
+    if (isTransitioningIn)
+    {
+        // Increment for position ease
+        transitionTime += GameRoot::instance().deltaTime;
+
+        // Ease position
+        menuOptionsSprite.setPosition(Extensions::easeOutCubic(menuOptionsOffScreenPosition, menuOptionsOnScreenPosition, transitionTime / TRANSITION_DURATION));
+        title.setPosition(Extensions::easeOutCubic(titleOffScreenPosition, titleOnScreenPosition, transitionTime / TRANSITION_DURATION));
+
+        // Set stopping point
+        if (transitionTime > TRANSITION_DURATION)
+        {
+            isTransitioningIn = false;
+            transitionTime = 0.f;
+            menuOptionsSprite.setPosition(menuOptionsOnScreenPosition);
+            title.setPosition(titleOnScreenPosition);
+        }
+    }
+}
+
+
+bool StartMenu::transitionMenuAndTitleOut()
+{
+    if (isTransitioningOut)
+    {
+        // Increment for position ease
+        transitionTime += GameRoot::instance().deltaTime;
+
+        // Ease position
+        menuOptionsSprite.setPosition(Extensions::easeInCubic(menuOptionsOnScreenPosition, menuOptionsOffScreenPosition, transitionTime / TRANSITION_DURATION));
+        title.setPosition(Extensions::easeInCubic(titleOnScreenPosition, titleOffScreenPosition, transitionTime / TRANSITION_DURATION));
+
+        // Set stopping point
+        if (transitionTime > TRANSITION_DURATION)
+        {
+            isTransitioningOut = false;
+            transitionTime = 0.f;
+            menuOptionsSprite.setPosition(menuOptionsOffScreenPosition);
+            title.setPosition(titleOffScreenPosition);
+            return true;
+        }
+    }
+
+    return false;
 }
 
 

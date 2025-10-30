@@ -45,9 +45,6 @@ struct StartMenu final : IGameState
 
     // Menus options area
     static constexpr int MENU_OPTIONS_COUNT = 3;
-    static constexpr float TRANSITION_DURATION = 0.075f;
-    float transitionTime = 0.f;
-    bool isActiveOptionIndicatorTransitioning = false;
     int activeMenuOptionIndex = 0;
     sf::RenderTexture menuOptionsTexture = {{600, 250}};
     sf::Sprite menuOptionsSprite {menuOptionsTexture.getTexture()};
@@ -56,10 +53,31 @@ struct StartMenu final : IGameState
     MenuOption quit {Art::instance().majorMonoFont, {"quit"}, 60};
     MenuOption* activeMenuOption = &start;
     std::array<MenuOption*, MENU_OPTIONS_COUNT> menuOptionPtrs {&start, &options, &quit};
+
+    // Menu and title options transitions
+    static constexpr float TRANSITION_DURATION = 0.4f;
+    bool isTransitioningIn = false;
+    bool isTransitioningOut = false;
+    float transitionTime = 0.f;
+    const sf::Vector2f menuOptionsOffScreenPosition {-330.f, GameRoot::instance().windowSizeF.y / 2.f};
+    const sf::Vector2f menuOptionsOnScreenPosition {325.f, GameRoot::instance().windowSizeF.y / 2.f};
+    const sf::Vector2f titleOffScreenPosition {
+        GameRoot::instance().windowSizeF.x + 355.f,
+        GameRoot::instance().windowSizeF.y / 2.f
+    };
+    const sf::Vector2f titleOnScreenPosition {
+        GameRoot::instance().windowSizeF.x - 350.f,
+        GameRoot::instance().windowSizeF.y / 2.f
+    };
+
+    // Options indicators
+    static constexpr float INDICATORS_TRANSITION_DURATION = 0.075f;
+    float indicatorsTransitionTime = 0.f;
+    bool isActiveOptionIndicatorTransitioning = false;
     ActiveMenuOptionIndicator leftIndicator {Art::instance().shapeKeeperCore};
     ActiveMenuOptionIndicator rightIndicator {Art::instance().shapeKeeperCore};
 
-    // Shape wars area
+    // Title area
     sf::Text shapeText {Art::instance().majorMonoFont, {"SHAPE"}, 140};
     sf::Text warsText {Art::instance().majorMonoFont, {"WARS"}, 140};
     sf::RenderTexture titleTexture = {{600, 250}};
@@ -81,6 +99,8 @@ struct StartMenu final : IGameState
     void update() override;
     void renderGaussianBlur() override;
     void renderToScreen() override;
+    void transitionMenuAndTitleIn();
+    bool transitionMenuAndTitleOut();
     void moveToNextMenuOption(float direction);
     void updateBackground();
     void updateMenuOptions();
