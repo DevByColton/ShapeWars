@@ -4,7 +4,6 @@
 #include "Content/Include/GaussianBlur.h"
 #include "Content/Include/Sound.h"
 #include "Entities/Include/Collisions.h"
-#include "Entities/Include/ShapeKeeper/ShapeKeeper.h"
 #include "Systems/Include/Grid.h"
 #include "Input/Include/Input.h"
 #include "Core/Include/Logger.h"
@@ -49,7 +48,7 @@ GameRoot::GameRoot()
     bottomLeftCorner = {windowRectangle.position.x, windowRectangle.size.y};
 
     // Set the minimum dead zone for controllers
-    renderWindow.setJoystickThreshold(15.f);
+    renderWindow.setJoystickThreshold(Input::instance().thumbStickDeadZone);
 
      Logger::printOut(
         "Created fullscreen window with size " + std::to_string(width) +

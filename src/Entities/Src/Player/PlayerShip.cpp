@@ -258,7 +258,7 @@ void PlayerShip::update()
         return;
 
     // Move the player and clamp to window bounds
-    velocity += speed * Input::instance().getMovementDirection();
+    velocity += speed * Input::getMovementDirection();
     const sf::Vector2f nextPosition = ship.getPosition() + velocity;
     float clampedX = std::clamp(nextPosition.x, halfWidth(), GameRoot::instance().windowSizeF.x - halfWidth());
     float clampedY = std::clamp(nextPosition.y, halfHeight(), GameRoot::instance().windowSizeF.y - halfHeight());

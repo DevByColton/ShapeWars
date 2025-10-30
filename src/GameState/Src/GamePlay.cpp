@@ -111,7 +111,7 @@ void GamePlay::processKeyReleased(const sf::Event::KeyReleased* keyReleased)
 
 void GamePlay::processJoystickButtonReleased(const sf::Event::JoystickButtonReleased* joystickButtonReleased)
 {
-    if (Input::instance().isStartButton(joystickButtonReleased))
+    if (Input::isStartButton(joystickButtonReleased))
     {
         GameRoot::instance().setCurrentGameState(InPauseMenu);
         PlayerStatus::instance().stopRoundClock();
@@ -120,26 +120,26 @@ void GamePlay::processJoystickButtonReleased(const sf::Event::JoystickButtonRele
 
     if (!PlayerStatus::instance().isDead())
     {
-        if (Input::instance().isPrimaryButton(joystickButtonReleased))
+        if (Input::isPrimaryButton(joystickButtonReleased))
         {
             Buffs::instance().useBuff(1);
             return;
         }
 
-        if (Input::instance().isSecondaryButton(joystickButtonReleased))
+        if (Input::isSecondaryButton(joystickButtonReleased))
         {
             Buffs::instance().useBuff(2);
             return;
         }
 
-        if (Input::instance().isTertiaryButton(joystickButtonReleased))
+        if (Input::isTertiaryButton(joystickButtonReleased))
         {
             Buffs::instance().useBuff(3);
             return;
         }
 
         // Last one so no need to return
-        if (Input::instance().isQuaternaryButton(joystickButtonReleased))
+        if (Input::isQuaternaryButton(joystickButtonReleased))
             Buffs::instance().useBuff(4);
     }
 }
@@ -147,7 +147,7 @@ void GamePlay::processJoystickButtonReleased(const sf::Event::JoystickButtonRele
 
 void GamePlay::processJoystickAxisMoved(const sf::Event::JoystickMoved* joystickMoved)
 {
-    if (Input::instance().isAxisRightTrigger(joystickMoved) && Input::instance().wasRightTriggerReleased(joystickMoved))
+    if (Input::isAxisRightTrigger(joystickMoved) && Input::wasRightTriggerReleased(joystickMoved))
         Nukes::instance().markDetonate(PlayerShip::instance().getPosition());
 }
 
