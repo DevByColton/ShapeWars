@@ -15,6 +15,42 @@ bool Dualsense::isSupported(const sf::Joystick::Identification& identification) 
 }
 
 
+bool Dualsense::isDpadX(const sf::Event::JoystickMoved* joystickMoved) const
+{
+    if (!isSupported(sf::Joystick::getIdentification(joystickMoved->joystickId)))
+        return false;
+
+    return joystickMoved->axis == sf::Joystick::Axis::PovX;
+}
+
+
+bool Dualsense::isDpadY(const sf::Event::JoystickMoved* joystickMoved) const
+{
+    if (!isSupported(sf::Joystick::getIdentification(joystickMoved->joystickId)))
+        return false;
+
+    return joystickMoved->axis == sf::Joystick::Axis::PovY;
+}
+
+
+bool Dualsense::isLeftThumbstickX(const sf::Event::JoystickMoved* joystickMoved) const
+{
+    if (!isSupported(sf::Joystick::getIdentification(joystickMoved->joystickId)))
+        return false;
+
+    return joystickMoved->axis == sf::Joystick::Axis::X;
+}
+
+
+bool Dualsense::isLeftThumbstickY(const sf::Event::JoystickMoved* joystickMoved) const
+{
+    if (!isSupported(sf::Joystick::getIdentification(joystickMoved->joystickId)))
+        return false;
+
+    return joystickMoved->axis == sf::Joystick::Axis::Y;
+}
+
+
 bool Dualsense::isAxisRightThumbstick(const sf::Event::JoystickMoved* joystickMoved) const
 {
     if (!isSupported(sf::Joystick::getIdentification(joystickMoved->joystickId)))
@@ -41,6 +77,34 @@ bool Dualsense::wasRightTriggerReleased(const sf::Event::JoystickMoved* joystick
     previousRightTriggerPressed = currentRightTriggerPressed;
     currentRightTriggerPressed = joystickMoved->position > 100 - Input::instance().triggerDeadZone;
     return previousRightTriggerPressed != currentRightTriggerPressed && !currentRightTriggerPressed;
+}
+
+
+bool Dualsense::wasLeftThumbstickMoved(const sf::Event::JoystickMoved* joystickMoved)
+{
+    if (!isSupported(sf::Joystick::getIdentification(joystickMoved->joystickId)))
+        return false;
+
+    const bool isInPositiveDeadZone = joystickMoved->position > Input::instance().thumbStickDeadZone;
+    const bool isInNegativeDeadZone = joystickMoved->position < -Input::instance().thumbStickDeadZone;
+
+    previousLeftThumbstickMoved = currentLeftThumbstickMoved;
+    currentLeftThumbstickMoved = isInPositiveDeadZone || isInNegativeDeadZone;
+    return previousLeftThumbstickMoved != currentLeftThumbstickMoved && currentLeftThumbstickMoved;
+}
+
+
+bool Dualsense::wasDpadMoved(const sf::Event::JoystickMoved* joystickMoved)
+{
+    if (!isSupported(sf::Joystick::getIdentification(joystickMoved->joystickId)))
+        return false;
+
+    const bool isInPositiveDeadZone = joystickMoved->position > Input::instance().thumbStickDeadZone;
+    const bool isInNegativeDeadZone = joystickMoved->position < -Input::instance().thumbStickDeadZone;
+
+    previousDpadMoved = currentDpadMoved;
+    currentDpadMoved = isInPositiveDeadZone || isInNegativeDeadZone;
+    return previousDpadMoved != currentDpadMoved && currentDpadMoved;
 }
 
 

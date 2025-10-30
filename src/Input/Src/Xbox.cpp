@@ -12,6 +12,42 @@ bool Xbox::isSupported(const sf::Joystick::Identification& identification) const
 }
 
 
+bool Xbox::isDpadX(const sf::Event::JoystickMoved* joystickMoved) const
+{
+    if (!isSupported(sf::Joystick::getIdentification(joystickMoved->joystickId)))
+        return false;
+
+    return joystickMoved->axis == sf::Joystick::Axis::PovX;
+}
+
+
+bool Xbox::isDpadY(const sf::Event::JoystickMoved* joystickMoved) const
+{
+    if (!isSupported(sf::Joystick::getIdentification(joystickMoved->joystickId)))
+        return false;
+
+    return joystickMoved->axis == sf::Joystick::Axis::PovY;
+}
+
+
+bool Xbox::isLeftThumbstickX(const sf::Event::JoystickMoved* joystickMoved) const
+{
+    if (!isSupported(sf::Joystick::getIdentification(joystickMoved->joystickId)))
+        return false;
+
+    return joystickMoved->axis == sf::Joystick::Axis::X;
+}
+
+
+bool Xbox::isLeftThumbstickY(const sf::Event::JoystickMoved* joystickMoved) const
+{
+    if (!isSupported(sf::Joystick::getIdentification(joystickMoved->joystickId)))
+        return false;
+
+    return joystickMoved->axis == sf::Joystick::Axis::Y;
+}
+
+
 bool Xbox::isAxisRightThumbstick(const sf::Event::JoystickMoved* joystickMoved) const
 {
     if (!isSupported(sf::Joystick::getIdentification(joystickMoved->joystickId)))
@@ -38,6 +74,34 @@ bool Xbox::wasRightTriggerReleased(const sf::Event::JoystickMoved* joystickMoved
     previousRightTriggerPressed = currentRightTriggerPressed;
     currentRightTriggerPressed = joystickMoved->position < -Input::instance().triggerDeadZone;
     return previousRightTriggerPressed != currentRightTriggerPressed && !currentRightTriggerPressed;
+}
+
+
+bool Xbox::wasDpadMoved(const sf::Event::JoystickMoved* joystickMoved)
+{
+    if (!isSupported(sf::Joystick::getIdentification(joystickMoved->joystickId)))
+        return false;
+
+    const bool isInPositiveDeadZone = joystickMoved->position > Input::instance().thumbStickDeadZone;
+    const bool isInNegativeDeadZone = joystickMoved->position < -Input::instance().thumbStickDeadZone;
+
+    previousDpadMoved = currentDpadMoved;
+    currentDpadMoved = isInPositiveDeadZone || isInNegativeDeadZone;
+    return previousDpadMoved != currentDpadMoved && currentDpadMoved;
+}
+
+
+bool Xbox::wasLeftThumbstickMoved(const sf::Event::JoystickMoved* joystickMoved)
+{
+    if (!isSupported(sf::Joystick::getIdentification(joystickMoved->joystickId)))
+        return false;
+
+    const bool isInPositiveDeadZone = joystickMoved->position > Input::instance().thumbStickDeadZone;
+    const bool isInNegativeDeadZone = joystickMoved->position < -Input::instance().thumbStickDeadZone;
+
+    previousLeftThumbstickMoved = currentLeftThumbstickMoved;
+    currentLeftThumbstickMoved = isInPositiveDeadZone || isInNegativeDeadZone;
+    return previousLeftThumbstickMoved != currentLeftThumbstickMoved && currentLeftThumbstickMoved;
 }
 
 

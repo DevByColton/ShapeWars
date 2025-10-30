@@ -18,7 +18,7 @@ struct ShapeKeeperHealthContainer {
     bool isTransitioningOut = false;
     float transitionTime = 0.f;
 
-    sf::Text headerText {Art::instance().shapeKeeperFont, {"SHAPE KEEPER"}, 60};
+    sf::Text headerText {Art::instance().majorMonoFont, {"SHAPE KEEPER"}, 60};
     sf::Sprite frame {Art::instance().shapeKeeperHealthFrame};
     sf::RenderTexture renderTexture {{frame.getTexture().getSize().x, frame.getTexture().getSize().y}};
     sf::Sprite sprite {renderTexture.getTexture()};

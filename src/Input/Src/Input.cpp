@@ -31,14 +31,42 @@ bool Input::isMouseVisible() const
 }
 
 
-bool Input::isAxisRightThumbstick(const sf::Event::JoystickMoved* joystickMoved) const
+bool Input::isDpadX(const sf::Event::JoystickMoved* joystickMoved)
+{
+    return Xbox::instance().isDpadX(joystickMoved) ||
+           Dualsense::instance().isDpadX(joystickMoved);
+}
+
+
+bool Input::isDpadY(const sf::Event::JoystickMoved* joystickMoved)
+{
+    return Xbox::instance().isDpadY(joystickMoved) ||
+           Dualsense::instance().isDpadY(joystickMoved);
+}
+
+
+bool Input::isLeftThumbstickX(const sf::Event::JoystickMoved* joystickMoved)
+{
+    return Xbox::instance().isLeftThumbstickX(joystickMoved) ||
+           Dualsense::instance().isLeftThumbstickX(joystickMoved);
+}
+
+
+bool Input::isLeftThumbstickY(const sf::Event::JoystickMoved* joystickMoved)
+{
+    return Xbox::instance().isLeftThumbstickY(joystickMoved) ||
+       Dualsense::instance().isLeftThumbstickY(joystickMoved);
+}
+
+
+bool Input::isAxisRightThumbstick(const sf::Event::JoystickMoved* joystickMoved)
 {
     return Xbox::instance().isAxisRightThumbstick(joystickMoved) ||
            Dualsense::instance().isAxisRightThumbstick(joystickMoved);
 }
 
 
-bool Input::isAxisRightTrigger(const sf::Event::JoystickMoved* joystickMoved) const
+bool Input::isAxisRightTrigger(const sf::Event::JoystickMoved* joystickMoved)
 {
     return Xbox::instance().isAxisRightTrigger(joystickMoved) ||
            Dualsense::instance().isAxisRightTrigger(joystickMoved);
@@ -49,6 +77,20 @@ bool Input::wasRightTriggerReleased(const sf::Event::JoystickMoved* joystickMove
 {
     return Xbox::instance().wasRightTriggerReleased(joystickMoved) ||
            Dualsense::instance().wasRightTriggerReleased(joystickMoved);
+}
+
+
+bool Input::wasDpadMoved(const sf::Event::JoystickMoved* joystickMoved)
+{
+    return Xbox::instance().wasDpadMoved(joystickMoved) ||
+           Dualsense::instance().wasDpadMoved(joystickMoved);
+}
+
+
+bool Input::wasLeftThumbstickMoved(const sf::Event::JoystickMoved* joystickMoved)
+{
+    return Xbox::instance().wasLeftThumbstickMoved(joystickMoved) ||
+           Dualsense::instance().wasLeftThumbstickMoved(joystickMoved);
 }
 
 
@@ -117,7 +159,7 @@ sf::Vector2f Input::thumbStickPosition(const int index, const sf::Joystick::Axis
 }
 
 
-sf::Vector2f Input::getMovementDirection() const
+sf::Vector2f Input::getMovementDirection()
 {
     sf::Vector2f direction {0.f, 0.f};
 

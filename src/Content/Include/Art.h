@@ -74,7 +74,7 @@ struct Art {
     sf::Texture xboxYButton;
     sf::Texture xboxRightTrigger;
     sf::Font font;
-    sf::Font shapeKeeperFont;
+    sf::Font majorMonoFont;
 };
 
 

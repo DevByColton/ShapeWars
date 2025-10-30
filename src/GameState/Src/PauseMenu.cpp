@@ -30,7 +30,7 @@ void PauseMenu::processKeyReleased(const sf::Event::KeyReleased* keyReleased)
 
 void PauseMenu::processJoystickButtonReleased(const sf::Event::JoystickButtonReleased* joystickButtonReleased)
 {
-    if (Input::instance().isStartButton(joystickButtonReleased))
+    if (Input::isStartButton(joystickButtonReleased))
     {
         GameRoot::instance().setCurrentGameState(InGamePlay);
         PlayerStatus::instance().startRoundClock();

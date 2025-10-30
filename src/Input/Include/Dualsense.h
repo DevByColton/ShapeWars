@@ -9,8 +9,8 @@
 //
 //                                       Mappings for Dualsense controllers
 //
-// sf::Joystick::Axis::X         Left stick x value
-// sf::Joystick::Axis::Y         Left stick y value
+// sf::Joystick::Axis::X         Left stick x value, left is negative and right is positive
+// sf::Joystick::Axis::Y         Left stick y value, up is negative and down is positive
 // sf::Joystick::Axis::Z         Right stick x value
 // sf::Joystick::Axis::R         Right stick y value
 // sf::Joystick::Axis::U         Left trigger, starts at -100 and fully pushed is 100
@@ -46,6 +46,10 @@ private:
     static constexpr std::string PLAYSTATION {"playstation"};
     bool previousRightTriggerPressed = false;
     bool currentRightTriggerPressed = false;
+    bool previousDpadMoved = false;
+    bool currentDpadMoved = false;
+    bool previousLeftThumbstickMoved = false;
+    bool currentLeftThumbstickMoved = false;
 
 public:
     static Dualsense &instance()
@@ -55,9 +59,15 @@ public:
     }
 
     [[nodiscard]] bool isSupported(const sf::Joystick::Identification& identification) const;
+    [[nodiscard]] bool isDpadX(const sf::Event::JoystickMoved* joystickMoved) const;
+    [[nodiscard]] bool isDpadY(const sf::Event::JoystickMoved* joystickMoved) const;
+    [[nodiscard]] bool isLeftThumbstickX(const sf::Event::JoystickMoved* joystickMoved) const;
+    [[nodiscard]] bool isLeftThumbstickY(const sf::Event::JoystickMoved* joystickMoved) const;
     [[nodiscard]] bool isAxisRightThumbstick(const sf::Event::JoystickMoved* joystickMoved) const;
     [[nodiscard]] bool isAxisRightTrigger(const sf::Event::JoystickMoved* joystickMoved) const;
     [[nodiscard]] bool wasRightTriggerReleased(const sf::Event::JoystickMoved* joystickMoved);
+    [[nodiscard]] bool wasLeftThumbstickMoved(const sf::Event::JoystickMoved* joystickMoved);
+    [[nodiscard]] bool wasDpadMoved(const sf::Event::JoystickMoved* joystickMoved);
     [[nodiscard]] sf::Vector2f leftThumbStickPosition(const int index, const sf::Joystick::Identification& identification) const;
     [[nodiscard]] sf::Vector2f rightThumbStickPosition(const int index, const sf::Joystick::Identification& identification) const;
     [[nodiscard]] bool isBackButton(const sf::Event::JoystickButtonReleased* joystickButtonReleased) const;

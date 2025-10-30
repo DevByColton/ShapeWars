@@ -9,12 +9,14 @@ private:
     sf::Sprite mouseCursor{Art::instance().pointer};
 
 public:
+
     static MouseAndKeyboard &instance()
     {
         static auto *instance = new MouseAndKeyboard;
         return *instance;
     }
 
+    sf::Vector2f getMouseWindowPosition() const;
     sf::Vector2f movementDirection();
     sf::Vector2f keysAimDirection();
     sf::Vector2f mouseAimDirection(const sf::Vector2f& fromPosition) const;

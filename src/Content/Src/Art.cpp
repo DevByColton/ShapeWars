@@ -189,8 +189,8 @@ Art::Art()
         font = sf::Font("Content\\Font\\TurretRoad-Regular.ttf");
         font.setSmooth(true);
 
-        shapeKeeperFont = sf::Font("Content\\Font\\MajorMonoDisplay-Regular.ttf");
-        shapeKeeperFont.setSmooth(true);
+        majorMonoFont = sf::Font("Content\\Font\\MajorMonoDisplay-Regular.ttf");
+        majorMonoFont.setSmooth(true);
 
     }
     catch (sf::Exception &ex)
