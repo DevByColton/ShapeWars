@@ -53,6 +53,19 @@ StartMenu::StartMenu()
 }
 
 
+void StartMenu::processMouseReleased(const sf::Event::MouseButtonReleased* mouseReleased)
+{
+    if (mouseReleased->button == sf::Mouse::Button::Left)
+    {
+        const bool contains = menuOptionsSprite
+            .getTransform()
+            .transformRect(activeMenuOption->getGlobalBounds())
+            .contains(MouseAndKeyboard::instance().getMouseWindowPosition());
+
+        if (contains)
+            activeMenuOption->onSelect();
+    }
+}
 
 void StartMenu::processKeyReleased(const sf::Event::KeyReleased* keyReleased)
 {

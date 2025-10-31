@@ -19,6 +19,11 @@ PauseMenu::PauseMenu()
 }
 
 
+void PauseMenu::processMouseReleased(const sf::Event::MouseButtonReleased* mouseReleased)
+{
+    // nothing yet
+}
+
 void PauseMenu::processKeyReleased(const sf::Event::KeyReleased* keyReleased)
 {
     if (keyReleased->scancode == sf::Keyboard::Scancode::P)

@@ -93,6 +93,7 @@ struct StartMenu final : IGameState
     std::uniform_real_distribution<float> widthDistribution {20.f, GameRoot::instance().windowSizeF.x - 20.f};
     std::uniform_real_distribution<float> heightDistribution {20.f, GameRoot::instance().windowSizeF.y - 20.f};
 
+    void processMouseReleased(const sf::Event::MouseButtonReleased* mouseReleased) override;
     void processKeyReleased(const sf::Event::KeyReleased* keyReleased) override;
     void processJoystickButtonReleased(const sf::Event::JoystickButtonReleased* joystickButtonReleased) override;
     void processJoystickAxisMoved(const sf::Event::JoystickMoved* joystickMoved) override;

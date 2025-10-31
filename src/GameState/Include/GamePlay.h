@@ -36,6 +36,7 @@ public:
     void doTotalReset();
     void startRound();
     void endRound();
+    void processMouseReleased(const sf::Event::MouseButtonReleased* mouseReleased) override;
     void processKeyReleased(const sf::Event::KeyReleased* keyReleased) override;
     void processJoystickButtonReleased(const sf::Event::JoystickButtonReleased* joystickButtonReleased) override;
     void processJoystickAxisMoved(const sf::Event::JoystickMoved* joystickMoved) override;

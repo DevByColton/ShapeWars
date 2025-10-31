@@ -19,6 +19,7 @@ struct PauseMenu final : IGameState
     sf::Text highScoreHeaderText {Art::instance().font, {"== [ highscore ] =="}, 30};
     sf::Text highScoreText {Art::instance().font, {}, 30};
 
+    void processMouseReleased(const sf::Event::MouseButtonReleased* mouseReleased) override;
     void processKeyReleased(const sf::Event::KeyReleased* keyReleased) override;
     void processJoystickButtonReleased(const sf::Event::JoystickButtonReleased* joystickButtonReleased) override;
     void processJoystickAxisMoved(const sf::Event::JoystickMoved* joystickMoved) override;

@@ -59,6 +59,11 @@ void GamePlay::endRound()
     markRoundEnd = true;
 }
 
+void GamePlay::processMouseReleased(const sf::Event::MouseButtonReleased* mouseReleased)
+{
+    // nothing yet
+}
+
 
 void GamePlay::processKeyReleased(const sf::Event::KeyReleased* keyReleased)
 {

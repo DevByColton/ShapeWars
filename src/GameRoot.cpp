@@ -129,6 +129,24 @@ void GameRoot::processInput()
         if (event->is<sf::Event::JoystickConnected>())
             Input::instance().checkConnectedDevice();
 
+        if (const auto* mouseReleased = event->getIf<sf::Event::MouseButtonReleased>())
+        {
+            Input::instance().inputMode = InputMode::MouseAndKeyboard;
+
+            switch (currentGameState)
+            {
+            case InStartMenu:
+                StartMenu::instance().processMouseReleased(mouseReleased);
+                break;
+            case InPauseMenu:
+                PauseMenu::instance().processMouseReleased(mouseReleased);
+                break;
+            case InGamePlay:
+                GamePlay::instance().processMouseReleased(mouseReleased);
+                break;
+            }
+        }
+
         // Keyboard released events (these are single press events that trigger on release)
         if (const auto* keyReleased = event->getIf<sf::Event::KeyReleased>())
         {
