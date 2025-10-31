@@ -26,6 +26,7 @@ StartMenu::StartMenu()
     quit.setOrigin({0, quit.getLocalBounds().getCenter().y});
     quit.setPosition({70.f, menuOptionsTexture.getSize().y * 0.75f});
     quit.onSelect = [] { GameRoot::instance().renderWindow.close(); };
+    setActiveMenuOption(&start);
 
     // Select functions
     start.onSelect = [this]{ isTransitioningOut = true; };
@@ -125,7 +126,7 @@ void StartMenu::moveToNextMenuOption(const float direction)
     }
 
     // Set the next active menu option
-    activeMenuOption = menuOptionPtrs.at(activeMenuOptionIndex);
+    setActiveMenuOption(menuOptionPtrs.at(activeMenuOptionIndex));
 
     leftIndicator.setActive({
         activeMenuOption->getPosition().x - 30.f,
@@ -211,7 +212,7 @@ void StartMenu::updateMenuOptions()
             });
 
             activeMenuOptionIndex = mo;
-            activeMenuOption = menuOptionPtrs.at(mo);
+            setActiveMenuOption(menuOptionPtrs.at(mo));
             isActiveOptionIndicatorTransitioning = true;
         }
 
@@ -242,6 +243,14 @@ void StartMenu::ActiveMenuOptionIndicator::setActive(const sf::Vector2f& targetP
 {
     previousPosition = getPosition();
     this->targetPosition = targetPosition;
+}
+
+
+void StartMenu::setActiveMenuOption(MenuOption* nextMenuOption)
+{
+    activeMenuOption->setFillColor(MenuOption::MUTED_TEXT_COLOR);
+    activeMenuOption = nextMenuOption;
+    activeMenuOption->setFillColor(sf::Color::White);
 }
 
 
