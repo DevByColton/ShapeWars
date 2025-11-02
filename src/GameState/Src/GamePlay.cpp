@@ -11,6 +11,7 @@
 #include "../../Input/Include/Input.h"
 #include "../../Systems/Include/Grid.h"
 #include "../../Systems/Include/Particles.h"
+#include "../Include/PauseMenu.h"
 #include "../Include/StartMenu.h"
 #include "../UI/Include/FloatingKillTexts.h"
 
@@ -20,6 +21,15 @@ GamePlay::GamePlay()
     ShapeKeeper::instance().currentGamePlayState = &currentGamePlayState;
 }
 
+
+void GamePlay::pause()
+{
+    GameRoot::instance().removeUpdatableState(&instance());
+    GameRoot::instance().addUpdatableState(&PauseMenu::instance());
+    GameRoot::instance().addDrawableState(&PauseMenu::instance());
+    GameRoot::instance().setActiveInputState(&PauseMenu::instance());
+    PlayerStatus::instance().stopRoundClock();
+}
 
 void GamePlay::doBaseReset()
 {
@@ -75,8 +85,7 @@ void GamePlay::processKeyReleased(const sf::Event::KeyReleased* keyReleased)
 
     if (keyReleased->scancode == sf::Keyboard::Scancode::P)
     {
-        GameRoot::instance().setCurrentGameState(InPauseMenu);
-        PlayerStatus::instance().stopRoundClock();
+        pause();
         return;
     }
 
@@ -119,8 +128,7 @@ void GamePlay::processJoystickButtonReleased(const sf::Event::JoystickButtonRele
 {
     if (Input::isStartButton(joystickButtonReleased))
     {
-        GameRoot::instance().setCurrentGameState(InPauseMenu);
-        PlayerStatus::instance().stopRoundClock();
+        pause();
         return;
     }
 
@@ -223,7 +231,11 @@ void GamePlay::update()
     if (PlayerStatus::instance().needTotalReset)
     {
         doTotalReset();
-        GameRoot::instance().setCurrentGameState(InStartMenu);
+        GameRoot::instance().removeUpdatableState(&instance());
+        GameRoot::instance().removeDrawableState(&instance());
+        GameRoot::instance().addUpdatableState(&StartMenu::instance());
+        GameRoot::instance().addDrawableState(&StartMenu::instance());
+        GameRoot::instance().setActiveInputState(&StartMenu::instance());
         StartMenu::instance().isTransitioningIn = true;
     }
 

@@ -90,12 +90,13 @@ add_executable(ShapeWars src/main.cpp
         src/GameState/Include/PauseMenu.h
         src/GameState/Src/GamePlay.cpp
         src/GameState/Include/GamePlay.h
-        src/GameState/Include/GameState.h
         src/GameRoot.h
         src/GameState/UI/Src/GamePlayHUD.cpp
         src/GameState/UI/Include/GamePlayHUD.h
         src/GameState/UI/Src/GamePlayControlArea.cpp
         src/GameState/UI/Include/GamePlayControlArea.h
+        src/GameState/Src/OptionsMenu.cpp
+        src/GameState/Include/OptionsMenu.h
 )
 
 target_compile_features(ShapeWars PRIVATE cxx_std_20)

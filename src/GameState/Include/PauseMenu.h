@@ -26,6 +26,7 @@ struct PauseMenu final : IGameState
     void update() override;
     void renderGaussianBlur() override;
     void renderToScreen() override;
+    void resume();
 };
 
 

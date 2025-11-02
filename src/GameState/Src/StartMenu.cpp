@@ -16,13 +16,10 @@ StartMenu::StartMenu()
     // Menu options
     menuOptionsSprite.setOrigin(menuOptionsSprite.getLocalBounds().getCenter());
     menuOptionsSprite.setPosition(menuOptionsOnScreenPosition);
-    start.setStyle(sf::Text::Bold);
     start.setOrigin({0, start.getLocalBounds().getCenter().y});
     start.setPosition({70.f, menuOptionsTexture.getSize().y * 0.25f});
-    options.setStyle(sf::Text::Bold);
     options.setOrigin({0, options.getLocalBounds().getCenter().y});
     options.setPosition({70.f, menuOptionsTexture.getSize().y * 0.5f});
-    quit.setStyle(sf::Text::Bold);
     quit.setOrigin({0, quit.getLocalBounds().getCenter().y});
     quit.setPosition({70.f, menuOptionsTexture.getSize().y * 0.75f});
     quit.onSelect = [] { GameRoot::instance().renderWindow.close(); };
@@ -149,7 +146,11 @@ void StartMenu::update()
     transitionMenuAndTitleIn();
     if (transitionMenuAndTitleOut())
     {
-        GameRoot::instance().setCurrentGameState(InGamePlay);
+        GameRoot::instance().removeUpdatableState(&instance());
+        GameRoot::instance().removeDrawableState(&instance());
+        GameRoot::instance().addUpdatableState(&GamePlay::instance());
+        GameRoot::instance().addDrawableState(&GamePlay::instance());
+        GameRoot::instance().setActiveInputState(&GamePlay::instance());
         GamePlay::instance().startRound();
     }
 }

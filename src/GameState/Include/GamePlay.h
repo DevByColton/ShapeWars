@@ -11,12 +11,8 @@ enum GamePlayState
 };
 
 
-class GamePlay final : IGameState
+struct GamePlay final : IGameState
 {
-private:
-    GamePlayState currentGamePlayState = PreBoss;
-
-public:
     GamePlay();
 
     static GamePlay &instance()
@@ -26,12 +22,13 @@ public:
     }
 
     bool isShapeKeeperEncounterStarting = false;
-
     bool markRoundStart = false;
     bool markShapeKeeperStart = false;
     bool markShapeKeeperEnd = false;
     bool markRoundEnd = false;
+    GamePlayState currentGamePlayState = PreBoss;
 
+    void pause();
     void doBaseReset();
     void doTotalReset();
     void startRound();

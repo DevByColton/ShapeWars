@@ -65,26 +65,78 @@ void GameRoot::toggleVsync()
 }
 
 
+void GameRoot::setActiveInputState(IGameState* gameState)
+{
+    activeInputState = gameState;
+}
+
+void GameRoot::addUpdatableState(IGameState* gameState)
+{
+    for (int s = 0; s < MAX_GAME_STATE_COUNT; s++)
+        if (updatableGameStates.at(s) == nullptr)
+        {
+            updatableGameStates.at(s) = gameState;
+            break;
+        }
+}
+
+
+void GameRoot::removeUpdatableState(const IGameState* gameState)
+{
+    int foundIndex = -1;
+
+    for (int s = 0; s < MAX_GAME_STATE_COUNT; s++)
+        if (updatableGameStates.at(s) == gameState)
+        {
+            foundIndex = s;
+            break;
+        }
+
+    if (foundIndex != -1)
+        updatableGameStates.at(foundIndex) = nullptr;
+}
+
+
+void GameRoot::addDrawableState(IGameState* gameState)
+{
+    for (int s = 0; s < MAX_GAME_STATE_COUNT; s++)
+        if (drawableGameStates.at(s) == nullptr)
+        {
+            drawableGameStates.at(s) = gameState;
+            break;
+        }
+}
+
+
+void GameRoot::removeDrawableState(const IGameState* gameState)
+{
+    int foundIndex = -1;
+
+    for (int s = 0; s < MAX_GAME_STATE_COUNT; s++)
+        if (drawableGameStates.at(s) == gameState)
+        {
+            foundIndex = s;
+            break;
+        }
+
+    if (foundIndex != -1)
+        drawableGameStates.at(foundIndex) = nullptr;
+}
+
+
 std::chrono::milliseconds GameRoot::getCurrentTime()
 {
     return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch());
 }
 
 
-bool GameRoot::isCurrentGameState(const GameState gameState) const
-{
-    return currentGameState == gameState;
-}
-
-
-void GameRoot::setCurrentGameState(const GameState nextGameState)
-{
-    currentGameState = nextGameState;
-}
-
-
 void GameRoot::run()
 {
+    // Set start menu as the first state
+    setActiveInputState(&StartMenu::instance());
+    addUpdatableState(&StartMenu::instance());
+    addDrawableState(&StartMenu::instance());
+
     // Main game loop, running at a fixed timestep of 60 fps
     while (renderWindow.isOpen())
     {
@@ -132,38 +184,14 @@ void GameRoot::processInput()
         if (const auto* mouseReleased = event->getIf<sf::Event::MouseButtonReleased>())
         {
             Input::instance().inputMode = InputMode::MouseAndKeyboard;
-
-            switch (currentGameState)
-            {
-            case InStartMenu:
-                StartMenu::instance().processMouseReleased(mouseReleased);
-                break;
-            case InPauseMenu:
-                PauseMenu::instance().processMouseReleased(mouseReleased);
-                break;
-            case InGamePlay:
-                GamePlay::instance().processMouseReleased(mouseReleased);
-                break;
-            }
+            activeInputState->processMouseReleased(mouseReleased);
         }
 
         // Keyboard released events (these are single press events that trigger on release)
         if (const auto* keyReleased = event->getIf<sf::Event::KeyReleased>())
         {
             Input::instance().inputMode = InputMode::MouseAndKeyboard;
-
-            switch (currentGameState)
-            {
-            case InStartMenu:
-                StartMenu::instance().processKeyReleased(keyReleased);
-                break;
-            case InPauseMenu:
-                PauseMenu::instance().processKeyReleased(keyReleased);
-                break;
-            case InGamePlay:
-                GamePlay::instance().processKeyReleased(keyReleased);
-                break;
-            }
+            activeInputState->processKeyReleased(keyReleased);
 
             // Todo: Stuff below will be deleted eventually, move to settings pages
 
@@ -184,38 +212,14 @@ void GameRoot::processInput()
         if (const auto* joystickButtonReleased = event->getIf<sf::Event::JoystickButtonReleased>())
         {
             Input::instance().inputMode = InputMode::Joystick;
-
-            switch (currentGameState)
-            {
-            case InStartMenu:
-                StartMenu::instance().processJoystickButtonReleased(joystickButtonReleased);
-                break;
-            case InPauseMenu:
-                PauseMenu::instance().processJoystickButtonReleased(joystickButtonReleased);
-                break;
-            case InGamePlay:
-                GamePlay::instance().processJoystickButtonReleased(joystickButtonReleased);
-                break;
-            }
+            activeInputState->processJoystickButtonReleased(joystickButtonReleased);
         }
 
         // Joystick axis moved event
         if (const auto* joystickMoved = event->getIf<sf::Event::JoystickMoved>())
         {
             Input::instance().inputMode = InputMode::Joystick;
-
-            switch (currentGameState)
-            {
-            case InStartMenu:
-                StartMenu::instance().processJoystickAxisMoved(joystickMoved);
-                break;
-            case InPauseMenu:
-                PauseMenu::instance().processJoystickAxisMoved(joystickMoved);
-                break;
-            case InGamePlay:
-                GamePlay::instance().processJoystickAxisMoved(joystickMoved);
-                break;
-            }
+            activeInputState->processJoystickAxisMoved(joystickMoved);
         }
     }
 
@@ -225,18 +229,9 @@ void GameRoot::processInput()
 
 void GameRoot::update() const
 {
-    switch (currentGameState)
-    {
-    case InStartMenu:
-        StartMenu::instance().update();
-        break;
-    case InPauseMenu:
-        PauseMenu::instance().update();
-        break;
-    case InGamePlay:
-        GamePlay::instance().update();
-        break;
-    }
+    for (int s = 0; s < MAX_GAME_STATE_COUNT; s++)
+        if (updatableGameStates.at(s) != nullptr)
+            updatableGameStates.at(s)->update();
 }
 
 
@@ -245,19 +240,12 @@ void GameRoot::render()
     // Clear the screen
     renderWindow.clear();
 
-    if (currentGameState == InStartMenu)
-    {
-        StartMenu::instance().renderGaussianBlur();
-        StartMenu::instance().renderToScreen();
-    }
-    else
-    {
-        GamePlay::instance().renderGaussianBlur();
-        GamePlay::instance().renderToScreen();
-
-        if (isCurrentGameState(InPauseMenu))
-            PauseMenu::instance().renderToScreen();
-    }
+    for (int s = 0; s < MAX_GAME_STATE_COUNT; s++)
+        if (drawableGameStates.at(s) != nullptr)
+        {
+            drawableGameStates.at(s)->renderGaussianBlur();
+            drawableGameStates.at(s)->renderToScreen();
+        }
 
     Input::instance().draw();
 
