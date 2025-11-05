@@ -2,6 +2,7 @@
 #define STARTMENU_H
 #include <functional>
 #include <random>
+#include "ActiveMenuOptionIndicator.h"
 #include "IGameState.h"
 #include "../../GameRoot.h"
 #include "../../Content/Include/Art.h"
@@ -34,21 +35,6 @@ struct StartMenu final : IGameState
         std::function<void()> onSelect {};
     };
 
-    struct ActiveMenuOptionIndicator final : sf::Sprite
-    {
-        explicit ActiveMenuOptionIndicator(const sf::Texture& texture) : Sprite(texture)
-        {
-            setOrigin(getLocalBounds().getCenter());
-            setScale({0.4f, 0.4f});
-        }
-
-        sf::Vector2f previousPosition {0.f, 0.f};
-        sf::Vector2f targetPosition {0.f, 0.f};
-
-        void setActive(const sf::Vector2f& targetPosition);
-        void transition(float time);
-    };
-
     // Menus options area
     static constexpr int MENU_OPTIONS_COUNT = 3;
     int activeMenuOptionIndex = 0;
@@ -59,6 +45,7 @@ struct StartMenu final : IGameState
     MenuOption quit {Art::instance().majorMonoFont, {"quit"}, 60};
     MenuOption* activeMenuOption = &start;
     std::array<MenuOption*, MENU_OPTIONS_COUNT> menuOptionPtrs {&start, &options, &quit};
+    OptionIndicator optionIndicator {};
 
     // Menu and title options transitions
     static constexpr float TRANSITION_DURATION = 0.4f;
@@ -76,13 +63,6 @@ struct StartMenu final : IGameState
         GameRoot::instance().windowSizeF.y / 2.f
     };
 
-    // Options indicators
-    static constexpr float INDICATORS_TRANSITION_DURATION = 0.075f;
-    float indicatorsTransitionTime = 0.f;
-    bool isActiveOptionIndicatorTransitioning = false;
-    ActiveMenuOptionIndicator leftIndicator {Art::instance().shapeKeeperCore};
-    ActiveMenuOptionIndicator rightIndicator {Art::instance().shapeKeeperCore};
-
     // Title area
     sf::Text shapeText {Art::instance().majorMonoFont, {"SHAPE"}, 140};
     sf::Text warsText {Art::instance().majorMonoFont, {"WARS"}, 140};
@@ -99,7 +79,11 @@ struct StartMenu final : IGameState
     std::uniform_real_distribution<float> widthDistribution {20.f, GameRoot::instance().windowSizeF.x - 20.f};
     std::uniform_real_distribution<float> heightDistribution {20.f, GameRoot::instance().windowSizeF.y - 20.f};
 
+    void processMouseMoved(const sf::Event::MouseMoved* mouseMoved) override;
     void processMouseReleased(const sf::Event::MouseButtonReleased* mouseReleased) override;
+    void processMousePressed(const sf::Event::MouseButtonPressed* mousePressed) override;
+    void processMouseWheelScrolledEvent(const sf::Event::MouseWheelScrolled* mouseWheelScrolled) override;
+    void processKeyPressed(const sf::Event::KeyPressed* keyPressed) override;
     void processKeyReleased(const sf::Event::KeyReleased* keyReleased) override;
     void processJoystickButtonReleased(const sf::Event::JoystickButtonReleased* joystickButtonReleased) override;
     void processJoystickAxisMoved(const sf::Event::JoystickMoved* joystickMoved) override;
@@ -111,7 +95,6 @@ struct StartMenu final : IGameState
     bool transitionMenuAndTitleOut();
     void moveToNextMenuOption(float direction);
     void updateBackground();
-    void updateMenuOptions();
 };
 
 

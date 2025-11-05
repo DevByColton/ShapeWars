@@ -2,18 +2,19 @@
 #include "../../Content/Include/GaussianBlur.h"
 #include "../../Core/Include/ColorPicker.h"
 #include "../../Core/Include/Extensions.h"
-#include "../../Core/Include/Logger.h"
 #include "../../Core/Include/RandomVector.h"
 #include "../../Input/Include/Input.h"
 #include "../../Input/Include/MouseAndKeyboard.h"
 #include "../../Systems/Include/Grid.h"
 #include "../../Systems/Include/Particles.h"
 #include "../Include/GamePlay.h"
+#include "../Include/OptionsMenu.h"
 
 
 StartMenu::StartMenu()
 {
     // Menu options
+    menuOptionsTexture.setSmooth(true);
     menuOptionsSprite.setOrigin(menuOptionsSprite.getLocalBounds().getCenter());
     menuOptionsSprite.setPosition(menuOptionsOnScreenPosition);
     start.setOrigin({0, start.getLocalBounds().getCenter().y});
@@ -27,19 +28,20 @@ StartMenu::StartMenu()
 
     // Select functions
     start.onSelect = [this]{ isTransitioningOut = true; };
-    options.onSelect = [] { Logger::printOut("todo: going to options screen"); };
+    options.onSelect = [] { OptionsMenu::instance().open(&instance()); };
     quit.onSelect = [] { GameRoot::instance().renderWindow.close(); };
 
     // Set the default active menu option
-    leftIndicator.setPosition({
+    optionIndicator.left.setPosition({
         start.getPosition().x - 30.f,
         start.getPosition().y
     });
-    rightIndicator.setPosition({
+    optionIndicator.right.setPosition({
         start.getLocalBounds().size.x + 110.f,
         start.getPosition().y
     });
 
+    titleTexture.setSmooth(true);
     title.setOrigin(title.getLocalBounds().getCenter());
     title.setPosition(titleOnScreenPosition);
 
@@ -48,6 +50,32 @@ StartMenu::StartMenu()
 
     warsText.setOrigin({warsText.getLocalBounds().size.x, warsText.getLocalBounds().getCenter().y});
     warsText.setPosition({title.getLocalBounds().size.x - 55.f, title.getOrigin().y + 60.f});
+}
+
+
+void StartMenu::processMouseMoved(const sf::Event::MouseMoved* mouseMoved)
+{
+    // For hovering on an option
+    if (!optionIndicator.isActiveOptionIndicatorTransitioning)
+        for (int mo = 0; mo < MENU_OPTIONS_COUNT; mo++)
+        {
+            const bool contains = menuOptionsSprite
+            .getTransform()
+            .transformRect(menuOptionPtrs.at(mo)->getGlobalBounds())
+            .contains(MouseAndKeyboard::instance().getMouseWindowPosition());
+
+            if (!contains)
+                continue;
+
+            // Menu option can be active
+            optionIndicator.setActive(
+                {menuOptionPtrs.at(mo)->getPosition().x - 30.f, menuOptionPtrs.at(mo)->getPosition().y},
+                {menuOptionPtrs.at(mo)->getLocalBounds().size.x + 110.f, menuOptionPtrs.at(mo)->getPosition().y}
+            );
+
+            activeMenuOptionIndex = mo;
+            setActiveMenuOption(menuOptionPtrs.at(mo));
+        }
 }
 
 
@@ -64,6 +92,25 @@ void StartMenu::processMouseReleased(const sf::Event::MouseButtonReleased* mouse
             activeMenuOption->onSelect();
     }
 }
+
+
+void StartMenu::processMousePressed(const sf::Event::MouseButtonPressed* mousePressed)
+{
+    // Nothing to do
+}
+
+
+void StartMenu::processMouseWheelScrolledEvent(const sf::Event::MouseWheelScrolled* mouseWheelScrolled)
+{
+    moveToNextMenuOption(-mouseWheelScrolled->delta);
+}
+
+
+void StartMenu::processKeyPressed(const sf::Event::KeyPressed* keyPressed)
+{
+    // Nothing to do
+}
+
 
 void StartMenu::processKeyReleased(const sf::Event::KeyReleased* keyReleased)
 {
@@ -103,7 +150,7 @@ void StartMenu::processJoystickAxisMoved(const sf::Event::JoystickMoved* joystic
 
 void StartMenu::moveToNextMenuOption(const float direction)
 {
-    if (isActiveOptionIndicatorTransitioning)
+    if (optionIndicator.isActiveOptionIndicatorTransitioning)
         return;
 
     // Iterate the active index
@@ -124,24 +171,17 @@ void StartMenu::moveToNextMenuOption(const float direction)
 
     // Set the next active menu option
     setActiveMenuOption(menuOptionPtrs.at(activeMenuOptionIndex));
-
-    leftIndicator.setActive({
-        activeMenuOption->getPosition().x - 30.f,
-        activeMenuOption->getPosition().y
-    });
-    rightIndicator.setActive({
-        activeMenuOption->getLocalBounds().size.x + 110.f,
-        activeMenuOption->getPosition().y
-    });
-
-    isActiveOptionIndicatorTransitioning = true;
+    optionIndicator.setActive(
+        {activeMenuOption->getPosition().x - 30.f, activeMenuOption->getPosition().y},
+        {activeMenuOption->getLocalBounds().size.x + 110.f, activeMenuOption->getPosition().y}
+    );
 }
 
 
 void StartMenu::update()
 {
     updateBackground();
-    updateMenuOptions();
+    optionIndicator.update();
 
     transitionMenuAndTitleIn();
     if (transitionMenuAndTitleOut())
@@ -188,76 +228,11 @@ void StartMenu::updateBackground()
 }
 
 
-void StartMenu::updateMenuOptions()
-{
-    // For hovering on an option
-    if (!isActiveOptionIndicatorTransitioning)
-        for (int mo = 0; mo < MENU_OPTIONS_COUNT; mo++)
-        {
-            const bool contains = menuOptionsSprite
-            .getTransform()
-            .transformRect(menuOptionPtrs.at(mo)->getGlobalBounds())
-            .contains(MouseAndKeyboard::instance().getMouseWindowPosition());
-
-            if (!contains)
-                continue;
-
-            // Menu option can be active
-            leftIndicator.setActive({
-                menuOptionPtrs.at(mo)->getPosition().x - 30.f,
-                menuOptionPtrs.at(mo)->getPosition().y
-            });
-            rightIndicator.setActive({
-                menuOptionPtrs.at(mo)->getLocalBounds().size.x + 110.f,
-                menuOptionPtrs.at(mo)->getPosition().y
-            });
-
-            activeMenuOptionIndex = mo;
-            setActiveMenuOption(menuOptionPtrs.at(mo));
-            isActiveOptionIndicatorTransitioning = true;
-        }
-
-    if (isActiveOptionIndicatorTransitioning)
-    {
-        indicatorsTransitionTime += GameRoot::instance().deltaTime;
-
-        const float time = indicatorsTransitionTime / INDICATORS_TRANSITION_DURATION;
-        leftIndicator.transition(time);
-        rightIndicator.transition(time);
-
-        // Set stopping point
-        if (indicatorsTransitionTime > INDICATORS_TRANSITION_DURATION)
-        {
-            isActiveOptionIndicatorTransitioning = false;
-            indicatorsTransitionTime = 0.f;
-            leftIndicator.setPosition(leftIndicator.targetPosition);
-            rightIndicator.setPosition(rightIndicator.targetPosition);
-        }
-    }
-
-    leftIndicator.rotate(sf::radians(2.f * GameRoot::instance().deltaTime));
-    rightIndicator.rotate(sf::radians(-2.f * GameRoot::instance().deltaTime));
-}
-
-
-void StartMenu::ActiveMenuOptionIndicator::setActive(const sf::Vector2f& targetPosition)
-{
-    previousPosition = getPosition();
-    this->targetPosition = targetPosition;
-}
-
-
 void StartMenu::setActiveMenuOption(MenuOption* nextMenuOption)
 {
     activeMenuOption->setFillColor(MenuOption::MUTED_TEXT_COLOR);
     activeMenuOption = nextMenuOption;
     activeMenuOption->setFillColor(sf::Color::White);
-}
-
-
-void StartMenu::ActiveMenuOptionIndicator::transition(const float time)
-{
-    setPosition(Extensions::easeOutCubic(previousPosition, targetPosition, time));
 }
 
 
@@ -316,8 +291,7 @@ void StartMenu::renderGaussianBlur()
     Particles::instance().draw();
     Grid::instance().draw();
     menuOptionsTexture.clear(sf::Color::Transparent);
-    menuOptionsTexture.draw(leftIndicator);
-    menuOptionsTexture.draw(rightIndicator);
+    optionIndicator.draw(menuOptionsTexture);
     menuOptionsTexture.display();
     GaussianBlur::instance().drawToBase(menuOptionsSprite);
     GaussianBlur::instance().drawToScreen();

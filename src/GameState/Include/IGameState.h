@@ -10,7 +10,11 @@ struct IGameState
     virtual void update() = 0;
     virtual void renderGaussianBlur() = 0;
     virtual void renderToScreen() = 0;
+    virtual void processMouseMoved(const sf::Event::MouseMoved* mouseMoved) = 0;
     virtual void processMouseReleased(const sf::Event::MouseButtonReleased* mouseReleased) = 0;
+    virtual void processMousePressed(const sf::Event::MouseButtonPressed* mousePressed) = 0;
+    virtual void processMouseWheelScrolledEvent(const sf::Event::MouseWheelScrolled* mouseWheelScrolled) = 0;
+    virtual void processKeyPressed(const sf::Event::KeyPressed* keyPressed) = 0;
     virtual void processKeyReleased(const sf::Event::KeyReleased* keyReleased) = 0;
     virtual void processJoystickButtonReleased(const sf::Event::JoystickButtonReleased* joystickButtonReleased) = 0;
     virtual void processJoystickAxisMoved(const sf::Event::JoystickMoved* joystickMoved) = 0;

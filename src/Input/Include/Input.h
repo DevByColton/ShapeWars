@@ -28,7 +28,7 @@ struct Input
     InputMode inputMode = InputMode::MouseAndKeyboard;
 
     [[nodiscard]] bool isMouseVisible() const;
-    [[nodiscard]] static sf::Vector2f getMovementDirection();
+    [[nodiscard]] static sf::Vector2f getMovementDirection(bool withWasdMovement);
     [[nodiscard]] sf::Vector2f getAimDirection(const sf::Vector2f& fromPosition) const;
     [[nodiscard]] sf::Vector2f thumbStickPosition(int index, sf::Joystick::Axis, sf::Joystick::Axis) const;
     [[nodiscard]] static bool isDpadX(const sf::Event::JoystickMoved* joystickMoved);

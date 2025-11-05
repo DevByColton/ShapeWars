@@ -20,10 +20,29 @@ PauseMenu::PauseMenu()
 }
 
 
+void PauseMenu::processMouseMoved(const sf::Event::MouseMoved* mouseMoved)
+{
+    // Nothing to do
+}
+
+
 void PauseMenu::processMouseReleased(const sf::Event::MouseButtonReleased* mouseReleased)
 {
-    // nothing yet
+    // Nothing to do
 }
+
+
+void PauseMenu::processMouseWheelScrolledEvent(const sf::Event::MouseWheelScrolled* mouseWheelScrolled)
+{
+    // Nothing to do
+}
+
+
+void PauseMenu::processKeyPressed(const sf::Event::KeyPressed* keyPressed)
+{
+    // Nothing to do
+}
+
 
 void PauseMenu::processKeyReleased(const sf::Event::KeyReleased* keyReleased)
 {
@@ -31,23 +50,35 @@ void PauseMenu::processKeyReleased(const sf::Event::KeyReleased* keyReleased)
         resume();
 }
 
+
+void PauseMenu::processMousePressed(const sf::Event::MouseButtonPressed* mousePressed)
+{
+    // Nothinig to do
+}
+
+
 void PauseMenu::processJoystickButtonReleased(const sf::Event::JoystickButtonReleased* joystickButtonReleased)
 {
     if (Input::isStartButton(joystickButtonReleased))
         resume();
 }
 
+
 void PauseMenu::processJoystickAxisMoved(const sf::Event::JoystickMoved* joystickMoved)
 {
+    // Nothing to do
 }
+
 
 void PauseMenu::update()
 {
+    // Nothing to do
 }
 
 
 void PauseMenu::renderGaussianBlur()
 {
+    // Nothing to do
 }
 
 
@@ -62,6 +93,7 @@ void PauseMenu::renderToScreen()
     highScoreText.setPosition({ GameRoot::instance().windowSizeF.x - highscoreTextRect.size.x - 22.f, 30.f });
     GameRoot::instance().renderWindow.draw(highScoreText);
 }
+
 
 void PauseMenu::resume()
 {

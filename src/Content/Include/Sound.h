@@ -19,6 +19,8 @@ struct Sound {
     }
 
     bool playSound = false;
+    float musicMasterVolume = 100.f;
+    float sfxMasterVolume = 100.f;
     sf::Music gameplaySong;
 
     // Shot sounds
@@ -75,6 +77,8 @@ struct Sound {
     std::uniform_int_distribution<int> spawnIndex {1, 8 };
     std::uniform_real_distribution<float> spawnPitch {0.6f, 1.f };
 
+    void setMusicMasterVolume(float volume);
+    void setSfxMasterVolume(float volume);
     void playGamePlaySong();
     void playShotSound();
     void playExplosionSound();

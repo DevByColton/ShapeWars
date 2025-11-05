@@ -7,10 +7,11 @@
 #include "Systems/Include/Grid.h"
 #include "Input/Include/Input.h"
 #include "Core/Include/Logger.h"
+#include "Entities/Include/Enemies.h"
 #include "Entities/Include/Player/Buffs.h"
 #include "Entities/Include/Player/PlayerStatus.h"
 #include "GameState/Include/GamePlay.h"
-#include "GameState/Include/PauseMenu.h"
+#include "GameState/Include/OptionsMenu.h"
 #include "GameState/Include/StartMenu.h"
 #include "SFML/Graphics/Image.hpp"
 #include "SFML/System/Sleep.hpp"
@@ -55,13 +56,6 @@ GameRoot::GameRoot()
         " x " + std::to_string(height) + " and " +
         std::to_string(bitsPerPixel) + " bits per pixel"
     );
-}
-
-
-void GameRoot::toggleVsync()
-{
-    vsyncEnabled = !vsyncEnabled;
-    renderWindow.setVerticalSyncEnabled(vsyncEnabled);
 }
 
 
@@ -130,13 +124,26 @@ std::chrono::milliseconds GameRoot::getCurrentTime()
 }
 
 
-void GameRoot::run()
+void GameRoot::load()
 {
+    // Make sure all singleton instances have been loaded
+    // Touching all the top level instances will cause everything to load upfront
+    Sound::instance();
+    Art::instance();
+    GamePlay::instance();
+    Enemies::instance();
+    Bullets::instance();
+    // todo: add the rest of the stuff here
+
     // Set start menu as the first state
     setActiveInputState(&StartMenu::instance());
     addUpdatableState(&StartMenu::instance());
     addDrawableState(&StartMenu::instance());
+}
 
+
+void GameRoot::run()
+{
     // Main game loop, running at a fixed timestep of 60 fps
     while (renderWindow.isOpen())
     {
@@ -165,14 +172,6 @@ void GameRoot::processInput()
         if (event->is<sf::Event::Closed>())
             renderWindow.close();
 
-        // Set input mode to mouse and keyboard if the mouse moves
-        if (event->is<sf::Event::MouseMoved>())
-            Input::instance().inputMode = InputMode::MouseAndKeyboard;
-
-        // Keyboard pressed events (these are hold events)
-        if (event->is<sf::Event::KeyPressed>())
-            Input::instance().inputMode = InputMode::MouseAndKeyboard;
-
         // Joystick buttons pressed events (these are hold events)
         if (event->is<sf::Event::JoystickButtonPressed>())
             Input::instance().inputMode = InputMode::Joystick;
@@ -181,10 +180,39 @@ void GameRoot::processInput()
         if (event->is<sf::Event::JoystickConnected>())
             Input::instance().checkConnectedDevice();
 
+        // Mouse moved events
+        if (const auto* mouseMoved = event->getIf<sf::Event::MouseMoved>())
+        {
+            Input::instance().inputMode = InputMode::MouseAndKeyboard;
+            activeInputState->processMouseMoved(mouseMoved);
+        }
+
+        // Mouse pressed events
+        if (const auto* mousePressed = event->getIf<sf::Event::MouseButtonPressed>())
+        {
+            Input::instance().inputMode = InputMode::MouseAndKeyboard;
+            activeInputState->processMousePressed(mousePressed);
+        }
+
+        // Mouse release events
         if (const auto* mouseReleased = event->getIf<sf::Event::MouseButtonReleased>())
         {
             Input::instance().inputMode = InputMode::MouseAndKeyboard;
             activeInputState->processMouseReleased(mouseReleased);
+        }
+
+        // Mouse wheel scroll events
+        if (const auto* mouseWheelScrolled = event->getIf<sf::Event::MouseWheelScrolled>())
+        {
+            Input::instance().inputMode = InputMode::MouseAndKeyboard;
+            activeInputState->processMouseWheelScrolledEvent(mouseWheelScrolled);
+        }
+
+        // Keyboard pressed events (these are hold events)
+        if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>())
+        {
+            Input::instance().inputMode = InputMode::MouseAndKeyboard;
+            activeInputState->processKeyPressed(keyPressed);
         }
 
         // Keyboard released events (these are single press events that trigger on release)
@@ -195,7 +223,7 @@ void GameRoot::processInput()
 
             // Todo: Stuff below will be deleted eventually, move to settings pages
 
-            if (keyReleased->scancode == sf::Keyboard::Scancode::Escape)
+            if (keyReleased->scancode == sf::Keyboard::Scancode::K)
                 renderWindow.close();
 
             if (keyReleased->scancode == sf::Keyboard::Scancode::O)
@@ -203,9 +231,6 @@ void GameRoot::processInput()
 
             if (keyReleased->scancode == sf::Keyboard::Scancode::B)
                 GaussianBlur::instance().toggleGaussianBlur();
-
-            if (keyReleased->scancode == sf::Keyboard::Scancode::V)
-                toggleVsync();
         }
 
         // Joystick buttons released events (these are single press events that trigger on release)

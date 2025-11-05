@@ -73,6 +73,11 @@ struct Art {
     sf::Texture xboxXButton;
     sf::Texture xboxYButton;
     sf::Texture xboxRightTrigger;
+    sf::Texture switchChecked;
+    sf::Texture switchUnchecked;
+    sf::Texture sliderOptionKnob;
+    sf::Texture sliderOptionBarFill;
+    sf::Texture sliderOptionBarOutline;
     sf::Font font;
     sf::Font majorMonoFont;
 };

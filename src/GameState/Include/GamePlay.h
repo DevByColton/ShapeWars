@@ -33,7 +33,11 @@ struct GamePlay final : IGameState
     void doTotalReset();
     void startRound();
     void endRound();
+    void processMouseMoved(const sf::Event::MouseMoved* mouseMoved) override;
     void processMouseReleased(const sf::Event::MouseButtonReleased* mouseReleased) override;
+    void processMousePressed(const sf::Event::MouseButtonPressed* mousePressed) override;
+    void processMouseWheelScrolledEvent(const sf::Event::MouseWheelScrolled* mouseWheelScrolled) override;
+    void processKeyPressed(const sf::Event::KeyPressed* keyPressed) override;
     void processKeyReleased(const sf::Event::KeyReleased* keyReleased) override;
     void processJoystickButtonReleased(const sf::Event::JoystickButtonReleased* joystickButtonReleased) override;
     void processJoystickAxisMoved(const sf::Event::JoystickMoved* joystickMoved) override;

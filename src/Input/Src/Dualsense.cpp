@@ -108,6 +108,26 @@ bool Dualsense::wasDpadMoved(const sf::Event::JoystickMoved* joystickMoved)
 }
 
 
+float Dualsense::dpadXPosition(const int index, const sf::Joystick::Identification& identification) const
+{
+    if (!isSupported(identification))
+        return 0.f;
+
+    // Dpad right is negative and left is positive, flip it
+    return sf::Joystick::getAxisPosition(index, sf::Joystick::Axis::PovX);
+}
+
+
+float Dualsense::dpadYPosition(const int index, const sf::Joystick::Identification& identification) const
+{
+    if (!isSupported(identification))
+        return 0.f;
+
+    // Dpad up is negative and down is positive, flip it
+    return -sf::Joystick::getAxisPosition(index, sf::Joystick::Axis::PovY);
+}
+
+
 sf::Vector2f Dualsense::leftThumbStickPosition(const int index, const sf::Joystick::Identification& identification) const
 {
     if (!isSupported(identification))

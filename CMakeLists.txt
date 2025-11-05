@@ -97,6 +97,8 @@ add_executable(ShapeWars src/main.cpp
         src/GameState/UI/Include/GamePlayControlArea.h
         src/GameState/Src/OptionsMenu.cpp
         src/GameState/Include/OptionsMenu.h
+        src/GameState/Src/ActiveMenuOptionIndicator.cpp
+        src/GameState/Include/ActiveMenuOptionIndicator.h
 )
 
 target_compile_features(ShapeWars PRIVATE cxx_std_20)

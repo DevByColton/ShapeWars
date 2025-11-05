@@ -186,6 +186,21 @@ Art::Art()
         xboxRightTrigger = sf::Texture("Content\\Images\\XboxRightTrigger.png");
         xboxRightTrigger.setSmooth(true);
 
+        switchChecked = sf::Texture("Content\\Images\\SwitchChecked.png");
+        switchChecked.setSmooth(true);
+
+        switchUnchecked = sf::Texture("Content\\Images\\SwitchUnchecked.png");
+        switchUnchecked.setSmooth(true);
+
+        sliderOptionKnob = sf::Texture("Content\\Images\\SliderOptionKnob.png");
+        sliderOptionKnob.setSmooth(true);
+
+        sliderOptionBarFill = sf::Texture("Content\\Images\\SliderOptionBarFill.png");
+        sliderOptionBarFill.setSmooth(true);
+
+        sliderOptionBarOutline = sf::Texture("Content\\Images\\SliderOptionBarOutline.png");
+        sliderOptionBarOutline.setSmooth(true);
+
         font = sf::Font("Content\\Font\\TurretRoad-Regular.ttf");
         font.setSmooth(true);
 

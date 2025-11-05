@@ -10,7 +10,6 @@ private:
     GameRoot();
 
     static constexpr std::chrono::milliseconds MS_PER_FRAME {16};
-    bool vsyncEnabled = true;
     sf::Clock gameClock {};
     sf::Clock deltaClock {};
 
@@ -19,7 +18,6 @@ private:
     std::array<IGameState*, MAX_GAME_STATE_COUNT> updatableGameStates {nullptr, nullptr, nullptr};
     std::array<IGameState*, MAX_GAME_STATE_COUNT> drawableGameStates {nullptr, nullptr, nullptr};
 
-    void toggleVsync();
     void processInput();
     void update() const;
     void render();
@@ -47,6 +45,7 @@ public:
     void removeUpdatableState(const IGameState* gameState);
     void addDrawableState(IGameState* gameState);
     void removeDrawableState(const IGameState* gameState);
+    void load();
     void run();
 };
 

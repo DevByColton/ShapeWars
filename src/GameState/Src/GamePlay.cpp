@@ -69,9 +69,34 @@ void GamePlay::endRound()
     markRoundEnd = true;
 }
 
+
+void GamePlay::processMouseMoved(const sf::Event::MouseMoved* mouseMoved)
+{
+    // Nothing to do
+}
+
+
 void GamePlay::processMouseReleased(const sf::Event::MouseButtonReleased* mouseReleased)
 {
-    // nothing yet
+    // Nothing to do
+}
+
+
+void GamePlay::processMousePressed(const sf::Event::MouseButtonPressed* mousePressed)
+{
+    // Nothinig to do
+}
+
+
+void GamePlay::processMouseWheelScrolledEvent(const sf::Event::MouseWheelScrolled* mouseWheelScrolled)
+{
+    // Nothing to do
+}
+
+
+void GamePlay::processKeyPressed(const sf::Event::KeyPressed* keyPressed)
+{
+    // Nothing to do
 }
 
 
