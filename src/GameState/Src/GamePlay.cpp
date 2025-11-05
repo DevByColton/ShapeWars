@@ -102,13 +102,14 @@ void GamePlay::processKeyPressed(const sf::Event::KeyPressed* keyPressed)
 
 void GamePlay::processKeyReleased(const sf::Event::KeyReleased* keyReleased)
 {
-    if (keyReleased->scancode == sf::Keyboard::Scancode::K)
+    if (keyReleased->scancode == sf::Keyboard::Scancode::M)
     {
         PlayerStatus::instance().markForKill();
         return;
     }
 
-    if (keyReleased->scancode == sf::Keyboard::Scancode::P)
+    if (keyReleased->scancode == sf::Keyboard::Scancode::Escape ||
+        keyReleased->scancode == sf::Keyboard::Scancode::P)
     {
         pause();
         return;

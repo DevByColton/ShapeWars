@@ -7,14 +7,24 @@
 #include "Systems/Include/Grid.h"
 #include "Input/Include/Input.h"
 #include "Core/Include/Logger.h"
+#include "Entities/Include/BlackHoles.h"
 #include "Entities/Include/Enemies.h"
+#include "Entities/Include/Nukes.h"
 #include "Entities/Include/Player/Buffs.h"
+#include "Entities/Include/Player/PlayerShip.h"
 #include "Entities/Include/Player/PlayerStatus.h"
+#include "Entities/Include/ShapeKeeper/ShapeKeeper.h"
 #include "GameState/Include/GamePlay.h"
 #include "GameState/Include/OptionsMenu.h"
+#include "GameState/Include/PauseMenu.h"
 #include "GameState/Include/StartMenu.h"
+#include "GameState/UI/Include/FloatingKillTexts.h"
+#include "Input/Include/Dualsense.h"
+#include "Input/Include/MouseAndKeyboard.h"
+#include "Input/Include/Xbox.h"
 #include "SFML/Graphics/Image.hpp"
 #include "SFML/System/Sleep.hpp"
+#include "Systems/Include/Particles.h"
 
 GameRoot::GameRoot()
 {
@@ -126,14 +136,31 @@ std::chrono::milliseconds GameRoot::getCurrentTime()
 
 void GameRoot::load()
 {
-    // Make sure all singleton instances have been loaded
-    // Touching all the top level instances will cause everything to load upfront
+    // Make sure all singleton instances have been loaded, this will cause everything to load upfront
     Sound::instance();
     Art::instance();
-    GamePlay::instance();
+    GaussianBlur::instance();
+    Buffs::instance();
+    PlayerStatus::instance();
+    PlayerShip::instance();
+    ShapeKeeper::instance();
+    BlackHoles::instance();
     Enemies::instance();
     Bullets::instance();
-    // todo: add the rest of the stuff here
+    Nukes::instance();
+    Collisions::instance();
+    GamePlay::instance();
+    OptionsMenu::instance();
+    PauseMenu::instance();
+    StartMenu::instance();
+    FloatingKillTexts::instance();
+    GamePlayHUD::instance();
+    Input::instance();
+    Xbox::instance();
+    Dualsense::instance();
+    MouseAndKeyboard::instance();
+    Grid::instance();
+    Particles::instance();
 
     // Set start menu as the first state
     setActiveInputState(&StartMenu::instance());
