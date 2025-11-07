@@ -2,6 +2,7 @@
 #define OPTIONSMENU_H
 #include <functional>
 #include <utility>
+#include <fstream>
 #include "ActiveMenuOptionIndicator.h"
 #include "IGameState.h"
 #include "../../GameRoot.h"
@@ -23,6 +24,15 @@ struct OptionsMenu final : IGameState {
         static auto *instance = new OptionsMenu;
         return *instance;
     }
+
+    struct Options
+    {
+        bool vsync;
+        int musicVolume;
+        int sfxVolume;
+        bool buttonsOverride;
+        int buttonsOverrideOption;
+    };
 
     struct IOption
     {
@@ -102,25 +112,27 @@ struct OptionsMenu final : IGameState {
     SwitchOption vsync {"vsync", true, {GameRoot::instance().renderWindow.getSize().x / 2.f, 250.f}};
     SliderOption musicVol {"music vol", {vsync.containerSprite.getPosition().x, vsync.containerSprite.getPosition().y + 75.f}};
     SliderOption sfxVol {"sfx vol", {musicVol.containerSprite.getPosition().x, musicVol.containerSprite.getPosition().y + 75.f}};
-    SwitchOption buttonsOverrideSwitch {"buttons override", false, {sfxVol.containerSprite.getPosition().x, sfxVol.containerSprite.getPosition().y + 75.f}};
-    ButtonsOverrideOptions buttonsOverrideOptions {"buttons", {buttonsOverrideSwitch.containerSprite.getPosition().x, buttonsOverrideSwitch.containerSprite.getPosition().y + 75.f}};
+    SwitchOption buttonsOverride {"buttons override", false, {sfxVol.containerSprite.getPosition().x, sfxVol.containerSprite.getPosition().y + 75.f}};
+    ButtonsOverrideOptions buttonsOverrideOptions {"buttons", {buttonsOverride.containerSprite.getPosition().x, buttonsOverride.containerSprite.getPosition().y + 75.f}};
     OptionIndicator optionIndicator {};
     IOption* activeOption {&vsync};
     ActiveSliderOption activeSliderOption {};
-    std::array<IOption*, OPTIONS_COUNT> optionPtrs {&vsync, &musicVol, &sfxVol, &buttonsOverrideSwitch, nullptr};
+    std::array<IOption*, OPTIONS_COUNT> optionPtrs {&vsync, &musicVol, &sfxVol, &buttonsOverride, nullptr};
 
     IGameState* openedFrom {nullptr};
-
     sf::Text backText {Art::instance().turretRoadFont, {"back"}, 42};
     Buttons buttons {};
+    Options options {};
 
+    void loadOptions();
+    void saveOptions();
     void open(IGameState* openedFrom);
     void close();
     void setActiveOption(IOption* option);
-    void toggleVsync();
+    void toggleVsync(bool fromOptions);
     void startSliding(SliderOption* sliderOption);
     void endSliding();
-    void toggleButtonOverride();
+    void toggleButtonOverride(bool fromOptions);
     void moveToNextMenuOption(float direction);
     void update() override;
     void renderGaussianBlur() override;

@@ -1,8 +1,11 @@
 ﻿#include "../Include/OptionsMenu.h"
 #include "../../Content/Include/GaussianBlur.h"
 #include "../../Content/Include/Sound.h"
+#include "../../Core/Include/Logger.h"
 #include "../../Input/Include/Input.h"
 #include "../../Input/Include/MouseAndKeyboard.h"
+
+#include <iostream>
 
 
 OptionsMenu::OptionsMenu()
@@ -37,7 +40,7 @@ OptionsMenu::OptionsMenu()
     buttons.activeButtons.shrink_to_fit();
 
     // Set button actions
-    vsync.onToggle = [this]{ toggleVsync(); };
+    vsync.onToggle = [this]{ toggleVsync(false); };
 
     musicVol.onPress = [this]{ startSliding(&musicVol); };
     musicVol.onRelease = [this] { endSliding(); };
@@ -47,7 +50,50 @@ OptionsMenu::OptionsMenu()
     sfxVol.onRelease = [this] { endSliding(); };
     sfxVol.onUpdate = [this] { Sound::instance().setSfxMasterVolume(sfxVol.value); };
 
-    buttonsOverrideSwitch.onToggle = [this]{ toggleButtonOverride(); };
+    buttonsOverride.onToggle = [this]{ toggleButtonOverride(false); };
+
+    loadOptions();
+}
+
+
+void OptionsMenu::loadOptions()
+{
+    // Open the options file
+    std::fstream optionsFile {"Content\\Data\\Options.bin", std::ios::in | std::ios::binary};
+
+    if (!optionsFile)
+        return;
+
+    // Read the options and close
+    optionsFile.read(reinterpret_cast<char*>(&options), sizeof(Options));
+    optionsFile.close();
+
+    toggleVsync(true);
+    musicVol.updateValue(options.musicVolume);
+    sfxVol.updateValue(options.sfxVolume);
+    toggleButtonOverride(true);
+    buttonsOverrideOptions.setByActiveIndex(options.buttonsOverrideOption);
+}
+
+
+void OptionsMenu::saveOptions()
+{
+    // Open the options file
+    std::fstream optionsFile {"Content\\Data\\Options.bin", std::ios::out | std::ios::binary};
+
+    if (!optionsFile)
+        return;
+
+    // Sync the current options with the options object
+    options.vsync = vsync.checked;
+    options.musicVolume = musicVol.value;
+    options.sfxVolume = sfxVol.value;
+    options.buttonsOverride = buttonsOverride.checked;
+    options.buttonsOverrideOption = static_cast<int>(buttonsOverrideOptions.activeOption->first);
+
+    // Write the file and close
+    optionsFile.write(reinterpret_cast<char*>(&options), sizeof(Options));
+    optionsFile.close();
 }
 
 
@@ -220,6 +266,8 @@ void OptionsMenu::close()
     GameRoot::instance().removeUpdatableState(&instance());
     GameRoot::instance().removeDrawableState(&instance());
     openedFrom = nullptr;
+
+    saveOptions();
 }
 
 
@@ -231,9 +279,13 @@ void OptionsMenu::setActiveOption(IOption* option)
 }
 
 
-void OptionsMenu::toggleVsync()
+void OptionsMenu::toggleVsync(const bool fromOptions)
 {
-    vsync.checked = !vsync.checked;
+    if (fromOptions)
+        vsync.checked = options.vsync;
+    else
+        vsync.checked = !vsync.checked;
+
     GameRoot::instance().renderWindow.setVerticalSyncEnabled(vsync.checked);
 }
 
@@ -265,14 +317,18 @@ void OptionsMenu::endSliding()
 }
 
 
-void OptionsMenu::toggleButtonOverride()
+void OptionsMenu::toggleButtonOverride(const bool fromOptions)
 {
-    buttonsOverrideSwitch.checked = !buttonsOverrideSwitch.checked;
-    Input::instance().isButtonsOverrideActive = buttonsOverrideSwitch.checked;
+    if (fromOptions)
+        buttonsOverride.checked = options.buttonsOverride;
+    else
+        buttonsOverride.checked = !buttonsOverride.checked;
+
+    Input::instance().isButtonsOverrideActive = buttonsOverride.checked;
     buttonsOverrideOptions.setByActiveIndex(static_cast<int>(Input::instance().buttonsOverride));
 
     // Add or remove the button options to the iterable options
-    if (buttonsOverrideSwitch.checked)
+    if (buttonsOverride.checked)
         optionPtrs.at(buttonsOverrideOptions.OPTIONS_MENU_INDEX) = &buttonsOverrideOptions;
     else
         optionPtrs.at(buttonsOverrideOptions.OPTIONS_MENU_INDEX) = nullptr;
@@ -363,9 +419,9 @@ void OptionsMenu::renderToScreen()
     vsync.draw(optionsBackgroundTexture);
     musicVol.draw(optionsBackgroundTexture);
     sfxVol.draw(optionsBackgroundTexture);
-    buttonsOverrideSwitch.draw(optionsBackgroundTexture);
+    buttonsOverride.draw(optionsBackgroundTexture);
 
-    if (buttonsOverrideSwitch.checked)
+    if (buttonsOverride.checked)
         buttonsOverrideOptions.draw(optionsBackgroundTexture);
 
     optionsBackgroundTexture.draw(backText);

@@ -4,7 +4,6 @@
 #include "../../../Systems/Include/Grid.h"
 #include "../../../Systems/Include/Particles.h"
 #include "../../../Core/Include/ColorPicker.h"
-#include "../../../Core/Include/Extensions.h"
 #include "../../../Core/Include/RandomVector.h"
 #include "../../../GameState/Include/GamePlay.h"
 #include "../../Include/Enemies.h"
@@ -119,7 +118,7 @@ void PlayerStatus::removeLife()
 void PlayerStatus::loadHighscore()
 {
     // Load the high score file and make sure it opened
-    std::ifstream highscoreFile {"Content\\Data\\highscores.txt"};
+    std::ifstream highscoreFile {"Content\\Data\\Highscores.txt"};
 
     // If the file is not found just default highscore
     if (!highscoreFile) {
