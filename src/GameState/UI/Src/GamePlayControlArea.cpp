@@ -15,42 +15,6 @@ GamePlayControlArea::GamePlayControlArea()
     });
     controlArea.setPosition(controlAreaOffScreenPosition);
 
-    // Set the button positions
-    buttons.num2.setFramePosition({
-        controlArea.getTexture().getSize().x / 2.f - 40.f,
-        97.5f
-    });
-    buttons.xboxBButton.setPosition(buttons.num2.getPosition());
-    buttons.dualsenseCircleButton.setPosition(buttons.num2.getPosition());
-
-    buttons.num1.setFramePosition({
-        buttons.num2.frame.getPosition().x - 80.f,
-        97.5f
-    });
-    buttons.xboxAButton.setPosition(buttons.num1.getPosition());
-    buttons.dualsenseXButton.setPosition(buttons.num1.getPosition());
-
-    buttons.num3.setFramePosition({
-        controlArea.getTexture().getSize().x / 2.f + 40.f,
-        97.5f
-    });
-    buttons.xboxXButton.setPosition(buttons.num3.getPosition());
-    buttons.dualsenseSquareButton.setPosition(buttons.num3.getPosition());
-
-    buttons.num4.setFramePosition({
-        buttons.num3.frame.getPosition().x + 80.f,
-        97.5f
-    });
-    buttons.xboxYButton.setPosition(buttons.num4.getPosition());
-    buttons.dualsenseTriangleButton.setPosition(buttons.num4.getPosition());
-
-    buttons.spaceBar.setFramePosition({
-        buttons.num4.frame.getPosition().x + 60.f,
-        97.5f
-    });
-    buttons.xboxRightTrigger.setPosition(buttons.spaceBar.getPosition());
-    buttons.dualsenseRightTrigger.setPosition(buttons.spaceBar.getPosition());
-
     // Set the lives and nukes
     lives.frame.setPosition({
         controlArea.getTexture().getSize().x / 2.f - 255.f,
@@ -72,6 +36,59 @@ GamePlayControlArea::GamePlayControlArea()
         nukes.frame.getPosition().y
     });
     nukes.setScale({0.75f, 0.75f});
+
+    // Set the button positions
+    buttons.num2.setPosition({
+        controlArea.getTexture().getSize().x / 2.f - 40.f,
+        97.5f
+    });
+    buttons.xboxBButton.setPosition(buttons.num2.getPosition());
+    buttons.dualsenseCircleButton.setPosition(buttons.num2.getPosition());
+
+    buttons.num1.setPosition({
+        buttons.num2.getPosition().x - 80.f,
+        97.5f
+    });
+    buttons.xboxAButton.setPosition(buttons.num1.getPosition());
+    buttons.dualsenseXButton.setPosition(buttons.num1.getPosition());
+
+    buttons.num3.setPosition({
+        controlArea.getTexture().getSize().x / 2.f + 40.f,
+        97.5f
+    });
+    buttons.xboxXButton.setPosition(buttons.num3.getPosition());
+    buttons.dualsenseSquareButton.setPosition(buttons.num3.getPosition());
+
+    buttons.num4.setPosition({
+        buttons.num3.getPosition().x + 80.f,
+        97.5f
+    });
+    buttons.xboxYButton.setPosition(buttons.num4.getPosition());
+    buttons.dualsenseTriangleButton.setPosition(buttons.num4.getPosition());
+
+    buttons.spaceBar.setPosition({
+        buttons.num4.getPosition().x + 60.f,
+        97.5f
+    });
+    buttons.xboxRightTrigger.setPosition(buttons.spaceBar.getPosition());
+    buttons.dualsenseRightTrigger.setPosition(buttons.spaceBar.getPosition());
+
+    buttons.activeButtons.push_back(&buttons.num1);
+    buttons.activeButtons.push_back(&buttons.num2);
+    buttons.activeButtons.push_back(&buttons.num3);
+    buttons.activeButtons.push_back(&buttons.num4);
+    buttons.activeButtons.push_back(&buttons.spaceBar);
+    buttons.activeButtons.push_back(&buttons.xboxAButton);
+    buttons.activeButtons.push_back(&buttons.xboxBButton);
+    buttons.activeButtons.push_back(&buttons.xboxXButton);
+    buttons.activeButtons.push_back(&buttons.xboxYButton);
+    buttons.activeButtons.push_back(&buttons.xboxRightTrigger);
+    buttons.activeButtons.push_back(&buttons.dualsenseXButton);
+    buttons.activeButtons.push_back(&buttons.dualsenseSquareButton);
+    buttons.activeButtons.push_back(&buttons.dualsenseCircleButton);
+    buttons.activeButtons.push_back(&buttons.dualsenseTriangleButton);
+    buttons.activeButtons.push_back(&buttons.dualsenseRightTrigger);
+    buttons.activeButtons.shrink_to_fit();
 }
 
 

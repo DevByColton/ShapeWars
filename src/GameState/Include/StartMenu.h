@@ -40,9 +40,9 @@ struct StartMenu final : IGameState
     int activeMenuOptionIndex = 0;
     sf::RenderTexture menuOptionsTexture = {{600, 250}};
     sf::Sprite menuOptionsSprite {menuOptionsTexture.getTexture()};
-    MenuOption start {Art::instance().majorMonoFont, {"start"}, 60};
-    MenuOption options {Art::instance().majorMonoFont, {"options"}, 60};
-    MenuOption quit {Art::instance().majorMonoFont, {"quit"}, 60};
+    MenuOption start {Art::instance().turretRoadFont, {"start"}, 48};
+    MenuOption options {Art::instance().turretRoadFont, {"options"}, 48};
+    MenuOption quit {Art::instance().turretRoadFont, {"quit"}, 48};
     MenuOption* activeMenuOption = &start;
     std::array<MenuOption*, MENU_OPTIONS_COUNT> menuOptionPtrs {&start, &options, &quit};
     OptionIndicator optionIndicator {};

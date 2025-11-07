@@ -1,8 +1,6 @@
-﻿#include <cmath>
-#include "../Include/OptionsMenu.h"
+﻿#include "../Include/OptionsMenu.h"
 #include "../../Content/Include/GaussianBlur.h"
 #include "../../Content/Include/Sound.h"
-#include "../../Core/Include/Logger.h"
 #include "../../Input/Include/Input.h"
 #include "../../Input/Include/MouseAndKeyboard.h"
 
@@ -20,6 +18,24 @@ OptionsMenu::OptionsMenu()
         vsync.containerSprite.getOrigin().y
     }));
 
+    // Set back text and buttons
+    backText.setOrigin(backText.getLocalBounds().getCenter());
+    backText.setStyle(sf::Text::Bold);
+    backText.setPosition({
+        optionsBackgroundTexture.getSize().x / 2.f - 20.f,
+        optionsBackgroundTexture.getSize().y - 50.f
+    });
+    buttons.escape.setPosition({
+        backText.getPosition().x + 75.f,
+        optionsBackgroundTexture.getSize().y - 48.5f
+    });
+    buttons.xboxBButton.setPosition(buttons.escape.getPosition());
+    buttons.dualsenseCircleButton.setPosition(buttons.escape.getPosition());
+    buttons.activeButtons.push_back(&buttons.escape);
+    buttons.activeButtons.push_back(&buttons.xboxBButton);
+    buttons.activeButtons.push_back(&buttons.dualsenseCircleButton);
+    buttons.activeButtons.shrink_to_fit();
+
     // Set button actions
     vsync.onToggle = [this]{ toggleVsync(); };
 
@@ -31,7 +47,7 @@ OptionsMenu::OptionsMenu()
     sfxVol.onRelease = [this] { endSliding(); };
     sfxVol.onUpdate = [this] { Sound::instance().setSfxMasterVolume(sfxVol.value); };
 
-    buttonsOverride.onToggle = [this]{ toggleButtonOverride(); };
+    buttonsOverrideSwitch.onToggle = [this]{ toggleButtonOverride(); };
 }
 
 
@@ -69,6 +85,36 @@ OptionsMenu::SliderOption::SliderOption(const std::string& label, const sf::Vect
     fill.setOrigin(fill.getLocalBounds().getCenter());
     knob.setOrigin(knob.getLocalBounds().getCenter());
     setValuePositions();
+}
+
+
+OptionsMenu::ButtonsOverrideOptions::ButtonsOverrideOptions(const std::string& label, const sf::Vector2f& position)
+{
+    containerTexture.setSmooth(true);
+    containerSprite.setOrigin(containerSprite.getLocalBounds().getCenter());
+    containerSprite.setPosition(position);
+    this->label.setString(label);
+    this->label.setOrigin({0.f, this->label.getLocalBounds().getCenter().y});
+    this->label.setPosition({10.f, containerTexture.getTexture().getSize().y / 2.f});
+    this->label.setFillColor(MUTED_TEXT_COLOR);
+    this->label.setStyle(sf::Text::Bold);
+
+    dualsense.second.setFillColor(MUTED_TEXT_COLOR);
+    dualsense.second.setStyle(sf::Text::Bold);
+    dualsense.second.setPosition({containerTexture.getTexture().getSize().x - 165.f, containerTexture.getTexture().getSize().y / 2.f});
+    dualsense.second.setOrigin(dualsense.second.getLocalBounds().getCenter());
+
+    xbox.second.setFillColor(MUTED_TEXT_COLOR);
+    xbox.second.setStyle(sf::Text::Bold);
+    xbox.second.setPosition({dualsense.second.getPosition().x - 200.f, dualsense.second.getPosition().y});
+    xbox.second.setOrigin({xbox.second.getLocalBounds().getCenter().x, keyboard.second.getLocalBounds().getCenter().y});
+    // Note: For whatever reason the text "xbox" does not align on the y axis properly with the other text. So to get around
+    //       this, I am using the y origin of "keyboard" so it aligns with the other text. It has something to do with the 'b'
+
+    keyboard.second.setFillColor(MUTED_TEXT_COLOR);
+    keyboard.second.setStyle(sf::Text::Bold);
+    keyboard.second.setPosition({xbox.second.getPosition().x - 180.f, containerTexture.getTexture().getSize().y / 2.f});
+    keyboard.second.setOrigin(keyboard.second.getLocalBounds().getCenter());
 }
 
 
@@ -112,6 +158,45 @@ void OptionsMenu::SliderOption::draw(sf::RenderTexture& renderTexture)
     containerTexture.draw(outline);
     containerTexture.draw(fill);
     containerTexture.draw(knob);
+    containerTexture.display();
+    renderTexture.draw(containerSprite);
+}
+
+
+void OptionsMenu::ButtonsOverrideOptions::setByActiveIndex(const int activeIndex)
+{
+    if (activeOption != nullptr)
+        activeOption->second.setFillColor(MUTED_TEXT_COLOR);
+
+    activeOptionIndex = activeIndex;
+    activeOption = optionPtrs.at(activeOptionIndex);
+    activeOption->second.setFillColor(sf::Color::White);
+    Input::instance().buttonsOverride = activeOption->first;
+}
+
+void OptionsMenu::ButtonsOverrideOptions::setActiveButtonOverrideOption(const int direction)
+{
+    activeOptionIndex += direction;
+
+    if (activeOptionIndex < 0)
+        activeOptionIndex = OPTIONS_COUNT - 1;
+    else if (activeOptionIndex > OPTIONS_COUNT - 1)
+        activeOptionIndex = 0;
+
+    activeOption->second.setFillColor(MUTED_TEXT_COLOR);
+    activeOption = optionPtrs.at(activeOptionIndex);
+    activeOption->second.setFillColor(sf::Color::White);
+    Input::instance().buttonsOverride = activeOption->first;
+}
+
+
+void OptionsMenu::ButtonsOverrideOptions::draw(sf::RenderTexture& renderTexture)
+{
+    containerTexture.clear(sf::Color::Transparent);
+    containerTexture.draw(label);
+    containerTexture.draw(keyboard.second);
+    containerTexture.draw(xbox.second);
+    containerTexture.draw(dualsense.second);
     containerTexture.display();
     renderTexture.draw(containerSprite);
 }
@@ -182,8 +267,15 @@ void OptionsMenu::endSliding()
 
 void OptionsMenu::toggleButtonOverride()
 {
-    Logger::printOut("BUTTONS OVERRIDE");
-    buttonsOverride.checked = !buttonsOverride.checked;
+    buttonsOverrideSwitch.checked = !buttonsOverrideSwitch.checked;
+    Input::instance().isButtonsOverrideActive = buttonsOverrideSwitch.checked;
+    buttonsOverrideOptions.setByActiveIndex(static_cast<int>(Input::instance().buttonsOverride));
+
+    // Add or remove the button options to the iterable options
+    if (buttonsOverrideSwitch.checked)
+        optionPtrs.at(buttonsOverrideOptions.OPTIONS_MENU_INDEX) = &buttonsOverrideOptions;
+    else
+        optionPtrs.at(buttonsOverrideOptions.OPTIONS_MENU_INDEX) = nullptr;
 }
 
 
@@ -193,20 +285,23 @@ void OptionsMenu::moveToNextMenuOption(const float direction)
         return;
 
     // Iterate the active index
-    if (direction < 0)
+    do
     {
-        activeOptionIndex -= 1;
+        if (direction < 0)
+        {
+            activeOptionIndex -= 1;
 
-        if (activeOptionIndex < 0)
-            activeOptionIndex = OPTIONS_COUNT - 1;
-    }
-    else
-    {
-        activeOptionIndex += 1;
+            if (activeOptionIndex < 0)
+                activeOptionIndex = OPTIONS_COUNT - 1;
+        }
+        else
+        {
+            activeOptionIndex += 1;
 
-        if (activeOptionIndex > OPTIONS_COUNT - 1)
-            activeOptionIndex = 0;
-    }
+            if (activeOptionIndex > OPTIONS_COUNT - 1)
+                activeOptionIndex = 0;
+        }
+    } while (optionPtrs.at(activeOptionIndex) == nullptr);
 
     // Set the next active menu option
     const sf::Vector2f leftPosition = optionPtrs.at(activeOptionIndex)->containerSprite.getTransform().transformPoint({
@@ -268,7 +363,13 @@ void OptionsMenu::renderToScreen()
     vsync.draw(optionsBackgroundTexture);
     musicVol.draw(optionsBackgroundTexture);
     sfxVol.draw(optionsBackgroundTexture);
-    buttonsOverride.draw(optionsBackgroundTexture);
+    buttonsOverrideSwitch.draw(optionsBackgroundTexture);
+
+    if (buttonsOverrideSwitch.checked)
+        buttonsOverrideOptions.draw(optionsBackgroundTexture);
+
+    optionsBackgroundTexture.draw(backText);
+    buttons.draw(optionsBackgroundTexture);
     optionsBackgroundTexture.display();
     GameRoot::instance().renderWindow.draw(optionBackground);
 }
@@ -278,29 +379,30 @@ void OptionsMenu::processMouseMoved(const sf::Event::MouseMoved* mouseMoved)
     // For hovering on an option
     if (!optionIndicator.isActiveOptionIndicatorTransitioning && activeSliderOption.sliderOption == nullptr)
         for (int o = 0; o < OPTIONS_COUNT; o++)
-        {
-            const bool contains = optionBackground
-            .getTransform()
-            .transformRect(optionPtrs.at(o)->containerSprite.getGlobalBounds())
-            .contains(MouseAndKeyboard::instance().getMouseWindowPosition());
+            if (optionPtrs.at(o) != nullptr)
+            {
+                const bool contains = optionBackground
+                .getTransform()
+                .transformRect(optionPtrs.at(o)->containerSprite.getGlobalBounds())
+                .contains(MouseAndKeyboard::instance().getMouseWindowPosition());
 
-            if (!contains)
-                continue;
+                if (!contains)
+                    continue;
 
-            // Menu option can be active
-            const sf::Vector2f leftPosition = optionPtrs.at(o)->containerSprite.getTransform().transformPoint({
-                -20.f,
-                optionPtrs.at(o)->containerSprite.getOrigin().y
-            });
-            const sf::Vector2f rightPosition = optionPtrs.at(o)->containerSprite.getTransform().transformPoint({
-                optionPtrs.at(o)->containerSprite.getLocalBounds().size.x,
-                optionPtrs.at(o)->containerSprite.getOrigin().y
-            });
-            optionIndicator.setActive(leftPosition, rightPosition);
+                // Menu option can be active
+                const sf::Vector2f leftPosition = optionPtrs.at(o)->containerSprite.getTransform().transformPoint({
+                    -20.f,
+                    optionPtrs.at(o)->containerSprite.getOrigin().y
+                });
+                const sf::Vector2f rightPosition = optionPtrs.at(o)->containerSprite.getTransform().transformPoint({
+                    optionPtrs.at(o)->containerSprite.getLocalBounds().size.x,
+                    optionPtrs.at(o)->containerSprite.getOrigin().y
+                });
+                optionIndicator.setActive(leftPosition, rightPosition);
 
-            activeOptionIndex = o;
-            setActiveOption(optionPtrs.at(o));
-        }
+                activeOptionIndex = o;
+                setActiveOption(optionPtrs.at(o));
+            }
 }
 
 
@@ -356,12 +458,22 @@ void OptionsMenu::processMouseWheelScrolledEvent(const sf::Event::MouseWheelScro
 void OptionsMenu::processKeyPressed(const sf::Event::KeyPressed* keyPressed)
 {
     if (keyPressed->scancode == sf::Keyboard::Scancode::Left)
+    {
         if (const auto sliderOption = dynamic_cast<SliderOption*>(activeOption); sliderOption != nullptr)
             sliderOption->updateValue(sliderOption->value - 5.f);
 
+        if (const auto buttonOverrideOptions = dynamic_cast<ButtonsOverrideOptions*>(activeOption); buttonOverrideOptions != nullptr)
+            buttonsOverrideOptions.setActiveButtonOverrideOption(-1);
+    }
+
     if (keyPressed->scancode == sf::Keyboard::Scancode::Right)
+    {
         if (const auto sliderOption = dynamic_cast<SliderOption*>(activeOption); sliderOption != nullptr)
             sliderOption->updateValue(sliderOption->value + 5.f);
+
+        if (const auto buttonOverrideOptions = dynamic_cast<ButtonsOverrideOptions*>(activeOption); buttonOverrideOptions != nullptr)
+            buttonsOverrideOptions.setActiveButtonOverrideOption(1);
+    }
 }
 
 
@@ -405,10 +517,20 @@ void OptionsMenu::processJoystickAxisMoved(const sf::Event::JoystickMoved* joyst
         moveToNextMenuOption(joystickMoved->position);
 
     if (Input::isDpadX(joystickMoved) && Input::wasDpadMoved(joystickMoved))
+    {
         if (const auto sliderOption = dynamic_cast<SliderOption*>(activeOption); sliderOption != nullptr)
             sliderOption->updateValue(joystickMoved->position > 0.f ? sliderOption->value + 5.f : sliderOption->value - 5.f);
 
+        if (const auto buttonOverrideOptions = dynamic_cast<ButtonsOverrideOptions*>(activeOption); buttonOverrideOptions != nullptr)
+            buttonsOverrideOptions.setActiveButtonOverrideOption(joystickMoved->position > 0.f ? 1 : -1);
+    }
+
     if (Input::isLeftThumbstickX(joystickMoved) && Input:: wasLeftThumbstickMoved(joystickMoved))
+    {
         if (const auto sliderOption = dynamic_cast<SliderOption*>(activeOption); sliderOption != nullptr)
             sliderOption->updateValue(joystickMoved->position > 0.f ? sliderOption->value + 5.f : sliderOption->value - 5.f);
+
+        if (const auto buttonOverrideOptions = dynamic_cast<ButtonsOverrideOptions*>(activeOption); buttonOverrideOptions != nullptr)
+            buttonsOverrideOptions.setActiveButtonOverrideOption(joystickMoved->position > 0.f ? 1 : -1);
+    }
 }

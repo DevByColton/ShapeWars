@@ -31,12 +31,12 @@ struct GamePlayHUD {
     sf::Sprite scoreFrame {Art::instance().scoreFrame};
     sf::RenderTexture scoreAreaTexture {{scoreFrame.getTexture().getSize().x, scoreFrame.getTexture().getSize().y}};
     sf::Sprite scoreArea {scoreAreaTexture.getTexture()};
-    sf::Text scoreText {Art::instance().font, {}, 60};
-    sf::Text multiplierHeaderText {Art::instance().font, {"mult x "}, 20};
-    sf::Text multiplierText {Art::instance().font, {}, 20};
-    sf::Text timerText {Art::instance().font, {}, 20};
-    sf::Text objectiveText {Art::instance().font, SCORE_OBJECTIVE_TEXT, 17};
-    sf::Text gameOverText {Art::instance().font, {}, 60};
+    sf::Text scoreText {Art::instance().turretRoadFont, {}, 60};
+    sf::Text multiplierHeaderText {Art::instance().turretRoadFont, {"mult x "}, 20};
+    sf::Text multiplierText {Art::instance().turretRoadFont, {}, 20};
+    sf::Text timerText {Art::instance().turretRoadFont, {}, 20};
+    sf::Text objectiveText {Art::instance().turretRoadFont, SCORE_OBJECTIVE_TEXT, 17};
+    sf::Text gameOverText {Art::instance().turretRoadFont, {}, 60};
     ShapeKeeperHealthContainer healthContainer {};
     GamePlayControlArea gamePlayControlArea {};
 

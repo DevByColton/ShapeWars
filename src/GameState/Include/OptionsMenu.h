@@ -1,14 +1,19 @@
 ﻿#ifndef OPTIONSMENU_H
 #define OPTIONSMENU_H
 #include <functional>
+#include <utility>
 #include "ActiveMenuOptionIndicator.h"
 #include "IGameState.h"
 #include "../../GameRoot.h"
 #include "../../Content/Include/Art.h"
+#include "../../Input/Include/Buttons.h"
+#include "../../Input/Include/Input.h"
 #include "SFML/Graphics/RenderTexture.hpp"
 #include "SFML/Graphics/Sprite.hpp"
 #include "SFML/Graphics/Text.hpp"
 
+
+enum struct ButtonsOverride;
 
 struct OptionsMenu final : IGameState {
     OptionsMenu();
@@ -26,7 +31,7 @@ struct OptionsMenu final : IGameState {
         static constexpr sf::Color MUTED_TEXT_COLOR {185, 185, 185, 255};
         sf::RenderTexture containerTexture {{1400, 50}};
         sf::Sprite containerSprite {containerTexture.getTexture()};
-        sf::Text label {Art::instance().majorMonoFont, {""}, 60};
+        sf::Text label {Art::instance().turretRoadFont, {""}, 48};
     };
 
     struct SwitchOption final : IOption
@@ -67,6 +72,24 @@ struct OptionsMenu final : IGameState {
         sf::Vector2f mouseStartingPosition {};
     };
 
+    struct ButtonsOverrideOptions final : IOption
+    {
+        ButtonsOverrideOptions(const std::string& label, const sf::Vector2f& position);
+
+        static constexpr int OPTIONS_MENU_INDEX = 4;
+        static constexpr int OPTIONS_COUNT = 3;
+        int activeOptionIndex = 0;
+        std::pair<ButtonsOverride, sf::Text> keyboard {ButtonsOverride::Keyboard, {Art::instance().turretRoadFont, {"keyboard"}, 48}};
+        std::pair<ButtonsOverride, sf::Text> xbox {ButtonsOverride::Xbox, {Art::instance().turretRoadFont, {"xbox"}, 48}};
+        std::pair<ButtonsOverride, sf::Text> dualsense {ButtonsOverride::Dualsense, {Art::instance().turretRoadFont, {"playstation"}, 48}};
+        std::pair<ButtonsOverride, sf::Text>* activeOption = {&keyboard};
+        std::array<std::pair<ButtonsOverride, sf::Text>*, OPTIONS_COUNT> optionPtrs = {&keyboard, &xbox, &dualsense};
+
+        void setByActiveIndex(int activeIndex);
+        void setActiveButtonOverrideOption(int direction);
+        void draw(sf::RenderTexture& renderTexture);
+    };
+
     // Options background and title
     const sf::Color backgroundColor {35,31,32, 225};
     sf::RenderTexture optionsBackgroundTexture = {{GameRoot::instance().renderWindow.getSize().x, GameRoot::instance().renderWindow.getSize().y}};
@@ -74,18 +97,22 @@ struct OptionsMenu final : IGameState {
     sf::Text title {Art::instance().majorMonoFont, {"OPTIONS"}, 100};
 
     // Options
-    static constexpr int OPTIONS_COUNT = 4;
+    static constexpr int OPTIONS_COUNT = 5;
     int activeOptionIndex = 0;
     SwitchOption vsync {"vsync", true, {GameRoot::instance().renderWindow.getSize().x / 2.f, 250.f}};
     SliderOption musicVol {"music vol", {vsync.containerSprite.getPosition().x, vsync.containerSprite.getPosition().y + 75.f}};
     SliderOption sfxVol {"sfx vol", {musicVol.containerSprite.getPosition().x, musicVol.containerSprite.getPosition().y + 75.f}};
-    SwitchOption buttonsOverride {"buttons override", false, {sfxVol.containerSprite.getPosition().x, sfxVol.containerSprite.getPosition().y + 75.f}};
+    SwitchOption buttonsOverrideSwitch {"buttons override", false, {sfxVol.containerSprite.getPosition().x, sfxVol.containerSprite.getPosition().y + 75.f}};
+    ButtonsOverrideOptions buttonsOverrideOptions {"buttons", {buttonsOverrideSwitch.containerSprite.getPosition().x, buttonsOverrideSwitch.containerSprite.getPosition().y + 75.f}};
     OptionIndicator optionIndicator {};
     IOption* activeOption {&vsync};
     ActiveSliderOption activeSliderOption {};
-    std::array<IOption*, OPTIONS_COUNT> optionPtrs {&vsync, &musicVol, &sfxVol, &buttonsOverride};
+    std::array<IOption*, OPTIONS_COUNT> optionPtrs {&vsync, &musicVol, &sfxVol, &buttonsOverrideSwitch, nullptr};
 
     IGameState* openedFrom {nullptr};
+
+    sf::Text backText {Art::instance().turretRoadFont, {"back"}, 42};
+    Buttons buttons {};
 
     void open(IGameState* openedFrom);
     void close();

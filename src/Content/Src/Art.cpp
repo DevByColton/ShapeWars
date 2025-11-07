@@ -138,9 +138,6 @@ Art::Art()
         scoreFrame = sf::Texture("Content\\Images\\ScoreFrame.png");
         scoreFrame.setSmooth(true);
 
-        keyboardFrame = sf::Texture("Content\\Images\\KeyboardFrame.png");
-        keyboardFrame.setSmooth(true);
-
         num1 = sf::Texture("Content\\Images\\Num1.png");
         num1.setSmooth(true);
 
@@ -155,6 +152,9 @@ Art::Art()
 
         spaceBar = sf::Texture("Content\\Images\\SpaceBar.png");
         spaceBar.setSmooth(true);
+
+        escape = sf::Texture("Content\\Images\\Escape.png");
+        escape.setSmooth(true);
 
         dualsenseXButton = sf::Texture("Content\\Images\\DualSenseXButton.png");
         dualsenseXButton.setSmooth(true);
@@ -201,8 +201,8 @@ Art::Art()
         sliderOptionBarOutline = sf::Texture("Content\\Images\\SliderOptionBarOutline.png");
         sliderOptionBarOutline.setSmooth(true);
 
-        font = sf::Font("Content\\Font\\TurretRoad-Regular.ttf");
-        font.setSmooth(true);
+        turretRoadFont = sf::Font("Content\\Font\\TurretRoad-Regular.ttf");
+        turretRoadFont.setSmooth(true);
 
         majorMonoFont = sf::Font("Content\\Font\\MajorMonoDisplay-Regular.ttf");
         majorMonoFont.setSmooth(true);
