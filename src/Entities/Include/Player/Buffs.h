@@ -42,7 +42,7 @@ private:
         BuffType type = BuffType::None;
         sf::Sprite frame {Art::instance().buffFrame};
         sf::Sprite icon {Art::instance().buffIconPlaceHolder};
-        sf::Text timerText {Art::instance().font, {}, 28};
+        sf::Text timerText {Art::instance().turretRoadFont, {}, 28};
 
         bool isBeingUsed() const;
         void setUsing();

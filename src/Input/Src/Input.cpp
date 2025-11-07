@@ -159,20 +159,29 @@ sf::Vector2f Input::thumbStickPosition(const int index, const sf::Joystick::Axis
 }
 
 
-sf::Vector2f Input::getMovementDirection()
+sf::Vector2f Input::getMovementDirection(const bool withWasdMovement)
 {
     sf::Vector2f direction {0.f, 0.f};
 
     // Sum mouse and keyboard movement if any
-    direction += MouseAndKeyboard::instance().movementDirection();
+    if (withWasdMovement)
+        direction += MouseAndKeyboard::instance().movementDirection();
 
     // Sum directions of each connected joystick if any
     for (int i = 0; i < sf::Joystick::Count; i++)
         if (sf::Joystick::isConnected(i))
         {
             const auto identification = sf::Joystick::getIdentification(i);
+
+            // Sum thumbsticks
             direction += Xbox::instance().leftThumbStickPosition(i, identification);
             direction += Dualsense::instance().leftThumbStickPosition(i, identification);
+
+            // Sum dpad
+            direction.x += Xbox::instance().dpadXPosition(i, identification);
+            direction.x += Dualsense::instance().dpadXPosition(i, identification);
+            direction.y += Xbox::instance().dpadYPosition(i, identification);
+            direction.y += Dualsense::instance().dpadYPosition(i, identification);
         }
 
     // Normalize
@@ -217,24 +226,40 @@ void Input::update()
     // Update the mouse sprite position to the actual mouse
     MouseAndKeyboard::instance().update();
 
-    // Check for valid joystick inputs, if none set the input mode to mouse and keyboard
+    // Check for valid joystick inputs
     hasValidXboxInput = false;
     hasValidDualsenseInput = false;
 
-    for (int i = 0; i < sf::Joystick::Count; i++)
-        if (sf::Joystick::isConnected(i))
+    for (int jsi = 0; jsi < sf::Joystick::Count; jsi++)
+        if (sf::Joystick::isConnected(jsi))
         {
-            const auto identification = sf::Joystick::getIdentification(i);
+            const auto identification = sf::Joystick::getIdentification(jsi);
 
             if (Xbox::instance().isSupported(identification))
+            {
                 hasValidXboxInput = true;
 
+                if (!isButtonsOverrideActive)
+                    buttonsOverride = ButtonsOverride::Xbox;
+            }
+
             if (Dualsense::instance().isSupported(identification))
+            {
                 hasValidDualsenseInput = true;
+
+                if (!isButtonsOverrideActive)
+                    buttonsOverride = ButtonsOverride::Dualsense;
+            }
         }
 
+    // If no valid joystick input set the input mode to mouse and keyboard
     if (!hasValidXboxInput && !hasValidDualsenseInput)
+    {
         inputMode = InputMode::MouseAndKeyboard;
+
+        if (!isButtonsOverrideActive)
+            buttonsOverride = ButtonsOverride::Keyboard;
+    }
 }
 
 

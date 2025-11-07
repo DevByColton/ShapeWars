@@ -23,7 +23,7 @@ private:
 
         const float baseFadeTime = 1.f;
         const float baseFadeScale = 1.f;
-        sf::Text text {Art::instance().font, {}, 16};
+        sf::Text text {Art::instance().turretRoadFont, {}, 16};
 
     public:
         bool isActive = false;

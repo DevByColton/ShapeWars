@@ -105,6 +105,25 @@ bool Xbox::wasLeftThumbstickMoved(const sf::Event::JoystickMoved* joystickMoved)
 }
 
 
+float Xbox::dpadXPosition(const int index, const sf::Joystick::Identification& identification) const
+{
+    if (!isSupported(identification))
+        return 0.f;
+
+    // Dpad right is negative and left is positive, flip it
+    return sf::Joystick::getAxisPosition(index, sf::Joystick::Axis::PovX);
+}
+
+
+float Xbox::dpadYPosition(const int index, const sf::Joystick::Identification& identification) const
+{
+    if (!isSupported(identification))
+        return 0.f;
+
+    return -sf::Joystick::getAxisPosition(index, sf::Joystick::Axis::PovY);
+}
+
+
 sf::Vector2f Xbox::leftThumbStickPosition(const int index, const sf::Joystick::Identification& identification) const
 {
     if (!isSupported(identification))

@@ -2,6 +2,7 @@
 #define STARTMENU_H
 #include <functional>
 #include <random>
+#include "ActiveMenuOptionIndicator.h"
 #include "IGameState.h"
 #include "../../GameRoot.h"
 #include "../../Content/Include/Art.h"
@@ -23,24 +24,15 @@ struct StartMenu final : IGameState
     struct MenuOption final : sf::Text
     {
         explicit MenuOption(const sf::Font& font, const sf::String& string, const unsigned int characterSize)
-            : sf::Text(font, string, characterSize){}
-
-        std::function<void()> onSelect {};
-    };
-
-    struct ActiveMenuOptionIndicator final : sf::Sprite
-    {
-        explicit ActiveMenuOptionIndicator(const sf::Texture& texture) : Sprite(texture)
+            : sf::Text(font, string, characterSize)
         {
-            setOrigin(getLocalBounds().getCenter());
-            setScale({0.4f, 0.4f});
+            // Mute the menu option by default
+            setFillColor(MUTED_TEXT_COLOR);
+            setStyle(Bold);
         }
 
-        sf::Vector2f previousPosition {0.f, 0.f};
-        sf::Vector2f targetPosition {0.f, 0.f};
-
-        void setActive(const sf::Vector2f& targetPosition);
-        void transition(float time);
+        static constexpr sf::Color MUTED_TEXT_COLOR {185, 185, 185, 255};
+        std::function<void()> onSelect {};
     };
 
     // Menus options area
@@ -48,11 +40,12 @@ struct StartMenu final : IGameState
     int activeMenuOptionIndex = 0;
     sf::RenderTexture menuOptionsTexture = {{600, 250}};
     sf::Sprite menuOptionsSprite {menuOptionsTexture.getTexture()};
-    MenuOption start {Art::instance().majorMonoFont, {"start"}, 60};
-    MenuOption options {Art::instance().majorMonoFont, {"options"}, 60};
-    MenuOption quit {Art::instance().majorMonoFont, {"quit"}, 60};
+    MenuOption start {Art::instance().turretRoadFont, {"start"}, 48};
+    MenuOption options {Art::instance().turretRoadFont, {"options"}, 48};
+    MenuOption quit {Art::instance().turretRoadFont, {"quit"}, 48};
     MenuOption* activeMenuOption = &start;
     std::array<MenuOption*, MENU_OPTIONS_COUNT> menuOptionPtrs {&start, &options, &quit};
+    OptionIndicator optionIndicator {};
 
     // Menu and title options transitions
     static constexpr float TRANSITION_DURATION = 0.4f;
@@ -70,13 +63,6 @@ struct StartMenu final : IGameState
         GameRoot::instance().windowSizeF.y / 2.f
     };
 
-    // Options indicators
-    static constexpr float INDICATORS_TRANSITION_DURATION = 0.075f;
-    float indicatorsTransitionTime = 0.f;
-    bool isActiveOptionIndicatorTransitioning = false;
-    ActiveMenuOptionIndicator leftIndicator {Art::instance().shapeKeeperCore};
-    ActiveMenuOptionIndicator rightIndicator {Art::instance().shapeKeeperCore};
-
     // Title area
     sf::Text shapeText {Art::instance().majorMonoFont, {"SHAPE"}, 140};
     sf::Text warsText {Art::instance().majorMonoFont, {"WARS"}, 140};
@@ -93,17 +79,22 @@ struct StartMenu final : IGameState
     std::uniform_real_distribution<float> widthDistribution {20.f, GameRoot::instance().windowSizeF.x - 20.f};
     std::uniform_real_distribution<float> heightDistribution {20.f, GameRoot::instance().windowSizeF.y - 20.f};
 
+    void processMouseMoved(const sf::Event::MouseMoved* mouseMoved) override;
+    void processMouseReleased(const sf::Event::MouseButtonReleased* mouseReleased) override;
+    void processMousePressed(const sf::Event::MouseButtonPressed* mousePressed) override;
+    void processMouseWheelScrolledEvent(const sf::Event::MouseWheelScrolled* mouseWheelScrolled) override;
+    void processKeyPressed(const sf::Event::KeyPressed* keyPressed) override;
     void processKeyReleased(const sf::Event::KeyReleased* keyReleased) override;
     void processJoystickButtonReleased(const sf::Event::JoystickButtonReleased* joystickButtonReleased) override;
     void processJoystickAxisMoved(const sf::Event::JoystickMoved* joystickMoved) override;
     void update() override;
     void renderGaussianBlur() override;
     void renderToScreen() override;
+    void setActiveMenuOption(MenuOption* nextMenuOption);
     void transitionMenuAndTitleIn();
     bool transitionMenuAndTitleOut();
     void moveToNextMenuOption(float direction);
     void updateBackground();
-    void updateMenuOptions();
 };
 
 

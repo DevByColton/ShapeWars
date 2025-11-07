@@ -9,7 +9,7 @@ GamePlayHUD::GamePlayHUD()
 {
     // Set the score to be in the top middle of the screen
     scoreAreaTexture.setSmooth(true);
-    scoreArea.setPosition(scoreAreaOnScreenPosition);
+    scoreArea.setPosition(scoreAreaOffScreenPosition);
     scoreArea.setOrigin({
         scoreAreaTexture.getSize().x / 2.f,
         scoreAreaTexture.getSize().y / 2.f

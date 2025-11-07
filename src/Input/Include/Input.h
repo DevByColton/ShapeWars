@@ -11,6 +11,15 @@ enum struct InputMode
     Joystick
 };
 
+
+enum struct ButtonsOverride
+{
+    Keyboard,
+    Xbox,
+    Dualsense
+};
+
+
 struct Input
 {
     Input();
@@ -23,12 +32,16 @@ struct Input
 
     float thumbStickDeadZone = 15.f; // SFML dead zone values from -100 to 100
     float triggerDeadZone = 50.f; // SFML dead zone values  from -100 to 100
+
     bool hasValidXboxInput = false;
     bool hasValidDualsenseInput = false;
     InputMode inputMode = InputMode::MouseAndKeyboard;
 
+    bool isButtonsOverrideActive = false;
+    ButtonsOverride buttonsOverride = ButtonsOverride::Xbox;
+
     [[nodiscard]] bool isMouseVisible() const;
-    [[nodiscard]] static sf::Vector2f getMovementDirection();
+    [[nodiscard]] static sf::Vector2f getMovementDirection(bool withWasdMovement);
     [[nodiscard]] sf::Vector2f getAimDirection(const sf::Vector2f& fromPosition) const;
     [[nodiscard]] sf::Vector2f thumbStickPosition(int index, sf::Joystick::Axis, sf::Joystick::Axis) const;
     [[nodiscard]] static bool isDpadX(const sf::Event::JoystickMoved* joystickMoved);

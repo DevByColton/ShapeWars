@@ -44,8 +44,46 @@ Sound::Sound() {
 }
 
 
-void Sound::togglePlaySounds() {
+void Sound::setMusicMasterVolume(const float volume)
+{
+    musicMasterVolume = volume;
+    gameplaySong.setVolume(musicMasterVolume);
+}
 
+
+void Sound::setSfxMasterVolume(const float volume)
+{
+    sfxMasterVolume = volume;
+
+    // Set the shot volumes
+    shot1Sound.setVolume(sfxMasterVolume);
+    shot2Sound.setVolume(sfxMasterVolume);
+    shot3Sound.setVolume(sfxMasterVolume);
+    shot4Sound.setVolume(sfxMasterVolume);
+
+    // Set the explosion volumes
+    explosion1Sound.setVolume(sfxMasterVolume);
+    explosion2Sound.setVolume(sfxMasterVolume);
+    explosion3Sound.setVolume(sfxMasterVolume);
+    explosion4Sound.setVolume(sfxMasterVolume);
+    explosion5Sound.setVolume(sfxMasterVolume);
+    explosion6Sound.setVolume(sfxMasterVolume);
+    explosion7Sound.setVolume(sfxMasterVolume);
+    explosion8Sound.setVolume(sfxMasterVolume);
+
+    // Set the spawn volumes
+    spawn1Sound.setVolume(sfxMasterVolume);
+    spawn2Sound.setVolume(sfxMasterVolume);
+    spawn3Sound.setVolume(sfxMasterVolume);
+    spawn4Sound.setVolume(sfxMasterVolume);
+    spawn5Sound.setVolume(sfxMasterVolume);
+    spawn6Sound.setVolume(sfxMasterVolume);
+    spawn7Sound.setVolume(sfxMasterVolume);
+    spawn8Sound.setVolume(sfxMasterVolume);
+}
+
+
+void Sound::togglePlaySounds() {
     playSound = !playSound;
 
     if (gameplaySong.getStatus() == sf::SoundSource::Status::Playing)
@@ -53,7 +91,6 @@ void Sound::togglePlaySounds() {
     else
         gameplaySong.play();
 }
-
 
 
 void Sound::playGamePlaySong()  {

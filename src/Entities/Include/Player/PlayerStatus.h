@@ -26,7 +26,7 @@ public:
         return *instance;
     }
 
-    int highScore = -1;
+    int highScore = 10'000;
     int score = 0;
     int lives = MAX_LIVES;
     int multiplier = 1;

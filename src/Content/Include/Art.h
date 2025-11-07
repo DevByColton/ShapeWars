@@ -57,12 +57,12 @@ struct Art {
     sf::Texture boostersBuff;
     sf::Texture livesAndNukesFrame;
     sf::Texture scoreFrame;
-    sf::Texture keyboardFrame;
     sf::Texture num1;
     sf::Texture num2;
     sf::Texture num3;
     sf::Texture num4;
     sf::Texture spaceBar;
+    sf::Texture escape;
     sf::Texture dualsenseXButton;
     sf::Texture dualsenseSquareButton;
     sf::Texture dualsenseCircleButton;
@@ -73,7 +73,12 @@ struct Art {
     sf::Texture xboxXButton;
     sf::Texture xboxYButton;
     sf::Texture xboxRightTrigger;
-    sf::Font font;
+    sf::Texture switchChecked;
+    sf::Texture switchUnchecked;
+    sf::Texture sliderOptionKnob;
+    sf::Texture sliderOptionBarFill;
+    sf::Texture sliderOptionBarOutline;
+    sf::Font turretRoadFont;
     sf::Font majorMonoFont;
 };
 

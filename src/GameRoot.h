@@ -1,7 +1,7 @@
 ﻿#ifndef GAMEROOT_H
 #define GAMEROOT_H
 #include <chrono>
-#include "GameState/Include/GameState.h"
+#include "GameState/Include/IGameState.h"
 #include "SFML/Graphics/RenderWindow.hpp"
 
 
@@ -10,12 +10,14 @@ private:
     GameRoot();
 
     static constexpr std::chrono::milliseconds MS_PER_FRAME {16};
-    bool vsyncEnabled = true;
     sf::Clock gameClock {};
     sf::Clock deltaClock {};
-    GameState currentGameState = InStartMenu;
 
-    void toggleVsync();
+    static constexpr int MAX_GAME_STATE_COUNT = 3;
+    IGameState* activeInputState = {nullptr};
+    std::array<IGameState*, MAX_GAME_STATE_COUNT> updatableGameStates {nullptr, nullptr, nullptr};
+    std::array<IGameState*, MAX_GAME_STATE_COUNT> drawableGameStates {nullptr, nullptr, nullptr};
+
     void processInput();
     void update() const;
     void render();
@@ -38,8 +40,12 @@ public:
     sf::Vector2f bottomRightCorner {0.f, 0.f};
     sf::Vector2f bottomLeftCorner {0.f, 0.f};
 
-    bool isCurrentGameState(GameState gameState) const;
-    void setCurrentGameState(GameState nextGameState);
+    void setActiveInputState(IGameState* gameState);
+    void addUpdatableState(IGameState* gameState);
+    void removeUpdatableState(const IGameState* gameState);
+    void addDrawableState(IGameState* gameState);
+    void removeDrawableState(const IGameState* gameState);
+    void load();
     void run();
 };
 

@@ -1,0 +1,153 @@
+﻿#ifndef OPTIONSMENU_H
+#define OPTIONSMENU_H
+#include <functional>
+#include <utility>
+#include <fstream>
+#include "ActiveMenuOptionIndicator.h"
+#include "IGameState.h"
+#include "../../GameRoot.h"
+#include "../../Content/Include/Art.h"
+#include "../../Input/Include/Buttons.h"
+#include "../../Input/Include/Input.h"
+#include "SFML/Graphics/RenderTexture.hpp"
+#include "SFML/Graphics/Sprite.hpp"
+#include "SFML/Graphics/Text.hpp"
+
+
+enum struct ButtonsOverride;
+
+struct OptionsMenu final : IGameState {
+    OptionsMenu();
+
+    static OptionsMenu &instance()
+    {
+        static auto *instance = new OptionsMenu;
+        return *instance;
+    }
+
+    struct Options
+    {
+        bool vsync;
+        int musicVolume;
+        int sfxVolume;
+        bool buttonsOverride;
+        int buttonsOverrideOption;
+    };
+
+    struct IOption
+    {
+        virtual ~IOption() = default;
+
+        static constexpr sf::Color MUTED_TEXT_COLOR {185, 185, 185, 255};
+        sf::RenderTexture containerTexture {{1400, 50}};
+        sf::Sprite containerSprite {containerTexture.getTexture()};
+        sf::Text label {Art::instance().turretRoadFont, {""}, 48};
+    };
+
+    struct SwitchOption final : IOption
+    {
+        SwitchOption(const std::string& label, bool checked, const sf::Vector2f& position);
+
+        bool checked = true;
+        sf::Sprite switchChecked {Art::instance().switchChecked};
+        sf::Sprite switchUnchecked {Art::instance().switchUnchecked};
+        std::function<void()> onToggle {};
+
+        void draw(sf::RenderTexture& renderTexture);
+    };
+
+    struct SliderOption final : IOption
+    {
+        SliderOption(const std::string& label, const sf::Vector2f& position);
+
+        static constexpr float MAX = 100.f;
+        static constexpr float MIN = 0.f;
+        float value = 75.f;
+        sf::Sprite knob {Art::instance().sliderOptionKnob};
+        sf::Sprite fill {Art::instance().sliderOptionBarFill};
+        sf::Sprite outline {Art::instance().sliderOptionBarOutline};
+        std::function<void()> onUpdate {};
+        std::function<void()> onPress {};
+        std::function<void()> onRelease {};
+
+        void updateValue(float next);
+        void setValuePositions();
+        void draw(sf::RenderTexture& renderTexture);
+    };
+
+    struct ActiveSliderOption
+    {
+        float originalValue = 0.f;
+        SliderOption* sliderOption {nullptr};
+        sf::Vector2f mouseStartingPosition {};
+    };
+
+    struct ButtonsOverrideOptions final : IOption
+    {
+        ButtonsOverrideOptions(const std::string& label, const sf::Vector2f& position);
+
+        static constexpr int OPTIONS_MENU_INDEX = 4;
+        static constexpr int OPTIONS_COUNT = 3;
+        int activeOptionIndex = 0;
+        std::pair<ButtonsOverride, sf::Text> keyboard {ButtonsOverride::Keyboard, {Art::instance().turretRoadFont, {"keyboard"}, 48}};
+        std::pair<ButtonsOverride, sf::Text> xbox {ButtonsOverride::Xbox, {Art::instance().turretRoadFont, {"xbox"}, 48}};
+        std::pair<ButtonsOverride, sf::Text> dualsense {ButtonsOverride::Dualsense, {Art::instance().turretRoadFont, {"playstation"}, 48}};
+        std::pair<ButtonsOverride, sf::Text>* activeOption = {&keyboard};
+        std::array<std::pair<ButtonsOverride, sf::Text>*, OPTIONS_COUNT> optionPtrs = {&keyboard, &xbox, &dualsense};
+
+        void checkOptionsSelected();
+        void setByActiveIndex(int activeIndex);
+        void setActiveButtonOverrideOption(int direction);
+        void draw(sf::RenderTexture& renderTexture);
+    };
+
+    // Options background and title
+    const sf::Color backgroundColor {35,31,32, 225};
+    sf::RenderTexture optionsBackgroundTexture = {{GameRoot::instance().renderWindow.getSize().x, GameRoot::instance().renderWindow.getSize().y}};
+    sf::Sprite optionBackground {optionsBackgroundTexture.getTexture()};
+    sf::Text title {Art::instance().majorMonoFont, {"OPTIONS"}, 100};
+
+    // Options
+    static constexpr int OPTIONS_COUNT = 5;
+    int activeOptionIndex = 0;
+    SwitchOption vsync {"vsync", true, {GameRoot::instance().renderWindow.getSize().x / 2.f, 250.f}};
+    SliderOption musicVol {"music vol", {vsync.containerSprite.getPosition().x, vsync.containerSprite.getPosition().y + 75.f}};
+    SliderOption sfxVol {"sfx vol", {musicVol.containerSprite.getPosition().x, musicVol.containerSprite.getPosition().y + 75.f}};
+    SwitchOption buttonsOverride {"buttons override", false, {sfxVol.containerSprite.getPosition().x, sfxVol.containerSprite.getPosition().y + 75.f}};
+    ButtonsOverrideOptions buttonsOverrideOptions {"buttons", {buttonsOverride.containerSprite.getPosition().x, buttonsOverride.containerSprite.getPosition().y + 75.f}};
+    OptionIndicator optionIndicator {};
+    IOption* activeOption {&vsync};
+    ActiveSliderOption activeSliderOption {};
+    std::array<IOption*, OPTIONS_COUNT> optionPtrs {&vsync, &musicVol, &sfxVol, &buttonsOverride, nullptr};
+
+    IGameState* openedFrom {nullptr};
+    sf::Text backText {Art::instance().turretRoadFont, {"back"}, 42};
+    Buttons buttons {};
+    Options options {};
+
+    void loadOptions();
+    void saveOptions();
+    void open(IGameState* openedFrom);
+    void close();
+    void setActiveOption(IOption* option);
+    void toggleVsync(bool fromOptions);
+    void startSliding(SliderOption* sliderOption);
+    void endSliding();
+    void toggleButtonOverride(bool fromOptions);
+    void moveToNextMenuOption(float direction);
+    void update() override;
+    void renderGaussianBlur() override;
+    void renderToScreen() override;
+    void processMouseMoved(const sf::Event::MouseMoved* mouseMoved) override;
+    void processMouseReleased(const sf::Event::MouseButtonReleased* mouseReleased) override;
+    void processMousePressed(const sf::Event::MouseButtonPressed* mousePressed) override;
+    void processMouseWheelScrolledEvent(const sf::Event::MouseWheelScrolled* mouseWheelScrolled) override;
+    void processKeyPressed(const sf::Event::KeyPressed* keyPressed) override;
+    void processKeyReleased(const sf::Event::KeyReleased* keyReleased) override;
+    void processJoystickButtonReleased(const sf::Event::JoystickButtonReleased* joystickButtonReleased) override;
+    void processJoystickAxisMoved(const sf::Event::JoystickMoved* joystickMoved) override;
+};
+
+
+
+#endif //OPTIONSMENU_H
