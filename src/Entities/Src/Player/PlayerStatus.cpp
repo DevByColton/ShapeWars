@@ -117,33 +117,29 @@ void PlayerStatus::removeLife()
 
 void PlayerStatus::loadHighscore()
 {
-    // Load the high score file and make sure it opened
-    std::ifstream highscoreFile {"Content\\Data\\Highscores.txt"};
+    // Open the highscore file
+    std::fstream highscoreFile {"Content\\Data\\Highscore.bin", std::ios::in | std::ios::binary};
 
     // If the file is not found just default highscore
-    if (!highscoreFile) {
-        highScore = 25'000;
+    if (!highscoreFile)
         return;
-    }
 
-    // The highscore is the only thing in the file
-    highscoreFile >> highScore;
-
+    // Read the options and close
+    highscoreFile.read(reinterpret_cast<char*>(&highScore), sizeof(highScore));
     highscoreFile.close();
 }
 
 
-void PlayerStatus::saveHighscore(const int newHighscore)
+void PlayerStatus::saveHighscore(int newHighscore)
 {
-    std::ofstream highscoreFile {"Content\\Data\\highscores.txt"};
+    // Open the options file
+    std::fstream highscoreFile {"Content\\Data\\Highscore.bin", std::ios::out | std::ios::binary};
 
-    // Don't do anything if the highscore file is not open
     if (!highscoreFile)
         return;
 
-    // Write out the new high score
-    highscoreFile << newHighscore;
-
+    // Read the options and close
+    highscoreFile.write(reinterpret_cast<char*>(&newHighscore), sizeof(newHighscore));
     highscoreFile.close();
 }
 

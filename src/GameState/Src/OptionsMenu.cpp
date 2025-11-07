@@ -5,8 +5,6 @@
 #include "../../Input/Include/Input.h"
 #include "../../Input/Include/MouseAndKeyboard.h"
 
-#include <iostream>
-
 
 OptionsMenu::OptionsMenu()
 {
