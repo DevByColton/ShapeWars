@@ -95,6 +95,7 @@ struct OptionsMenu final : IGameState {
         std::pair<ButtonsOverride, sf::Text>* activeOption = {&keyboard};
         std::array<std::pair<ButtonsOverride, sf::Text>*, OPTIONS_COUNT> optionPtrs = {&keyboard, &xbox, &dualsense};
 
+        void checkOptionsSelected();
         void setByActiveIndex(int activeIndex);
         void setActiveButtonOverrideOption(int direction);
         void draw(sf::RenderTexture& renderTexture);

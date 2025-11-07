@@ -207,6 +207,39 @@ void OptionsMenu::SliderOption::draw(sf::RenderTexture& renderTexture)
 }
 
 
+void OptionsMenu::ButtonsOverrideOptions::checkOptionsSelected()
+{
+    const bool keyboardContains = containerSprite
+        .getTransform()
+        .transformRect(keyboard.second.getGlobalBounds())
+        .contains(MouseAndKeyboard::instance().getMouseWindowPosition());
+
+    if (keyboardContains)
+    {
+        setByActiveIndex(static_cast<int>(keyboard.first));
+        return;
+    }
+
+    const bool xboxContains = containerSprite
+        .getTransform()
+        .transformRect(xbox.second.getGlobalBounds())
+        .contains(MouseAndKeyboard::instance().getMouseWindowPosition());
+
+    if (xboxContains)
+    {
+        setByActiveIndex(static_cast<int>(xbox.first));
+        return;
+    }
+
+    const bool dualsenseContains = containerSprite
+        .getTransform()
+        .transformRect(dualsense.second.getGlobalBounds())
+        .contains(MouseAndKeyboard::instance().getMouseWindowPosition());
+
+    if (dualsenseContains)
+        setByActiveIndex(static_cast<int>(dualsense.first));
+}
+
 void OptionsMenu::ButtonsOverrideOptions::setByActiveIndex(const int activeIndex)
 {
     if (activeOption != nullptr)
@@ -452,8 +485,8 @@ void OptionsMenu::processMouseMoved(const sf::Event::MouseMoved* mouseMoved)
                     optionPtrs.at(o)->containerSprite.getLocalBounds().size.x,
                     optionPtrs.at(o)->containerSprite.getOrigin().y
                 });
-                optionIndicator.setActive(leftPosition, rightPosition);
 
+                optionIndicator.setActive(leftPosition, rightPosition);
                 activeOptionIndex = o;
                 setActiveOption(optionPtrs.at(o));
             }
@@ -479,7 +512,12 @@ void OptionsMenu::processMouseReleased(const sf::Event::MouseButtonReleased* mou
 
             if (contains)
                 switchOption->onToggle();
+
+            return;
         }
+
+        if (const auto buttonsOverrideOption = dynamic_cast<ButtonsOverrideOptions*>(activeOption); buttonsOverrideOption != nullptr)
+            buttonsOverrideOption->checkOptionsSelected();
     }
 }
 
