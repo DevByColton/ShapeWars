@@ -259,10 +259,7 @@ void GamePlay::update()
         doTotalReset();
         GameRoot::instance().removeUpdatableState(&instance());
         GameRoot::instance().removeDrawableState(&instance());
-        GameRoot::instance().addUpdatableState(&StartMenu::instance());
-        GameRoot::instance().addDrawableState(&StartMenu::instance());
-        GameRoot::instance().setActiveInputState(&StartMenu::instance());
-        StartMenu::instance().isTransitioningIn = true;
+        StartMenu::instance().transitionTo();
     }
 
     // Independent of player status

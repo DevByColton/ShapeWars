@@ -27,7 +27,7 @@ StartMenu::StartMenu()
     setActiveMenuOption(&start);
 
     // Select functions
-    start.onSelect = [this]{ isTransitioningOut = true; };
+    start.onSelect = [this]{ isTransitioningOut = true; highscoreArea.isTransitioningOut = true; };
     options.onSelect = [] { OptionsMenu::instance().open(&instance()); };
     quit.onSelect = [] { GameRoot::instance().renderWindow.close(); };
 
@@ -50,6 +50,8 @@ StartMenu::StartMenu()
 
     warsText.setOrigin({warsText.getLocalBounds().size.x, warsText.getLocalBounds().getCenter().y});
     warsText.setPosition({title.getLocalBounds().size.x - 55.f, title.getOrigin().y + 60.f});
+
+    highscoreArea.startOffScreen();
 }
 
 
@@ -182,6 +184,7 @@ void StartMenu::update()
 {
     updateBackground();
     optionIndicator.update();
+    highscoreArea.update();
 
     transitionMenuAndTitleIn();
     if (transitionMenuAndTitleOut())
@@ -225,6 +228,15 @@ void StartMenu::updateBackground()
 
     Particles::instance().update();
     Grid::instance().update();
+}
+
+void StartMenu::transitionTo()
+{
+    GameRoot::instance().addUpdatableState(&instance());
+    GameRoot::instance().addDrawableState(&instance());
+    GameRoot::instance().setActiveInputState(&instance());
+    isTransitioningIn = true;
+    highscoreArea.isTransitioningIn = true;
 }
 
 
@@ -312,4 +324,6 @@ void StartMenu::renderToScreen()
     titleTexture.draw(warsText);
     titleTexture.display();
     GameRoot::instance().renderWindow.draw(title);
+
+    highscoreArea.drawToScreen();
 }
