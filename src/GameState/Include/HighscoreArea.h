@@ -27,7 +27,9 @@ struct HighscoreArea {
     void transitionIn();
     void transitionOut();
     void update();
+    void alignHighscoreText();
     void drawToScreen();
+    void drawToTexture(sf::RenderTexture& texture);
 };
 
 

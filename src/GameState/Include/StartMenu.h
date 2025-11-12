@@ -5,6 +5,7 @@
 #include "ActiveMenuOptionIndicator.h"
 #include "HighscoreArea.h"
 #include "IGameState.h"
+#include "MenuOption.h"
 #include "../../GameRoot.h"
 #include "../../Content/Include/Art.h"
 #include "SFML/Graphics/Text.hpp"
@@ -21,20 +22,6 @@ struct StartMenu final : IGameState
         static auto *instance = new StartMenu;
         return *instance;
     }
-
-    struct MenuOption final : sf::Text
-    {
-        explicit MenuOption(const sf::Font& font, const sf::String& string, const unsigned int characterSize)
-            : sf::Text(font, string, characterSize)
-        {
-            // Mute the menu option by default
-            setFillColor(MUTED_TEXT_COLOR);
-            setStyle(Bold);
-        }
-
-        static constexpr sf::Color MUTED_TEXT_COLOR {185, 185, 185, 255};
-        std::function<void()> onSelect {};
-    };
 
     // Menus options area
     static constexpr int MENU_OPTIONS_COUNT = 3;

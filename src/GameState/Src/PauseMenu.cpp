@@ -3,38 +3,102 @@
 #include "../../Core/Include/Extensions.h"
 #include "../../Entities/Include/Player/PlayerStatus.h"
 #include "../../Input/Include/Input.h"
+#include "../../Input/Include/MouseAndKeyboard.h"
 #include "../Include/GamePlay.h"
+#include "../Include/OptionsMenu.h"
 
 
 PauseMenu::PauseMenu()
 {
-    // Justify the pause text slightly under the multiplier text in the middle of the screen
-    pausedText.setPosition({GameRoot::instance().windowSizeF.x / 2.f, 250.f});
-    pausedText.setOrigin({ pausedText.getLocalBounds().size.x / 2.f, pausedText.getLocalBounds().size.y / 2.f });
+    // Background and title
+    backgroundTexture.setSmooth(true);
+    paused.setOrigin(paused.getLocalBounds().getCenter());
+    paused.setPosition({
+        GameRoot::instance().windowSizeF.x - 300.f,
+        GameRoot::instance().windowSizeF.y / 2.f
+    });
 
-    // Set the highscore text to be in the top right of the window, right aligned
-    highScoreHeaderText.setOrigin({ highScoreHeaderText.getLocalBounds().size.x, highScoreHeaderText.getLocalBounds().size.y});
-    highScoreHeaderText.setPosition({ GameRoot::instance().windowSizeF.x - 22.f, 25.f });
-    highScoreHeaderText.setStyle(sf::Text::Bold);
-    highScoreText.setStyle(sf::Text::Bold);
+    highscoreArea.startOnScreen();
+
+    // Menu options
+    options.setOrigin({0.f, options.getLocalBounds().getCenter().y});
+    options.setPosition({70.f, backgroundTexture.getSize().y / 2.f});
+    options.onSelect = [] { OptionsMenu::instance().open(&instance()); };
+
+    restart.setOrigin({0.f, resume.getLocalBounds().getCenter().y}); // restart another case where alignment is off because of tall letters
+    restart.setPosition({70.f, options.getPosition().y - 60.f});
+    restart.onSelect = [this]
+    {
+        PlayerStatus::instance().removeLife(true);
+        GamePlay::instance().restartRound();
+        resumeGameplay();
+    };
+
+    resume.setOrigin({0.f, resume.getLocalBounds().getCenter().y});
+    resume.setPosition({70.f, restart.getPosition().y - 60.f});
+    resume.onSelect = [this] { resumeGameplay(); };
+
+    quitToMenu.setOrigin({0.f, quitToMenu.getLocalBounds().getCenter().y});
+    quitToMenu.setPosition({70.f, options.getPosition().y + 60.f});
+    quitToMenu.onSelect = [this]
+    {
+        PlayerStatus::instance().removeLife(true);
+        resumeGameplay();
+    };
+
+    quitToDesktop.setOrigin({0.f, quitToDesktop.getLocalBounds().getCenter().y});
+    quitToDesktop.setPosition({70.f, quitToMenu.getPosition().y + 60.f});
+    quitToDesktop.onSelect = [] { GameRoot::instance().renderWindow.close(); };
+
+    // Set the default active menu option
+    setActiveMenuOption(&resume, false);
 }
 
 
 void PauseMenu::processMouseMoved(const sf::Event::MouseMoved* mouseMoved)
 {
-    // Nothing to do
+    // For hovering on an option
+    if (!optionIndicator.isActiveOptionIndicatorTransitioning)
+        for (int mo = 0; mo < MENU_OPTIONS_COUNT; mo++)
+        {
+            const bool contains = backgroundSprite
+            .getTransform()
+            .transformRect(menuOptionPtrs.at(mo)->getGlobalBounds())
+            .contains(MouseAndKeyboard::instance().getMouseWindowPosition());
+
+            if (!contains)
+                continue;
+
+            // Menu option can be active
+            optionIndicator.setActive(
+                {menuOptionPtrs.at(mo)->getPosition().x - 30.f, menuOptionPtrs.at(mo)->getPosition().y},
+                {menuOptionPtrs.at(mo)->getLocalBounds().size.x + 110.f, menuOptionPtrs.at(mo)->getPosition().y}
+            );
+
+            activeMenuOptionIndex = mo;
+            setActiveMenuOption(menuOptionPtrs.at(mo), true);
+        }
 }
 
 
 void PauseMenu::processMouseReleased(const sf::Event::MouseButtonReleased* mouseReleased)
 {
-    // Nothing to do
+    if (mouseReleased->button == sf::Mouse::Button::Left)
+    {
+        const bool contains = backgroundSprite
+            .getTransform()
+            .transformRect(activeMenuOption->getGlobalBounds())
+            .contains(MouseAndKeyboard::instance().getMouseWindowPosition());
+
+        if (contains)
+            activeMenuOption->onSelect();
+    }
 }
 
 
 void PauseMenu::processMouseWheelScrolledEvent(const sf::Event::MouseWheelScrolled* mouseWheelScrolled)
 {
-    // Nothing to do
+    moveToNextMenuOption(-mouseWheelScrolled->delta);
 }
 
 
@@ -46,8 +110,20 @@ void PauseMenu::processKeyPressed(const sf::Event::KeyPressed* keyPressed)
 
 void PauseMenu::processKeyReleased(const sf::Event::KeyReleased* keyReleased)
 {
-    if (keyReleased->scancode == sf::Keyboard::Scancode::P)
-        resume();
+    if (keyReleased->scancode == sf::Keyboard::Scancode::Escape ||
+        keyReleased->scancode == sf::Keyboard::Scancode::Tab)
+        resumeGameplay();
+
+    if (keyReleased->scancode == sf::Keyboard::Scancode::Enter ||
+        keyReleased->scancode == sf::Keyboard::Scancode::NumpadEnter ||
+        keyReleased->scancode == sf::Keyboard::Scancode::Space)
+        activeMenuOption->onSelect();
+
+    if (keyReleased->scancode == sf::Keyboard::Scancode::Up)
+        moveToNextMenuOption(-1.f);
+
+    if (keyReleased->scancode == sf::Keyboard::Scancode::Down)
+        moveToNextMenuOption(1.f);
 }
 
 
@@ -59,20 +135,27 @@ void PauseMenu::processMousePressed(const sf::Event::MouseButtonPressed* mousePr
 
 void PauseMenu::processJoystickButtonReleased(const sf::Event::JoystickButtonReleased* joystickButtonReleased)
 {
-    if (Input::isStartButton(joystickButtonReleased))
-        resume();
+    if (Input::isSecondaryButton(joystickButtonReleased))
+        resumeGameplay();
+
+    if (Input::isPrimaryButton(joystickButtonReleased))
+        activeMenuOption->onSelect();
 }
 
 
 void PauseMenu::processJoystickAxisMoved(const sf::Event::JoystickMoved* joystickMoved)
 {
-    // Nothing to do
+    if (Input::isDpadY(joystickMoved) && Input::wasDpadMoved(joystickMoved))
+        moveToNextMenuOption(-joystickMoved->position);
+
+    if (Input::isLeftThumbstickY(joystickMoved) && Input:: wasLeftThumbstickMoved(joystickMoved))
+        moveToNextMenuOption(joystickMoved->position);
 }
 
 
 void PauseMenu::update()
 {
-    // Nothing to do
+    optionIndicator.update();
 }
 
 
@@ -84,22 +167,85 @@ void PauseMenu::renderGaussianBlur()
 
 void PauseMenu::renderToScreen()
 {
-    GameRoot::instance().renderWindow.draw(pausedText);
-
-    // Draw the high score header and text, right align the highscore number
-    GameRoot::instance().renderWindow.draw(highScoreHeaderText);
-    highScoreText.setString(Extensions::formatNumberWithCommas(PlayerStatus::instance().highScore));
-    const sf::FloatRect highscoreTextRect = highScoreText.getLocalBounds();
-    highScoreText.setPosition({ GameRoot::instance().windowSizeF.x - highscoreTextRect.size.x - 22.f, 30.f });
-    GameRoot::instance().renderWindow.draw(highScoreText);
+    backgroundTexture.clear(BACKGROUND_COLOR);
+    backgroundTexture.draw(paused);
+    highscoreArea.drawToTexture(backgroundTexture);
+    optionIndicator.draw(backgroundTexture);
+    backgroundTexture.draw(resume);
+    backgroundTexture.draw(restart);
+    backgroundTexture.draw(options);
+    backgroundTexture.draw(quitToMenu);
+    backgroundTexture.draw(quitToDesktop);
+    backgroundTexture.display();
+    GameRoot::instance().renderWindow.draw(backgroundSprite);
 }
 
 
-void PauseMenu::resume()
+void PauseMenu::close()
 {
     GameRoot::instance().removeUpdatableState(&instance());
     GameRoot::instance().removeDrawableState(&instance());
+    setActiveMenuOption(&resume, false);
+    activeMenuOptionIndex = 0;
+}
+
+
+void PauseMenu::resumeGameplay()
+{
+    close();
     GameRoot::instance().addUpdatableState(&GamePlay::instance());
     GameRoot::instance().setActiveInputState(&GamePlay::instance());
     PlayerStatus::instance().startRoundClock();
+}
+
+
+void PauseMenu::setActiveMenuOption(MenuOption* nextMenuOption, const bool withPositionTransition)
+{
+    activeMenuOption->setFillColor(MenuOption::MUTED_TEXT_COLOR);
+    activeMenuOption = nextMenuOption;
+    activeMenuOption->setFillColor(sf::Color::White);
+
+    if (withPositionTransition)
+    {
+        optionIndicator.setActive(
+            {activeMenuOption->getPosition().x - 30.f, activeMenuOption->getPosition().y},
+            {activeMenuOption->getLocalBounds().size.x + 110.f, activeMenuOption->getPosition().y}
+        );
+    }
+    else
+    {
+        optionIndicator.left.setPosition({
+            activeMenuOption->getPosition().x - 30.f,
+            activeMenuOption->getPosition().y
+        });
+        optionIndicator.right.setPosition({
+            activeMenuOption->getLocalBounds().size.x + 110.f,
+            activeMenuOption->getPosition().y
+        });
+    }
+}
+
+
+void PauseMenu::moveToNextMenuOption(const float direction)
+{
+    if (optionIndicator.isActiveOptionIndicatorTransitioning)
+        return;
+
+    // Iterate the active index
+    if (direction < 0)
+    {
+        activeMenuOptionIndex -= 1;
+
+        if (activeMenuOptionIndex < 0)
+            activeMenuOptionIndex = MENU_OPTIONS_COUNT - 1;
+    }
+    else
+    {
+        activeMenuOptionIndex += 1;
+
+        if (activeMenuOptionIndex > MENU_OPTIONS_COUNT - 1)
+            activeMenuOptionIndex = 0;
+    }
+
+    setActiveMenuOption(menuOptionPtrs.at(activeMenuOptionIndex), true);
 }

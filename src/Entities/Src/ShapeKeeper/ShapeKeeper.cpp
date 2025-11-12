@@ -1,6 +1,7 @@
 ﻿#include "../../Include/ShapeKeeper/ShapeKeeper.h"
 #include "../../../Core/Include/Logger.h"
 #include "../../../GameState/UI/Include/GamePlayHUD.h"
+#include "../../Include/BlackHoles.h"
 #include "../../Include/Enemies.h"
 #include "../../Include/Player/PlayerShip.h"
 #include "../../Include/Player/PlayerStatus.h"
@@ -43,6 +44,7 @@ void ShapeKeeper::startEncounter()
         PlayerStatus::instance().addPoints(50'000);
         GamePlayHUD::instance().setObjectiveEndless();
         GamePlayHUD::instance().markHealthAreaTransitionOut(true);
+        Enemies::instance().canSpawn = true;
     };
     laserBeams.reset();
     top.reset();
@@ -64,10 +66,9 @@ void ShapeKeeper::endEncounter()
     if (!isActive)
         return;
 
-    // Make enemies keep spawning for endless mode, black holes can spawn again
+    // Make enemies keep spawning for endless mode
     timeUntilEnemiesSpawnElapsed = DEFAULT_TIME_UNTIL_ENEMIES_SPAWN;
     enemiesSpawningElapsed = 0.f;
-    Enemies::instance().canSpawn = true;
 
     if (isDefeated)
         *currentGamePlayState = Endless;
@@ -110,7 +111,7 @@ void ShapeKeeper::update()
 
 void ShapeKeeper::updateEnemiesSpawn()
 {
-    if (!isActive)
+    if (!isActive && !PlayerStatus::instance().isGameOver())
         return;
 
     // Update enemies spawning trigger

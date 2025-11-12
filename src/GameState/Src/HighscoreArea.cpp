@@ -75,16 +75,32 @@ void HighscoreArea::update()
 }
 
 
-void HighscoreArea::drawToScreen()
+void HighscoreArea::alignHighscoreText()
 {
-    // Update the highscore text to make sure its aligned correctly
-    // This doesn't really need to happen every frame it's just easier here in case it changes
     highScoreText.setString(Extensions::formatNumberWithCommas(PlayerStatus::instance().highScore));
     highScoreText.setOrigin(highScoreText.getLocalBounds().getCenter());
+}
+
+
+void HighscoreArea::drawToScreen()
+{
+    alignHighscoreText();
 
     containerTexture.clear(sf::Color::Transparent);
     containerTexture.draw(label);
     containerTexture.draw(highScoreText);
     containerTexture.display();
     GameRoot::instance().renderWindow.draw(containerSprite);
+}
+
+
+void HighscoreArea::drawToTexture(sf::RenderTexture& texture)
+{
+    alignHighscoreText();
+
+    containerTexture.clear(sf::Color::Transparent);
+    containerTexture.draw(label);
+    containerTexture.draw(highScoreText);
+    containerTexture.display();
+    texture.draw(containerSprite);
 }

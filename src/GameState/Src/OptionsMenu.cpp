@@ -40,6 +40,9 @@ OptionsMenu::OptionsMenu()
     // Set button actions
     vsync.onToggle = [this]{ toggleVsync(false); };
 
+    // Updating vsync origin manually, the alignment issue strikes again
+    vsync.label.setOrigin({vsync.label.getOrigin().x, vsync.label.getOrigin().y - 8.f});
+
     musicVol.onPress = [this]{ startSliding(&musicVol); };
     musicVol.onRelease = [this] { endSliding(); };
     musicVol.onUpdate = [this] { Sound::instance().setMusicMasterVolume(musicVol.value); };

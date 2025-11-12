@@ -67,6 +67,16 @@ void GamePlay::startRound()
 void GamePlay::endRound()
 {
     markRoundEnd = true;
+    Enemies::instance().canSpawn = false;
+    BlackHoles::instance().canSpawn = false;
+}
+
+
+void GamePlay::restartRound()
+{
+    markRoundRestart = true;
+    Enemies::instance().canSpawn = false;
+    BlackHoles::instance().canSpawn = false;
 }
 
 
@@ -108,8 +118,9 @@ void GamePlay::processKeyReleased(const sf::Event::KeyReleased* keyReleased)
         return;
     }
 
-    if (keyReleased->scancode == sf::Keyboard::Scancode::Escape ||
-        keyReleased->scancode == sf::Keyboard::Scancode::P)
+    if (!PlayerStatus::instance().isGameOver() &&
+        (keyReleased->scancode == sf::Keyboard::Scancode::Escape ||
+        keyReleased->scancode == sf::Keyboard::Scancode::Tab))
     {
         pause();
         return;
@@ -140,13 +151,7 @@ void GamePlay::processKeyReleased(const sf::Event::KeyReleased* keyReleased)
     }
 
     if (keyReleased->scancode == sf::Keyboard::Scancode::Space)
-    {
         Nukes::instance().markDetonate(PlayerShip::instance().getPosition());
-        return;
-    }
-
-    if (keyReleased->scancode == sf::Keyboard::Scancode::E)
-        ShapeKeeper::instance().endEncounter();
 }
 
 
@@ -214,12 +219,12 @@ void GamePlay::update()
             ShapeKeeper::instance().markDeactivate();
         }
         else
+        {
             GamePlayHUD::instance().isTransitioningScoreAreaOut = true;
+        }
 
         // Transition the control area out always
         GamePlayHUD::instance().gamePlayControlArea.isTransitioningOut = true;
-        Enemies::instance().canSpawn = false;
-        BlackHoles::instance().canSpawn = false;
         markRoundEnd = false;
     }
 
@@ -253,13 +258,22 @@ void GamePlay::update()
     if (PlayerStatus::instance().needBaseReset)
         doBaseReset();
 
-    // At the re-start of a new round
+    // Restart a new round or go back to the start menu
     if (PlayerStatus::instance().needTotalReset)
     {
         doTotalReset();
-        GameRoot::instance().removeUpdatableState(&instance());
-        GameRoot::instance().removeDrawableState(&instance());
-        StartMenu::instance().transitionTo();
+
+        if (markRoundRestart)
+        {
+            startRound();
+            markRoundRestart = false;
+        }
+        else
+        {
+            GameRoot::instance().removeUpdatableState(&instance());
+            GameRoot::instance().removeDrawableState(&instance());
+            StartMenu::instance().transitionTo();
+        }
     }
 
     // Independent of player status
