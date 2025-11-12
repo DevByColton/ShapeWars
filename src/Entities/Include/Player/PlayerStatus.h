@@ -41,7 +41,7 @@ public:
     bool isDead() const;
     void update();
     void addPoints(int);
-    void removeLife();
+    void removeLife(bool removeAll);
     void increaseMultiplier();
     bool isGameOver() const;
 };

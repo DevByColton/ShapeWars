@@ -163,9 +163,7 @@ void GameRoot::load()
     Particles::instance();
 
     // Set start menu as the first state
-    setActiveInputState(&StartMenu::instance());
-    addUpdatableState(&StartMenu::instance());
-    addDrawableState(&StartMenu::instance());
+    StartMenu::instance().transitionTo();
 }
 
 

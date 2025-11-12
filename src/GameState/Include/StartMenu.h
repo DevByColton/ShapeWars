@@ -3,7 +3,9 @@
 #include <functional>
 #include <random>
 #include "ActiveMenuOptionIndicator.h"
+#include "HighscoreArea.h"
 #include "IGameState.h"
+#include "MenuOption.h"
 #include "../../GameRoot.h"
 #include "../../Content/Include/Art.h"
 #include "SFML/Graphics/Text.hpp"
@@ -21,20 +23,6 @@ struct StartMenu final : IGameState
         return *instance;
     }
 
-    struct MenuOption final : sf::Text
-    {
-        explicit MenuOption(const sf::Font& font, const sf::String& string, const unsigned int characterSize)
-            : sf::Text(font, string, characterSize)
-        {
-            // Mute the menu option by default
-            setFillColor(MUTED_TEXT_COLOR);
-            setStyle(Bold);
-        }
-
-        static constexpr sf::Color MUTED_TEXT_COLOR {185, 185, 185, 255};
-        std::function<void()> onSelect {};
-    };
-
     // Menus options area
     static constexpr int MENU_OPTIONS_COUNT = 3;
     int activeMenuOptionIndex = 0;
@@ -46,6 +34,11 @@ struct StartMenu final : IGameState
     MenuOption* activeMenuOption = &start;
     std::array<MenuOption*, MENU_OPTIONS_COUNT> menuOptionPtrs {&start, &options, &quit};
     OptionIndicator optionIndicator {};
+    HighscoreArea highscoreArea {
+        true,
+        {GameRoot::instance().windowSizeF.x / 2.f, 100.f},
+        {GameRoot::instance().windowSizeF.x / 2.f, -100.f}
+    };
 
     // Menu and title options transitions
     static constexpr float TRANSITION_DURATION = 0.4f;
@@ -53,13 +46,13 @@ struct StartMenu final : IGameState
     bool isTransitioningOut = false;
     float transitionTime = 0.f;
     const sf::Vector2f menuOptionsOffScreenPosition {-330.f, GameRoot::instance().windowSizeF.y / 2.f};
-    const sf::Vector2f menuOptionsOnScreenPosition {325.f, GameRoot::instance().windowSizeF.y / 2.f};
+    const sf::Vector2f menuOptionsOnScreenPosition {335.f, GameRoot::instance().windowSizeF.y / 2.f};
     const sf::Vector2f titleOffScreenPosition {
         GameRoot::instance().windowSizeF.x + 355.f,
         GameRoot::instance().windowSizeF.y / 2.f
     };
     const sf::Vector2f titleOnScreenPosition {
-        GameRoot::instance().windowSizeF.x - 350.f,
+        GameRoot::instance().windowSizeF.x - 300.f,
         GameRoot::instance().windowSizeF.y / 2.f
     };
 
@@ -95,6 +88,7 @@ struct StartMenu final : IGameState
     bool transitionMenuAndTitleOut();
     void moveToNextMenuOption(float direction);
     void updateBackground();
+    void transitionTo();
 };
 
 

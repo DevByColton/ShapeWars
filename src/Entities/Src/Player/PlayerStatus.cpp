@@ -6,6 +6,7 @@
 #include "../../../Core/Include/ColorPicker.h"
 #include "../../../Core/Include/RandomVector.h"
 #include "../../../GameState/Include/GamePlay.h"
+#include "../../Include/BlackHoles.h"
 #include "../../Include/Enemies.h"
 #include "../../Include/Player/PlayerShip.h"
 
@@ -65,9 +66,9 @@ void PlayerStatus::increaseMultiplier()
 }
 
 
-void PlayerStatus::removeLife()
+void PlayerStatus::removeLife(const bool removeAll)
 {
-    lives -= 1;
+    lives -= removeAll ? lives : 1;
     multiplier = 1;
     multiplierTime = MAX_MULTIPLIER_TIME;
     needBaseReset = true;
@@ -159,7 +160,7 @@ void PlayerStatus::markForKill()
 
 void PlayerStatus::kill()
 {
-    removeLife();
+    removeLife(false);
     shouldKill = false;
 }
 
@@ -179,6 +180,7 @@ void PlayerStatus::update()
     {
         kill();
         Enemies::instance().canSpawn = false;
+        BlackHoles::instance().canSpawn = false;
     }
 
     // Make sure the player is alive
@@ -189,6 +191,7 @@ void PlayerStatus::update()
         if (respawnTime <= 0)
         {
             Enemies::instance().canSpawn = true;
+            BlackHoles::instance().canSpawn = true;
 
             // When the game was over and the long respawn ends
             if (isGameOver())

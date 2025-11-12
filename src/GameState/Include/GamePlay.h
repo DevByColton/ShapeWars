@@ -26,6 +26,7 @@ struct GamePlay final : IGameState
     bool markShapeKeeperStart = false;
     bool markShapeKeeperEnd = false;
     bool markRoundEnd = false;
+    bool markRoundRestart = false;
     GamePlayState currentGamePlayState = PreBoss;
 
     void pause();
@@ -33,6 +34,7 @@ struct GamePlay final : IGameState
     void doTotalReset();
     void startRound();
     void endRound();
+    void restartRound();
     void processMouseMoved(const sf::Event::MouseMoved* mouseMoved) override;
     void processMouseReleased(const sf::Event::MouseButtonReleased* mouseReleased) override;
     void processMousePressed(const sf::Event::MouseButtonPressed* mousePressed) override;
