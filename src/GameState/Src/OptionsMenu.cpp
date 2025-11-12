@@ -8,6 +8,13 @@
 
 OptionsMenu::OptionsMenu()
 {
+    constexpr sf::Color corners = {0, 12, 38, 255};
+    constexpr sf::Color middle = {0, 0, 77, 255};
+    background.setVertexData(0, {0.0f, 0.0f}, corners);
+    background.setVertexData(1, {0, GameRoot::instance().windowSizeF.y}, middle);
+    background.setVertexData(2, {GameRoot::instance().windowSizeF.x, 0.0f}, middle);
+    background.setVertexData(3, {GameRoot::instance().windowSizeF.x, GameRoot::instance().windowSizeF.y}, corners);
+
     optionsBackgroundTexture.setSmooth(true);
     title.setPosition({optionsBackgroundTexture.getSize().x / 2.f, 50.f});
     title.setOrigin(title.getLocalBounds().getCenter());
@@ -440,7 +447,8 @@ void OptionsMenu::update()
 
 void OptionsMenu::renderGaussianBlur()
 {
-    optionsBackgroundTexture.clear(backgroundColor);
+    optionsBackgroundTexture.clear(sf::Color::Transparent);
+    background.draw(optionsBackgroundTexture);
     optionIndicator.draw(optionsBackgroundTexture);
     optionsBackgroundTexture.display();
     GaussianBlur::instance().drawToBase(optionBackground);

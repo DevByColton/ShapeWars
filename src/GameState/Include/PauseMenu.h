@@ -1,6 +1,7 @@
 ﻿#ifndef PAUSEMENU_H
 #define PAUSEMENU_H
 #include "ActiveMenuOptionIndicator.h"
+#include "Background.h"
 #include "HighscoreArea.h"
 #include "IGameState.h"
 #include "MenuOption.h"
@@ -20,7 +21,7 @@ struct PauseMenu final : IGameState
     }
 
     // Options background and title
-    const sf::Color BACKGROUND_COLOR {35,31,32, 225};
+    Background background {};
     sf::RenderTexture backgroundTexture = {{GameRoot::instance().renderWindow.getSize().x, GameRoot::instance().renderWindow.getSize().y}};
     sf::Sprite backgroundSprite {backgroundTexture.getTexture()};
     sf::Text paused {Art::instance().majorMonoFont, {"PAUSED"}, 100};
