@@ -4,6 +4,7 @@
 #include <utility>
 #include <fstream>
 #include "ActiveMenuOptionIndicator.h"
+#include "Background.h"
 #include "IGameState.h"
 #include "../../GameRoot.h"
 #include "../../Content/Include/Art.h"
@@ -102,7 +103,7 @@ struct OptionsMenu final : IGameState {
     };
 
     // Options background and title
-    const sf::Color backgroundColor {35,31,32, 225};
+    Background background {};
     sf::RenderTexture optionsBackgroundTexture = {{GameRoot::instance().renderWindow.getSize().x, GameRoot::instance().renderWindow.getSize().y}};
     sf::Sprite optionBackground {optionsBackgroundTexture.getTexture()};
     sf::Text title {Art::instance().majorMonoFont, {"OPTIONS"}, 100};

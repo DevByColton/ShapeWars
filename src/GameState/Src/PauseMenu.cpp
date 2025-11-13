@@ -11,6 +11,13 @@
 PauseMenu::PauseMenu()
 {
     // Background and title
+    constexpr sf::Color corners = {21, 13, 38, 255};
+    constexpr sf::Color middle = {35, 21, 64, 255};
+    background.setVertexData(0, {0.0f, 0.0f}, corners);
+    background.setVertexData(1, {0, GameRoot::instance().windowSizeF.y}, middle);
+    background.setVertexData(2, {GameRoot::instance().windowSizeF.x, 0.0f}, middle);
+    background.setVertexData(3, {GameRoot::instance().windowSizeF.x, GameRoot::instance().windowSizeF.y}, corners);
+
     backgroundTexture.setSmooth(true);
     paused.setOrigin(paused.getLocalBounds().getCenter());
     paused.setPosition({
@@ -167,7 +174,8 @@ void PauseMenu::renderGaussianBlur()
 
 void PauseMenu::renderToScreen()
 {
-    backgroundTexture.clear(BACKGROUND_COLOR);
+    backgroundTexture.clear(sf::Color::Transparent);
+    background.draw(backgroundTexture);
     backgroundTexture.draw(paused);
     highscoreArea.drawToTexture(backgroundTexture);
     optionIndicator.draw(backgroundTexture);
