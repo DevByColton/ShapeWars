@@ -223,7 +223,7 @@ void GamePlayHUD::drawToScreen()
         text.append("high score: ");
         text.append(Extensions::formatNumberWithCommas(PlayerStatus::instance().highScore));
         gameOverText.setString(text);
-        gameOverText.setOrigin({gameOverText.getLocalBounds().size.x / 2.f, gameOverText.getLocalBounds().size.y / 2.f});
+        gameOverText.setOrigin(gameOverText.getLocalBounds().getCenter());
         GameRoot::instance().renderWindow.draw(gameOverText);
     }
 }
