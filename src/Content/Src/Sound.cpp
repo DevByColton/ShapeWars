@@ -4,43 +4,16 @@
 #include "SFML/System/Exception.hpp"
 
 
-Sound::Sound() {
-
+Sound::Sound()
+{
     try {
         // Load the gameplay song
         gameplaySong = sf::Music("Content\\Sound\\Music.mp3");
         gameplaySong.setLoopPoints({sf::milliseconds(0), sf::seconds(gameplaySong.getDuration().asSeconds())});
 
-        // Set the shot volumes
-        shot1Sound.setVolume(50.f);
-        shot2Sound.setVolume(50.f);
-        shot3Sound.setVolume(50.f);
-        shot4Sound.setVolume(50.f);
-
-        // Set the explosion volumes
-        explosion1Sound.setVolume(70.f);
-        explosion2Sound.setVolume(70.f);
-        explosion3Sound.setVolume(70.f);
-        explosion4Sound.setVolume(70.f);
-        explosion5Sound.setVolume(70.f);
-        explosion6Sound.setVolume(70.f);
-        explosion7Sound.setVolume(70.f);
-        explosion8Sound.setVolume(70.f);
-
-        // Set the spawn volumes
-        spawn1Sound.setVolume(60.f);
-        spawn2Sound.setVolume(60.f);
-        spawn3Sound.setVolume(60.f);
-        spawn4Sound.setVolume(60.f);
-        spawn5Sound.setVolume(60.f);
-        spawn6Sound.setVolume(60.f);
-        spawn7Sound.setVolume(60.f);
-        spawn8Sound.setVolume(60.f);
-
     } catch (sf::Exception &ex) {
         Logger::printError(ex.what());
     }
-
 }
 
 
@@ -54,6 +27,12 @@ void Sound::setMusicMasterVolume(const float volume)
 void Sound::setSfxMasterVolume(const float volume)
 {
     sfxMasterVolume = volume;
+
+    // Menu sounds
+    menuUpSound.setVolume(sfxMasterVolume);
+    menuDownSound.setVolume(sfxMasterVolume);
+    menuLeftSound.setVolume(sfxMasterVolume);
+    menuRightSound.setVolume(sfxMasterVolume);
 
     // Set the shot volumes
     shot1Sound.setVolume(sfxMasterVolume);
@@ -83,18 +62,19 @@ void Sound::setSfxMasterVolume(const float volume)
 }
 
 
-void Sound::togglePlaySounds() {
+void Sound::togglePlaySounds()
+{
     playSound = !playSound;
 
-    if (gameplaySong.getStatus() == sf::SoundSource::Status::Playing)
-        gameplaySong.stop();
-    else
-        gameplaySong.play();
+    // if (gameplaySong.getStatus() == sf::SoundSource::Status::Playing)
+    //     gameplaySong.stop();
+    // else
+    //     gameplaySong.play();
 }
 
 
-void Sound::playGamePlaySong()  {
-
+void Sound::playGamePlaySong()
+{
     if (!playSound || gameplaySong.getStatus() == sf::SoundSource::Status::Playing)
         return;
 
@@ -102,8 +82,8 @@ void Sound::playGamePlaySong()  {
 }
 
 
-void Sound::playShotSound() {
-
+void Sound::playShotSound()
+{
     if (!playSound)
         return;
 
@@ -122,12 +102,11 @@ void Sound::playShotSound() {
         shot4Sound.setPitch(shotPitch(randEngine));
         shot4Sound.play();
     }
-
 }
 
 
-void Sound::playExplosionSound() {
-
+void Sound::playExplosionSound()
+{
     if (!playSound)
         return;
 
@@ -158,12 +137,11 @@ void Sound::playExplosionSound() {
         explosion8Sound.setPitch(explosionPitch(randEngine));
         explosion8Sound.play();
     }
-
 }
 
 
-void Sound::playSpawnSound() {
-
+void Sound::playSpawnSound()
+{
     if (!playSound)
         return;
 
@@ -194,6 +172,5 @@ void Sound::playSpawnSound() {
         spawn8Sound.setPitch(spawnPitch(randEngine));
         spawn8Sound.play();
     }
-
 }
 

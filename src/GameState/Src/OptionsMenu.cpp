@@ -46,6 +46,22 @@ OptionsMenu::OptionsMenu()
 
     // Set button actions
     vsync.onToggle = [this]{ toggleVsync(false); };
+    vsync.toggleOn = [this]
+    {
+        if (!vsync.checked)
+        {
+            vsync.checked = false;
+            toggleVsync(false);
+        }
+    };
+    vsync.toggleOff = [this]
+    {
+        if (vsync.checked)
+        {
+            vsync.checked = true;
+            toggleVsync(false);
+        }
+    };
 
     // Updating vsync origin manually, the alignment issue strikes again
     vsync.label.setOrigin({vsync.label.getOrigin().x, vsync.label.getOrigin().y - 8.f});
@@ -59,6 +75,22 @@ OptionsMenu::OptionsMenu()
     sfxVol.onUpdate = [this] { Sound::instance().setSfxMasterVolume(sfxVol.value); };
 
     buttonsOverride.onToggle = [this]{ toggleButtonOverride(false); };
+    buttonsOverride.toggleOn = [this]
+    {
+        if (!buttonsOverride.checked)
+        {
+            buttonsOverride.checked = false;
+            toggleButtonOverride(false);
+        }
+    };
+    buttonsOverride.toggleOff = [this]
+    {
+        if (buttonsOverride.checked)
+        {
+            buttonsOverride.checked = true;
+            toggleButtonOverride(false);
+        }
+    };
 
     loadOptions();
 }
@@ -77,8 +109,10 @@ void OptionsMenu::loadOptions()
     optionsFile.close();
 
     toggleVsync(true);
-    musicVol.updateValue(options.musicVolume);
-    sfxVol.updateValue(options.sfxVolume);
+    musicVol.updateValue(options.musicVolume, false);
+    Sound::instance().setMusicMasterVolume(musicVol.value);
+    sfxVol.updateValue(options.sfxVolume, false);
+    Sound::instance().setSfxMasterVolume(sfxVol.value);
     toggleButtonOverride(true);
     buttonsOverrideOptions.setByActiveIndex(options.buttonsOverrideOption);
 }
@@ -172,10 +206,18 @@ OptionsMenu::ButtonsOverrideOptions::ButtonsOverrideOptions(const std::string& l
 }
 
 
-void OptionsMenu::SliderOption::updateValue(const float next)
+void OptionsMenu::SliderOption::updateValue(const float next, const bool shouldPlaySound)
 {
     if (next < MIN || next > MAX)
         return;
+
+    if (shouldPlaySound)
+    {
+        if (next > value)
+            Sound::instance().menuRightSound.play();
+        else
+            Sound::instance().menuLeftSound.play();
+    }
 
     value = next;
     onUpdate();
@@ -192,6 +234,15 @@ void OptionsMenu::SliderOption::setValuePositions()
 
     fill.setTextureRect({{0, 0},{static_cast<int>(sizeX), y}});
     knob.setPosition(fill.getTransform().transformPoint({sizeX, y / 2.f}));
+}
+
+
+void OptionsMenu::SwitchOption::playToggleSound() const
+{
+    if (checked)
+        Sound::instance().menuRightSound.play();
+    else
+        Sound::instance().menuLeftSound.play();
 }
 
 
@@ -274,6 +325,11 @@ void OptionsMenu::ButtonsOverrideOptions::setActiveButtonOverrideOption(const in
     activeOption = optionPtrs.at(activeOptionIndex);
     activeOption->second.setFillColor(sf::Color::White);
     Input::instance().buttonsOverride = activeOption->first;
+
+    if (direction > 0)
+        Sound::instance().menuLeftSound.play();
+    else
+        Sound::instance().menuRightSound.play();
 }
 
 
@@ -323,9 +379,14 @@ void OptionsMenu::setActiveOption(IOption* option)
 void OptionsMenu::toggleVsync(const bool fromOptions)
 {
     if (fromOptions)
+    {
         vsync.checked = options.vsync;
+    }
     else
+    {
         vsync.checked = !vsync.checked;
+        vsync.playToggleSound();
+    }
 
     GameRoot::instance().renderWindow.setVerticalSyncEnabled(vsync.checked);
 }
@@ -361,9 +422,14 @@ void OptionsMenu::endSliding()
 void OptionsMenu::toggleButtonOverride(const bool fromOptions)
 {
     if (fromOptions)
+    {
         buttonsOverride.checked = options.buttonsOverride;
+    }
     else
+    {
         buttonsOverride.checked = !buttonsOverride.checked;
+        buttonsOverride.playToggleSound();
+    }
 
     Input::instance().isButtonsOverrideActive = buttonsOverride.checked;
     buttonsOverrideOptions.setByActiveIndex(static_cast<int>(Input::instance().buttonsOverride));
@@ -429,17 +495,17 @@ void OptionsMenu::update()
         // Clamp the new value to min and max, if the falls outside the range, set it to min or max and finish sliding
         if (newValue < activeSliderOption.sliderOption->MIN)
         {
-            activeSliderOption.sliderOption->updateValue(activeSliderOption.sliderOption->MIN);
+            activeSliderOption.sliderOption->updateValue(activeSliderOption.sliderOption->MIN, true);
             endSliding();
         }
         else if (newValue > activeSliderOption.sliderOption->MAX)
         {
-            activeSliderOption.sliderOption->updateValue(activeSliderOption.sliderOption->MAX);
+            activeSliderOption.sliderOption->updateValue(activeSliderOption.sliderOption->MAX, true);
             endSliding();
         }
         else
         {
-            activeSliderOption.sliderOption->updateValue(newValue);
+            activeSliderOption.sliderOption->updateValue(newValue, false);
         }
     }
 }
@@ -562,8 +628,11 @@ void OptionsMenu::processKeyPressed(const sf::Event::KeyPressed* keyPressed)
 {
     if (keyPressed->scancode == sf::Keyboard::Scancode::Left)
     {
+        if (const auto switchOption = dynamic_cast<SwitchOption*>(activeOption); switchOption != nullptr)
+            switchOption->toggleOff();
+
         if (const auto sliderOption = dynamic_cast<SliderOption*>(activeOption); sliderOption != nullptr)
-            sliderOption->updateValue(sliderOption->value - 5.f);
+            sliderOption->updateValue(sliderOption->value - 5.f, true);
 
         if (const auto buttonOverrideOptions = dynamic_cast<ButtonsOverrideOptions*>(activeOption); buttonOverrideOptions != nullptr)
             buttonsOverrideOptions.setActiveButtonOverrideOption(-1);
@@ -571,8 +640,11 @@ void OptionsMenu::processKeyPressed(const sf::Event::KeyPressed* keyPressed)
 
     if (keyPressed->scancode == sf::Keyboard::Scancode::Right)
     {
+        if (const auto switchOption = dynamic_cast<SwitchOption*>(activeOption); switchOption != nullptr)
+            switchOption->toggleOn();
+
         if (const auto sliderOption = dynamic_cast<SliderOption*>(activeOption); sliderOption != nullptr)
-            sliderOption->updateValue(sliderOption->value + 5.f);
+            sliderOption->updateValue(sliderOption->value + 5.f, true);
 
         if (const auto buttonOverrideOptions = dynamic_cast<ButtonsOverrideOptions*>(activeOption); buttonOverrideOptions != nullptr)
             buttonsOverrideOptions.setActiveButtonOverrideOption(1);
@@ -621,8 +693,16 @@ void OptionsMenu::processJoystickAxisMoved(const sf::Event::JoystickMoved* joyst
 
     if (Input::isDpadX(joystickMoved) && Input::wasDpadMoved(joystickMoved))
     {
+        if (const auto switchOption = dynamic_cast<SwitchOption*>(activeOption); switchOption != nullptr)
+        {
+            if (joystickMoved->position > 0.f)
+                switchOption->toggleOn();
+            else
+                switchOption->toggleOff();
+        }
+
         if (const auto sliderOption = dynamic_cast<SliderOption*>(activeOption); sliderOption != nullptr)
-            sliderOption->updateValue(joystickMoved->position > 0.f ? sliderOption->value + 5.f : sliderOption->value - 5.f);
+            sliderOption->updateValue(joystickMoved->position > 0.f ? sliderOption->value + 5.f : sliderOption->value - 5.f, true);
 
         if (const auto buttonOverrideOptions = dynamic_cast<ButtonsOverrideOptions*>(activeOption); buttonOverrideOptions != nullptr)
             buttonsOverrideOptions.setActiveButtonOverrideOption(joystickMoved->position > 0.f ? 1 : -1);
@@ -630,8 +710,16 @@ void OptionsMenu::processJoystickAxisMoved(const sf::Event::JoystickMoved* joyst
 
     if (Input::isLeftThumbstickX(joystickMoved) && Input:: wasLeftThumbstickMoved(joystickMoved))
     {
+        if (const auto switchOption = dynamic_cast<SwitchOption*>(activeOption); switchOption != nullptr)
+        {
+            if (joystickMoved->position > 0.f)
+                switchOption->toggleOn();
+            else
+                switchOption->toggleOff();
+        }
+
         if (const auto sliderOption = dynamic_cast<SliderOption*>(activeOption); sliderOption != nullptr)
-            sliderOption->updateValue(joystickMoved->position > 0.f ? sliderOption->value + 5.f : sliderOption->value - 5.f);
+            sliderOption->updateValue(joystickMoved->position > 0.f ? sliderOption->value + 5.f : sliderOption->value - 5.f, true);
 
         if (const auto buttonOverrideOptions = dynamic_cast<ButtonsOverrideOptions*>(activeOption); buttonOverrideOptions != nullptr)
             buttonsOverrideOptions.setActiveButtonOverrideOption(joystickMoved->position > 0.f ? 1 : -1);

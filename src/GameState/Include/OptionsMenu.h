@@ -53,7 +53,10 @@ struct OptionsMenu final : IGameState {
         sf::Sprite switchChecked {Art::instance().switchChecked};
         sf::Sprite switchUnchecked {Art::instance().switchUnchecked};
         std::function<void()> onToggle {};
+        std::function<void()> toggleOn {};
+        std::function<void()> toggleOff {};
 
+        void playToggleSound() const;
         void draw(sf::RenderTexture& renderTexture);
     };
 
@@ -71,7 +74,7 @@ struct OptionsMenu final : IGameState {
         std::function<void()> onPress {};
         std::function<void()> onRelease {};
 
-        void updateValue(float next);
+        void updateValue(float next, bool shouldPlaySound);
         void setValuePositions();
         void draw(sf::RenderTexture& renderTexture);
     };

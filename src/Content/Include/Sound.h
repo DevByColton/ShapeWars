@@ -4,24 +4,36 @@
 
 #include "SFML/Audio/Music.hpp"
 #include "SFML/Audio/Sound.hpp"
-#include <array>
 #include <random>
 #include "SFML/Audio/SoundBuffer.hpp"
 
 
-struct Sound {
+class Sound {
+private:
+    bool playSound = false;
+    float musicMasterVolume = 100.f;
+    float sfxMasterVolume = 100.f;
+
+    sf::Music gameplaySong;
+
+    // Menu sounds
+    sf::SoundBuffer menuDownSoundBuffer = sf::SoundBuffer("Content\\Sound\\MenuSounds\\MenuSoundDown.ogg");
+    sf::SoundBuffer menuUpSoundBuffer = sf::SoundBuffer("Content\\Sound\\MenuSounds\\MenuSoundUp.ogg");
+    sf::SoundBuffer menuLeftSoundBuffer = sf::SoundBuffer("Content\\Sound\\MenuSounds\\MenuSoundLeft.ogg");
+    sf::SoundBuffer menuRightSoundBuffer = sf::SoundBuffer("Content\\Sound\\MenuSounds\\MenuSoundRight.ogg");
+
+public:
     Sound();
-    ~Sound() = default;
 
     static Sound &instance() {
         static auto *instance = new Sound;
         return *instance;
     }
 
-    bool playSound = false;
-    float musicMasterVolume = 100.f;
-    float sfxMasterVolume = 100.f;
-    sf::Music gameplaySong;
+    sf::Sound menuUpSound = sf::Sound(menuUpSoundBuffer);
+    sf::Sound menuDownSound = sf::Sound(menuDownSoundBuffer);
+    sf::Sound menuLeftSound = sf::Sound(menuLeftSoundBuffer);
+    sf::Sound menuRightSound = sf::Sound(menuRightSoundBuffer);
 
     // Shot sounds
     sf::SoundBuffer shot1Buff = sf::SoundBuffer("Content\\Sound\\shoot-01.wav");

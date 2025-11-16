@@ -1,5 +1,6 @@
 ﻿#include "../Include/ActiveMenuOptionIndicator.h"
 #include "../../GameRoot.h"
+#include "../../Content/Include/Sound.h"
 #include "../../Core/Include/Extensions.h"
 
 
@@ -28,6 +29,15 @@ void OptionIndicator::setActive(const sf::Vector2f& leftTargetPosition, const sf
     left.setActive(leftTargetPosition);
     right.setActive(rightTargetPosition);
     isActiveOptionIndicatorTransitioning = true;
+
+    // Check if direction is up or down by comparing one of the markers y previous and next y values
+    if (const float direction = left.previousPosition.y - left.targetPosition.y; direction != 0)
+    {
+        if (direction > 0)
+            Sound::instance().menuDownSound.play();
+        else
+            Sound::instance().menuUpSound.play();
+    }
 }
 
 
