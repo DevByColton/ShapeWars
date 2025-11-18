@@ -246,16 +246,12 @@ void GameRoot::processInput()
             Input::instance().inputMode = InputMode::MouseAndKeyboard;
             activeInputState->processKeyReleased(keyReleased);
 
-            // Todo: Stuff below will be deleted eventually, move to settings pages
+            // NOTE: For debugging
+            // if (keyReleased->scancode == sf::Keyboard::Scancode::K)
+            //     renderWindow.close();
 
-            if (keyReleased->scancode == sf::Keyboard::Scancode::K)
-                renderWindow.close();
-
-            if (keyReleased->scancode == sf::Keyboard::Scancode::O)
-                Sound::instance().togglePlaySounds();
-
-            if (keyReleased->scancode == sf::Keyboard::Scancode::B)
-                GaussianBlur::instance().toggleGaussianBlur();
+            // if (keyReleased->scancode == sf::Keyboard::Scancode::B)
+            //     GaussianBlur::instance().toggleGaussianBlur();
         }
 
         // Joystick buttons released events (these are single press events that trigger on release)
@@ -282,6 +278,9 @@ void GameRoot::update() const
     for (int s = 0; s < MAX_GAME_STATE_COUNT; s++)
         if (updatableGameStates.at(s) != nullptr)
             updatableGameStates.at(s)->update();
+
+    // Always update sound
+    Sound::instance().update();
 }
 
 

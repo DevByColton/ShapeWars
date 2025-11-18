@@ -214,9 +214,9 @@ void OptionsMenu::SliderOption::updateValue(const float next, const bool shouldP
     if (shouldPlaySound)
     {
         if (next > value)
-            Sound::instance().menuRightSound.play();
-        else
             Sound::instance().menuLeftSound.play();
+        else
+            Sound::instance().menuRightSound.play();
     }
 
     value = next;
@@ -240,9 +240,9 @@ void OptionsMenu::SliderOption::setValuePositions()
 void OptionsMenu::SwitchOption::playToggleSound() const
 {
     if (checked)
-        Sound::instance().menuRightSound.play();
-    else
         Sound::instance().menuLeftSound.play();
+    else
+        Sound::instance().menuRightSound.play();
 }
 
 

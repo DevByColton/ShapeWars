@@ -1,5 +1,6 @@
 ﻿#include "../Include/PauseMenu.h"
 #include "../../GameRoot.h"
+#include "../../Content/Include/Sound.h"
 #include "../../Core/Include/Extensions.h"
 #include "../../Entities/Include/Player/PlayerStatus.h"
 #include "../../Input/Include/Input.h"
@@ -186,6 +187,15 @@ void PauseMenu::renderToScreen()
     backgroundTexture.draw(quitToDesktop);
     backgroundTexture.display();
     GameRoot::instance().renderWindow.draw(backgroundSprite);
+}
+
+
+void PauseMenu::open()
+{
+    GameRoot::instance().addUpdatableState(&instance());
+    GameRoot::instance().addDrawableState(&instance());
+    GameRoot::instance().setActiveInputState(&instance());
+    PlayerStatus::instance().stopRoundClock();
 }
 
 

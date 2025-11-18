@@ -1,5 +1,6 @@
 ﻿#include "../Include/StartMenu.h"
 #include "../../Content/Include/GaussianBlur.h"
+#include "../../Content/Include/Sound.h"
 #include "../../Core/Include/ColorPicker.h"
 #include "../../Core/Include/Extensions.h"
 #include "../../Core/Include/RandomVector.h"
@@ -266,6 +267,7 @@ void StartMenu::transitionMenuAndTitleIn()
             transitionTime = 0.f;
             menuOptionsSprite.setPosition(menuOptionsOnScreenPosition);
             title.setPosition(titleOnScreenPosition);
+            Sound::instance().menuBackgroundSong.startPlaying();
         }
     }
 }
@@ -289,6 +291,7 @@ bool StartMenu::transitionMenuAndTitleOut()
             transitionTime = 0.f;
             menuOptionsSprite.setPosition(menuOptionsOffScreenPosition);
             title.setPosition(titleOffScreenPosition);
+            Sound::instance().menuBackgroundSong.fadeOut(2.f);
             return true;
         }
     }

@@ -137,8 +137,6 @@ void Bullets::addBulletGroup(const sf::Vector2f& position, const float direction
         bullet->activate(velocity, position + offset);
         offset = Extensions::transform({15.0, 8.0}, aimQuat);
         bullet2->activate(velocity, position + offset);
-
-        Sound::instance().playShotSound();
     }
 }
 

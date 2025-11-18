@@ -25,10 +25,7 @@ GamePlay::GamePlay()
 void GamePlay::pause()
 {
     GameRoot::instance().removeUpdatableState(&instance());
-    GameRoot::instance().addUpdatableState(&PauseMenu::instance());
-    GameRoot::instance().addDrawableState(&PauseMenu::instance());
-    GameRoot::instance().setActiveInputState(&PauseMenu::instance());
-    PlayerStatus::instance().stopRoundClock();
+    PauseMenu::instance().open();
 }
 
 void GamePlay::doBaseReset()
