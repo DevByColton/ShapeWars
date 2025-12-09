@@ -3,6 +3,7 @@
 #include "../Include/Player/Buffs.h"
 #include "../Include/Player/PlayerStatus.h"
 #include "../../Core/Include/Extensions.h"
+#include "../../Core/Include/Logger.h"
 #include "../Include/BlackHoles.h"
 #include "../Include/Bullets.h"
 #include "../Include/Enemies.h"
@@ -58,14 +59,15 @@ void Collisions::handleEnemyPlayerBullets()
                     // Special case for dodger enemies, see if they are in proximity to dodge the bullet
                     if (enemy.enemyType == Dodger && Extensions::distanceSquared(enemy.getPosition(), bullet.getPosition()) < SMALL_PROXIMITY_RADIUS_SQR)
                     {
-                        const sf::Vector2f p = bullet.getPosition() - enemy.getPosition();
-                        const sf::Vector2f v = bullet.getVelocity() - enemy.getCurrentVelocity();
+                        const sf::Vector2f p = (bullet.getPosition() - enemy.getPosition()).normalized();
+                        const sf::Vector2f v = (bullet.getVelocity() - enemy.getCurrentVelocity()).normalized();
+                        const float directionDot = p.dot(v);
 
                         // Only dodge the bullet if the bullet is traveling towards the dodger
-                        if (p.dot(v) < 0.f)
+                        if (directionDot < 0.f)
                         {
                             const sf::Vector2f direction = enemy.getPosition() - bullet.getPosition();
-                            enemy.applyForce(direction * 0.015f);
+                            enemy.applyForce(direction * -directionDot * GameRoot::instance().deltaTime);
                         }
                     }
 

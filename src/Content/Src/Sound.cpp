@@ -111,6 +111,8 @@ void Sound::setSfxMasterVolume(const float volume)
     menuDownSound.setVolume(sfxMasterVolume);
     menuLeftSound.setVolume(sfxMasterVolume);
     menuRightSound.setVolume(sfxMasterVolume);
+    menuOpenSound.setVolume(sfxMasterVolume);
+    menuCloseSound.setVolume(sfxMasterVolume);
 }
 
 void Sound::update()

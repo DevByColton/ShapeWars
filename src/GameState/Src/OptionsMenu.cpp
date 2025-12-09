@@ -351,6 +351,7 @@ void OptionsMenu::open(IGameState* openedFrom)
     GameRoot::instance().setActiveInputState(&instance());
     GameRoot::instance().addUpdatableState(&instance());
     GameRoot::instance().addDrawableState(&instance());
+    Sound::instance().menuOpenSound.play();
 }
 
 
@@ -365,6 +366,7 @@ void OptionsMenu::close()
     openedFrom = nullptr;
 
     saveOptions();
+    Sound::instance().menuCloseSound.play();
 }
 
 

@@ -17,6 +17,8 @@ private:
     sf::SoundBuffer menuUpSoundBuffer = sf::SoundBuffer("Content\\Sound\\MenuSounds\\MenuSoundUp.ogg");
     sf::SoundBuffer menuLeftSoundBuffer = sf::SoundBuffer("Content\\Sound\\MenuSounds\\MenuSoundLeft.ogg");
     sf::SoundBuffer menuRightSoundBuffer = sf::SoundBuffer("Content\\Sound\\MenuSounds\\MenuSoundRight.ogg");
+    sf::SoundBuffer menuOpenSoundBuffer = sf::SoundBuffer("Content\\Sound\\MenuSounds\\MenuOpen.ogg");
+    sf::SoundBuffer menuCloseSoundBuffer = sf::SoundBuffer("Content\\Sound\\MenuSounds\\MenuClose.ogg");
 
     struct Song final : sf::Music
     {
@@ -45,11 +47,13 @@ public:
         return *instance;
     }
 
-    Song menuBackgroundSong {"Content\\Sound\\MenuSounds\\MenuBackground.ogg", true, 500};
+    Song menuBackgroundSong {"Content\\Sound\\MenuSounds\\MenuBackground.ogg", true, 600};
     sf::Sound menuUpSound = sf::Sound(menuUpSoundBuffer);
     sf::Sound menuDownSound = sf::Sound(menuDownSoundBuffer);
     sf::Sound menuLeftSound = sf::Sound(menuLeftSoundBuffer);
     sf::Sound menuRightSound = sf::Sound(menuRightSoundBuffer);
+    sf::Sound menuOpenSound = sf::Sound(menuOpenSoundBuffer);
+    sf::Sound menuCloseSound = sf::Sound(menuCloseSoundBuffer);
 
     void setMusicMasterVolume(float volume);
     void setSfxMasterVolume(float volume);

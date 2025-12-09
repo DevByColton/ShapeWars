@@ -19,7 +19,7 @@ struct GamePlayHUD {
     }
 
     static constexpr float TRANSITION_DURATION = 0.5f;
-    const std::string SCORE_OBJECTIVE_TEXT {"==[ Achieve 250,000 points... ]=="};
+    const std::string SCORE_OBJECTIVE_TEXT {"==[ Achieve 50,000 points... ]=="};
     const std::string ENDLESS_OBJECTIVE_TEXT {"==[ War never ends! ]=="};
     const sf::Vector2f scoreAreaOffScreenPosition {GameRoot::instance().windowSizeF.x / 2.f, -75.f};
     const sf::Vector2f scoreAreaOnScreenPosition {GameRoot::instance().windowSizeF.x / 2.f, 55.f};
