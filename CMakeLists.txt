@@ -167,6 +167,13 @@ target_link_libraries(
         PRIVATE SFML::System
 )
 
+## Add linker flags to statically link libgcc and libstdc++
+#target_link_options(
+#        ShapeWars
+#        PRIVATE "-static-libgcc"
+#        PRIVATE "-static-libstdc++"
+#)
+
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_definitions(-DDEBUG_BUILD)
 elseif(CMAKE_BUILD_TYPE STREQUAL "Release")

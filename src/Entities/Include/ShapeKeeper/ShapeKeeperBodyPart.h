@@ -11,7 +11,7 @@ struct ShapeKeeperBodyPart final : sf::Sprite
     explicit ShapeKeeperBodyPart(const sf::Texture& texture, const sf::Texture& trailTexture, const sf::Color& color,
                                  ShapeKeeperHealthBar* healthBar, ShapeKeeperCore* core, float coreXOffset, float coreYOffset);
 
-    static constexpr int MAX_HEALTH = 30;
+    static constexpr int MAX_HEALTH = 100;
     bool wasHit = false;
     bool hasBeenHitByNuke = false;
     int health = MAX_HEALTH;

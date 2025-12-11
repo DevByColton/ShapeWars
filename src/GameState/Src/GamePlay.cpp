@@ -286,10 +286,10 @@ void GamePlay::renderGaussianBlur()
     GaussianBlur::instance().clearTextures();
     Grid::instance().draw();
     Particles::instance().draw();
-    Nukes::instance().draw();
     Enemies::instance().draw();
     BlackHoles::instance().draw();
     Bullets::instance().draw();
+    Nukes::instance().draw();
 
     if (currentGamePlayState == BossFight)
         ShapeKeeper::instance().draw();

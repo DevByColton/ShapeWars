@@ -17,7 +17,7 @@ struct ShapeKeeperCore final : sf::Sprite
 {
     explicit ShapeKeeperCore(const sf::Texture& texture, const sf::Color& color, ShapeKeeperHealthBar* healthBar);
 
-    static constexpr int MAX_HEALTH = 30;
+    static constexpr int MAX_HEALTH = 100;
     const sf::Vector2f offScreenLeft {-400.f, GameRoot::instance().windowSizeF.y / 2.f};
     const sf::Vector2f offScreenRight {GameRoot::instance().windowSizeF.x + 400.f, GameRoot::instance().windowSizeF.y / 2.f};
     bool wasHit = false;

@@ -5,6 +5,7 @@
 #include "../../Core/Include/Extensions.h"
 #include "../Include/BlackHoles.h"
 #include "../Include/Enemies.h"
+#include "SFML/Graphics/CircleShape.hpp"
 
 
 Nukes::Nukes()
