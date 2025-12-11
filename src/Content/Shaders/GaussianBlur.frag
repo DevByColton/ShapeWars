@@ -1,7 +1,11 @@
-﻿uniform int sampleCount;
+﻿#version 130
+
+uniform int sampleCount;
 uniform float sampleWeights[15];
 uniform vec2 sampleOffsets[15];
 uniform sampler2D texture;
+
+out vec4 outColor;
 
 void main()
 {
@@ -11,5 +15,5 @@ void main()
         c += (texture2D(texture, gl_TexCoord[0].xy + sampleOffsets[i])) * sampleWeights[i];
     }
 
-    gl_FragColor = c;
+    outColor = c;
 }

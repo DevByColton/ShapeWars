@@ -1,5 +1,9 @@
-﻿uniform sampler2D baseTexture;
+﻿#version 130
+
+uniform sampler2D baseTexture;
 uniform sampler2D saturationTexture;
+
+out vec4 outColor;
 
 void main() {
 
@@ -8,5 +12,5 @@ void main() {
     vec4 base = texture2D(baseTexture, gl_TexCoord[0].xy);
 
     // Combine the two colors
-    gl_FragColor = saturation + base;
+    outColor = saturation + base;
 }
