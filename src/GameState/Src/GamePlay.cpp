@@ -25,10 +25,7 @@ GamePlay::GamePlay()
 void GamePlay::pause()
 {
     GameRoot::instance().removeUpdatableState(&instance());
-    GameRoot::instance().addUpdatableState(&PauseMenu::instance());
-    GameRoot::instance().addDrawableState(&PauseMenu::instance());
-    GameRoot::instance().setActiveInputState(&PauseMenu::instance());
-    PlayerStatus::instance().stopRoundClock();
+    PauseMenu::instance().open();
 }
 
 void GamePlay::doBaseReset()
@@ -289,10 +286,10 @@ void GamePlay::renderGaussianBlur()
     GaussianBlur::instance().clearTextures();
     Grid::instance().draw();
     Particles::instance().draw();
-    Nukes::instance().draw();
     Enemies::instance().draw();
     BlackHoles::instance().draw();
     Bullets::instance().draw();
+    Nukes::instance().draw();
 
     if (currentGamePlayState == BossFight)
         ShapeKeeper::instance().draw();

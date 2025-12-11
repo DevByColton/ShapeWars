@@ -187,6 +187,8 @@ void PlayerShip::createBulletGroups()
 
         // Standard single bullet group
         Bullets::instance().addBulletGroup(getPosition(), aimAngle);
+
+        // Todo: add bullet shot here!
     }
 }
 

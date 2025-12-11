@@ -212,7 +212,6 @@ void Enemies::Enemy::killAddPoints()
 
     PlayerStatus::instance().addPoints(pointValue);
     PlayerStatus::instance().increaseMultiplier();
-    Sound::instance().playExplosionSound();
     reset(true);
 }
 
@@ -317,7 +316,6 @@ void Enemies::Enemy::activateWanderer()
     };
 
     isActive = true;
-    Sound::instance().playSpawnSound();
 }
 
 
@@ -356,7 +354,6 @@ void Enemies::Enemy::activateSeeker()
     };
 
     isActive = true;
-    Sound::instance().playSpawnSound();
 }
 
 
@@ -396,7 +393,6 @@ void Enemies::Enemy::activateDodger()
     };
 
     isActive = true;
-    Sound::instance().playSpawnSound();
 }
 
 
@@ -470,7 +466,6 @@ void Enemies::Enemy::activateSnakeHead()
     };
 
     isActive = true;
-    Sound::instance().playSpawnSound();
 }
 
 

@@ -9,7 +9,7 @@
 
 void ShapeKeeper::checkActivate()
 {
-    if (!isActive && !isDefeated && PlayerStatus::instance().score > 250)
+    if (!isActive && !isDefeated && PlayerStatus::instance().score > 50'000)
     {
         *currentGamePlayState = BossFight;
         GamePlayHUD::instance().markScoreAreaTransitionOut(true);

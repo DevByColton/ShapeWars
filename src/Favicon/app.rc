@@ -1,0 +1,2 @@
+﻿#include "winresrc.h"
+IDR_MAINFRAME ICON "ShapeWarsFavicon.ico"

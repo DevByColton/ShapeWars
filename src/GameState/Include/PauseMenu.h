@@ -54,6 +54,7 @@ struct PauseMenu final : IGameState
     void update() override;
     void renderGaussianBlur() override;
     void renderToScreen() override;
+    void open();
     void close();
     void resumeGameplay();
     void setActiveMenuOption(MenuOption* nextMenuOption, bool withPositionTransition);

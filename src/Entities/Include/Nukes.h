@@ -22,7 +22,7 @@ public:
         return *instance;
     }
 
-    static constexpr float TIME_UNTIL_ENEMIES_SPAWN_AFTER_DETONATION_DURATION = 3.5f;
+    static constexpr float TIME_UNTIL_ENEMIES_SPAWN_AFTER_DETONATION_DURATION = 2.5f;
     float timeUntilEnemiesSpawnAfterElapsed = 0.f;
     bool isDetonating = false;
     int count = MAX_NUKE_COUNT;

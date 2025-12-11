@@ -12,9 +12,8 @@ FetchContent_Declare(SFML
     SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
-#file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/src/Content" DESTINATION "${CMAKE_BINARY_DIR}/bin")
-
 add_executable(ShapeWars src/main.cpp
+        src/Favicon/app.rc
         src/GameRoot.cpp
         src/GameRoot.h
         src/Core/Src/Logger.cpp
@@ -107,6 +106,57 @@ add_executable(ShapeWars src/main.cpp
         src/GameState/Include/Background.h
 )
 
+# Copy data
+set(DATA_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/Content/Data")
+set(DATA_DEST_DIR "$<TARGET_FILE_DIR:ShapeWars>/Content/Data")
+add_custom_command(
+        TARGET ShapeWars POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${DATA_DEST_DIR}
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${DATA_SOURCE_DIR} ${DATA_DEST_DIR}
+        COMMENT "Copying data to $<TARGET_FILE_DIR:ShapeWars>/Content/Data"
+)
+
+# Copy fonts
+set(FONT_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/Content/Font")
+set(FONT_DEST_DIR "$<TARGET_FILE_DIR:ShapeWars>/Content/Font")
+add_custom_command(
+        TARGET ShapeWars POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${FONT_DEST_DIR}
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${FONT_SOURCE_DIR} ${FONT_DEST_DIR}
+        COMMENT "Copying fonts to $<TARGET_FILE_DIR:ShapeWars>/Content/Font"
+)
+
+# Copy images
+set(IMAGES_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/Content/Images")
+set(IMAGES_DEST_DIR "$<TARGET_FILE_DIR:ShapeWars>/Content/Images")
+add_custom_command(
+        TARGET ShapeWars POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${IMAGES_DEST_DIR}
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${IMAGES_SOURCE_DIR} ${IMAGES_DEST_DIR}
+        COMMENT "Copying images to $<TARGET_FILE_DIR:ShapeWars>/Content/Images"
+)
+
+# Copy shaders
+set(SHADER_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/Content/Shaders")
+set(SHADER_DEST_DIR "$<TARGET_FILE_DIR:ShapeWars>/Content/Shaders")
+add_custom_command(
+        TARGET ShapeWars POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${SHADER_DEST_DIR}
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${SHADER_SOURCE_DIR} ${SHADER_DEST_DIR}
+        COMMENT "Copying shaders to $<TARGET_FILE_DIR:ShapeWars>/Content/Shaders"
+)
+
+# Copy sounds
+set(SOUND_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/Content/Sound")
+set(SOUND_DEST_DIR "$<TARGET_FILE_DIR:ShapeWars>/Content/Sound")
+add_custom_command(
+        TARGET ShapeWars POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${SOUND_DEST_DIR}
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${SOUND_SOURCE_DIR} ${SOUND_DEST_DIR}
+        COMMENT "Copying sound to $<TARGET_FILE_DIR:ShapeWars>/Content/Sound"
+)
+
+
 target_compile_features(ShapeWars PRIVATE cxx_std_20)
 
 target_link_libraries(
@@ -116,3 +166,16 @@ target_link_libraries(
         PRIVATE SFML::Window
         PRIVATE SFML::System
 )
+
+## Add linker flags to statically link libgcc and libstdc++
+#target_link_options(
+#        ShapeWars
+#        PRIVATE "-static-libgcc"
+#        PRIVATE "-static-libstdc++"
+#)
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_definitions(-DDEBUG_BUILD)
+elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
+    add_definitions(-DRELEASE_BUILD)
+endif()
