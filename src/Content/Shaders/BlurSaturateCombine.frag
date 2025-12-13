@@ -1,4 +1,4 @@
-﻿#version 130
+#version 130
 
 uniform sampler2D baseTexture;
 uniform sampler2D saturationTexture;

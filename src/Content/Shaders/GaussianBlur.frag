@@ -1,4 +1,4 @@
-﻿#version 130
+#version 130
 
 uniform int sampleCount;
 uniform float sampleWeights[15];

@@ -1,12 +1,13 @@
-﻿#include <string>
+﻿#include <windows.h>
 #include <chrono>
 #include "GameRoot.h"
+#include "../cmake-build-release-mingw/_deps/sfml-src/extlibs/headers/glad/include/glad/gl.h"
 #include "Content/Include/GaussianBlur.h"
 #include "Content/Include/Sound.h"
+#include "Core/Include/Logger.h"
 #include "Entities/Include/Collisions.h"
 #include "Systems/Include/Grid.h"
 #include "Input/Include/Input.h"
-#include "Core/Include/Logger.h"
 #include "Entities/Include/BlackHoles.h"
 #include "Entities/Include/Enemies.h"
 #include "Entities/Include/Nukes.h"
@@ -28,11 +29,62 @@
 
 GameRoot::GameRoot()
 {
+    // Check the build type and determine the window size
+#ifdef DEBUG_BUILD
+    setupDebug();
+#elif defined(RELEASE_BUILD)
+    setupRelease();
+#endif
+
+    renderWindow.setVerticalSyncEnabled(true);
+    renderWindow.setMouseCursorVisible(false);
+    renderWindow.setIcon(sf::Image("Content\\Images\\BlackHole.png"));
+
+    // Set the screen size in float for easy maths
+    windowSizeF = {static_cast<float>(renderWindow.getSize().x), static_cast<float>(renderWindow.getSize().y)};
+    windowRectangle = {{0.0, 0.0}, {windowSizeF.x, windowSizeF.y}};
+    topLeftCorner = {windowRectangle.position.x, windowRectangle.position.y};
+    topRightCorner = {windowRectangle.size.x, windowRectangle.position.y};
+    bottomRightCorner = {windowRectangle.size.x, windowRectangle.size.y};
+    bottomLeftCorner = {windowRectangle.position.x, windowRectangle.size.y};
+
+    // Set the minimum dead zone for controllers
+    renderWindow.setJoystickThreshold(Input::instance().thumbStickDeadZone);
+}
+
+
+void GameRoot::setupDebug()
+{
+    // Set fullscreen mode and set the window maximum size to it
+    const auto& fullscreenModes = sf::VideoMode::getFullscreenModes();
+    const unsigned int width = fullscreenModes[3].size.x;
+    const unsigned int height = fullscreenModes[3].size.y;
+    const sf::Vector2 maxWindowSize {width, height};
+    const unsigned int bitsPerPixel = fullscreenModes[3].bitsPerPixel;
+
+    // for (std::size_t fullscreenModeIndex = 0; fullscreenModeIndex < fullscreenModes.size(); fullscreenModeIndex++)
+    //     Logger::printOut("Index: " + std::to_string(fullscreenModeIndex) + " X: " + std::to_string(fullscreenModes.at(fullscreenModeIndex).size.x) + "Y: " + std::to_string(fullscreenModes.at(fullscreenModeIndex).size.y));
+
+    // Create the render window with fullscreen and properties
+    sf::ContextSettings settings;
+    settings.antiAliasingLevel = 8;
+    renderWindow = sf::RenderWindow(
+        sf::VideoMode(maxWindowSize, bitsPerPixel),
+        "Shape Wars",
+        sf::Style::Default,
+        sf::State::Windowed,
+        settings
+    );
+}
+
+
+void GameRoot::setupRelease()
+{
     // Set fullscreen mode and set the window maximum size to it
     const auto& fullscreenModes = sf::VideoMode::getFullscreenModes();
     const unsigned int width = fullscreenModes[0].size.x;
     const unsigned int height = fullscreenModes[0].size.y;
-    sf::Vector2 maxWindowSize {width, height};
+    const sf::Vector2 maxWindowSize {width, height};
     const unsigned int bitsPerPixel = fullscreenModes[0].bitsPerPixel;
 
     // Create the render window with fullscreen and properties
@@ -45,27 +97,8 @@ GameRoot::GameRoot()
         sf::State::Fullscreen,
         settings
     );
+
     renderWindow.setMaximumSize(maxWindowSize);
-    renderWindow.setVerticalSyncEnabled(true);
-    renderWindow.setMouseCursorVisible(false);
-    renderWindow.setIcon(sf::Image("Content\\Images\\BlackHole.png"));
-
-    // Set the screen size in float for easy maths
-    windowSizeF = {static_cast<float>(width), static_cast<float>(height)};
-    windowRectangle = {{0.0, 0.0}, {windowSizeF.x, windowSizeF.y}};
-    topLeftCorner = {windowRectangle.position.x, windowRectangle.position.y};
-    topRightCorner = {windowRectangle.size.x, windowRectangle.position.y};
-    bottomRightCorner = {windowRectangle.size.x, windowRectangle.size.y};
-    bottomLeftCorner = {windowRectangle.position.x, windowRectangle.size.y};
-
-    // Set the minimum dead zone for controllers
-    renderWindow.setJoystickThreshold(Input::instance().thumbStickDeadZone);
-
-     Logger::printOut(
-        "Created fullscreen window with size " + std::to_string(width) +
-        " x " + std::to_string(height) + " and " +
-        std::to_string(bitsPerPixel) + " bits per pixel"
-    );
 }
 
 

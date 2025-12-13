@@ -18,6 +18,8 @@ private:
     std::array<IGameState*, MAX_GAME_STATE_COUNT> updatableGameStates {nullptr, nullptr, nullptr};
     std::array<IGameState*, MAX_GAME_STATE_COUNT> drawableGameStates {nullptr, nullptr, nullptr};
 
+    void setupDebug();
+    void setupRelease();
     void processInput();
     void update() const;
     void render();
