@@ -55,13 +55,14 @@ GameRoot::GameRoot()
 
 void GameRoot::setupDebug()
 {
-    // Set fullscreen mode and set the window maximum size to it
+    // Set windowed mode
     const auto& fullscreenModes = sf::VideoMode::getFullscreenModes();
     const unsigned int width = fullscreenModes[3].size.x;
     const unsigned int height = fullscreenModes[3].size.y;
     const sf::Vector2 maxWindowSize {width, height};
     const unsigned int bitsPerPixel = fullscreenModes[3].bitsPerPixel;
 
+    // Print each screen mode available
     // for (std::size_t fullscreenModeIndex = 0; fullscreenModeIndex < fullscreenModes.size(); fullscreenModeIndex++)
     //     Logger::printOut("Index: " + std::to_string(fullscreenModeIndex) + " X: " + std::to_string(fullscreenModes.at(fullscreenModeIndex).size.x) + "Y: " + std::to_string(fullscreenModes.at(fullscreenModeIndex).size.y));
 
