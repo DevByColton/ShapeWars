@@ -1,4 +1,4 @@
-<a href="https://youtu.be/1bVX6a6VZ1I" target="_blank" rel="noopener noreferrer">Current build gameplay video on YouTube</a>
+<a href="https://youtu.be/1bVX6a6VZ1I" target="_blank" rel="noopener noreferrer">Current build gameplay video on YouTube</a><br>
 <a href="https://cohmoe.itch.io/shape-wars" target="_blank" rel="noopener noreferrer">itch.io link to download</a>
 
 <p class="lato-bold">// MY GOAL FOR SHAPE WARS</p>
