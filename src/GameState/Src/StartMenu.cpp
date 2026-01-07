@@ -291,7 +291,7 @@ bool StartMenu::transitionMenuAndTitleOut()
             transitionTime = 0.f;
             menuOptionsSprite.setPosition(menuOptionsOffScreenPosition);
             title.setPosition(titleOffScreenPosition);
-            Sound::instance().menuBackgroundSong.fadeOut(2.f);
+            Sound::instance().menuBackgroundSong.fadeOut(1.f);
             return true;
         }
     }

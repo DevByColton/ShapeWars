@@ -214,6 +214,7 @@ void PauseMenu::resumeGameplay()
     GameRoot::instance().addUpdatableState(&GamePlay::instance());
     GameRoot::instance().setActiveInputState(&GamePlay::instance());
     PlayerStatus::instance().startRoundClock();
+    Sound::instance().gameplaySong.unmuffle();
 }
 
 

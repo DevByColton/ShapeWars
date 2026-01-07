@@ -24,6 +24,9 @@ private:
     {
         explicit Song(const std::filesystem::path& filename, bool shouldLoop, std::int32_t loopStartOffsetMs);
 
+        Song *lowPassVersion {nullptr};
+        bool isMuffled = false;
+
         float fadeOutDuration = 1.f;
         float fadeOutElapsed = 0.f;
         bool isFadingOut = false;
@@ -36,6 +39,8 @@ private:
         void stopPlaying();
         void fadeOut(float fadeTime);
         void fadeIn(float fadeTime);
+        void muffle();
+        void unmuffle();
         void update();
     };
 
@@ -48,6 +53,8 @@ public:
     }
 
     Song menuBackgroundSong {"Content\\Sound\\MenuSounds\\MenuBackground.ogg", true, 600};
+    Song gameplaySong {"Content\\Sound\\GameplaySong.ogg", true, 0};
+    Song gameplaySongLPF {"Content\\Sound\\GameplaySongLPF.ogg", true, 0};
     sf::Sound menuUpSound = sf::Sound(menuUpSoundBuffer);
     sf::Sound menuDownSound = sf::Sound(menuDownSoundBuffer);
     sf::Sound menuLeftSound = sf::Sound(menuLeftSoundBuffer);

@@ -14,6 +14,7 @@
 #include "../Include/PauseMenu.h"
 #include "../Include/StartMenu.h"
 #include "../UI/Include/FloatingKillTexts.h"
+#include "../../Content/Include/Sound.h"
 
 
 GamePlay::GamePlay()
@@ -109,17 +110,20 @@ void GamePlay::processKeyPressed(const sf::Event::KeyPressed* keyPressed)
 
 void GamePlay::processKeyReleased(const sf::Event::KeyReleased* keyReleased)
 {
+#ifdef DEBUG_BUILD
     if (keyReleased->scancode == sf::Keyboard::Scancode::M)
     {
         PlayerStatus::instance().markForKill();
         return;
     }
+#endif
 
     if (!PlayerStatus::instance().isGameOver() &&
         (keyReleased->scancode == sf::Keyboard::Scancode::Escape ||
         keyReleased->scancode == sf::Keyboard::Scancode::Tab))
     {
         pause();
+        Sound::instance().gameplaySong.muffle();
         return;
     }
 
@@ -203,6 +207,7 @@ void GamePlay::update()
         GamePlayHUD::instance().gamePlayControlArea.isTransitioningIn = true;
         Enemies::instance().canSpawn = true;
         BlackHoles::instance().canSpawn = true;
+        Sound::instance().gameplaySong.fadeIn(2.f);
         markRoundStart = false;
     }
 
@@ -222,6 +227,7 @@ void GamePlay::update()
 
         // Transition the control area out always
         GamePlayHUD::instance().gamePlayControlArea.isTransitioningOut = true;
+        Sound::instance().gameplaySong.fadeOut(5.f);
         markRoundEnd = false;
     }
 
