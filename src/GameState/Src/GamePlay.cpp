@@ -25,6 +25,7 @@ GamePlay::GamePlay()
 
 void GamePlay::pause()
 {
+    Sound::instance().gameplaySong.muffle();
     GameRoot::instance().removeUpdatableState(&instance());
     PauseMenu::instance().open();
 }
@@ -123,7 +124,6 @@ void GamePlay::processKeyReleased(const sf::Event::KeyReleased* keyReleased)
         keyReleased->scancode == sf::Keyboard::Scancode::Tab))
     {
         pause();
-        Sound::instance().gameplaySong.muffle();
         return;
     }
 

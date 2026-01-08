@@ -57,7 +57,7 @@ void LasersBeams::Laser::updateAnimation(const sf::Vector2f& laserEndPoint)
         return;
 
     // Entering animation state
-    if (animationState == Entering && laserExpandTime < LASER_EXPAND_DURATION)
+    if (animationState == Entering)
     {
         laserExpandTime += GameRoot::instance().deltaTime;
 
@@ -165,7 +165,6 @@ void LasersBeams::updateSpawnTimers()
         {
             timeUntilLaserElapsed = 0.f;
             timeUntilLaserDuration = timeUntilLaserDistribution(timeUntilLaserRandEngine);
-
             laserActiveTimeElapsed = laserActiveTimeDistribution(laserActiveTimeRandEngine);
             triggerEnteringAnimations();
         }

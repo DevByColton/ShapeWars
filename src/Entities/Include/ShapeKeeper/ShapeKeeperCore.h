@@ -17,7 +17,7 @@ struct ShapeKeeperCore final : sf::Sprite
 {
     explicit ShapeKeeperCore(const sf::Texture& texture, const sf::Color& color, ShapeKeeperHealthBar* healthBar);
 
-    static constexpr int MAX_HEALTH = 100;
+    static constexpr int MAX_HEALTH = 150;
     const sf::Vector2f offScreenLeft {-400.f, GameRoot::instance().windowSizeF.y / 2.f};
     const sf::Vector2f offScreenRight {GameRoot::instance().windowSizeF.x + 400.f, GameRoot::instance().windowSizeF.y / 2.f};
     bool wasHit = false;
@@ -41,9 +41,9 @@ struct ShapeKeeperCore final : sf::Sprite
     std::default_random_engine timeUntilMovementChangeRandEngine {std::random_device{}()};
     std::default_random_engine movementXRandEngine {std::random_device{}()};
     std::default_random_engine movementYRandEngine {std::random_device{}()};
-    std::uniform_real_distribution<float> timeUntilMovementChangeDistribution {1.f, 5.f};
-    std::uniform_real_distribution<float> movementXDistribution {200.f, GameRoot::instance().windowSizeF.x - 200.f};
-    std::uniform_real_distribution<float> movementYDistribution {200.f, GameRoot::instance().windowSizeF.y - 200.f};
+    std::uniform_real_distribution<float> timeUntilMovementChangeDistribution {2.5f, 5.f};
+    std::uniform_real_distribution<float> movementXRangeDistribution {-1000.f, 1000.f};
+    std::uniform_real_distribution<float> movementYRangeDistribution {-1000.f, 1000.f};
 
     // Rotation
     float timeUntilRotationChangeDuration = 0.f;

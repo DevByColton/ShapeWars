@@ -81,24 +81,22 @@ void GameRoot::setupDebug()
 
 void GameRoot::setupRelease()
 {
-    // Set fullscreen mode and set the window maximum size to it
-    const auto& fullscreenModes = sf::VideoMode::getFullscreenModes();
-    const unsigned int width = fullscreenModes[0].size.x;
-    const unsigned int height = fullscreenModes[0].size.y;
-    const sf::Vector2 maxWindowSize {width, height};
-    const unsigned int bitsPerPixel = fullscreenModes[0].bitsPerPixel;
-
     // Create the render window with fullscreen and properties
     sf::ContextSettings settings;
     settings.antiAliasingLevel = 8;
     renderWindow = sf::RenderWindow(
-        sf::VideoMode(maxWindowSize, bitsPerPixel),
+        sf::VideoMode(sf::VideoMode::getDesktopMode().size, sf::VideoMode::getDesktopMode().bitsPerPixel),
         "Shape Wars",
         sf::Style::Default,
         sf::State::Fullscreen,
         settings
     );
 
+    // Set fullscreen mode and set the window maximum size to it
+    const auto& fullscreenModes = sf::VideoMode::getFullscreenModes();
+    const unsigned int width = fullscreenModes[0].size.x;
+    const unsigned int height = fullscreenModes[0].size.y;
+    const sf::Vector2u maxWindowSize {width, height};
     renderWindow.setMaximumSize(maxWindowSize);
 }
 

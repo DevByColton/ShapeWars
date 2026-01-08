@@ -168,8 +168,13 @@ void ShapeKeeperCore::updateMovement()
     {
         timeUntilMovementChangeDuration = timeUntilMovementChangeDistribution(timeUntilMovementChangeRandEngine);
         timeUntilMovementChange = 0.f;
+
+        // Set the next target position by adding a random amount in the allowed range, clamp to bounds
         previousTargetPosition = getPosition();
-        currentTargetPosition = {movementXDistribution(movementXRandEngine), movementYDistribution(movementYRandEngine)};
+        currentTargetPosition = {
+            std::clamp(previousTargetPosition.x + movementXRangeDistribution(movementXRandEngine), 200.f, GameRoot::instance().windowSizeF.x - 200.f),
+            std::clamp(previousTargetPosition.y + movementYRangeDistribution(movementYRandEngine), 200.f, GameRoot::instance().windowSizeF.y - 200.f)
+        };
     }
 }
 
